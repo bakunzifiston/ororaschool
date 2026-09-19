@@ -1,0 +1,213 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+/* ===========================================================================
+   Orora School design tokens.
+
+   Tailwind v4 has no tailwind.config.js — @theme IS the config. Every token
+   declared here generates the matching utilities (bg-papyrus, text-fern-500,
+   font-display, text-title, rounded-md ...).
+   =========================================================================== */
+@theme {
+    /* ---- Typefaces --------------------------------------------------------
+       Bitter: slab serif built for small on-screen sizes; carries the register
+       of a printed agricultural extension manual.
+       IBM Plex Sans: technical/industrial UI face, legible on low-density
+       screens. Plex Mono is its numeric companion — this interface is dense with
+       counts, percentages, dates and codes that must align down a column. */
+    --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+    --font-display: 'Bitter', Georgia, 'Times New Roman', serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+    /* ---- Type scale ------------------------------------------------------- */
+    --text-micro: 0.78125rem;        /* 12.5px — labels, captions */
+    --text-micro--line-height: 1.4;
+    --text-dense: 0.875rem;          /* 14px — tables, meta, dense UI */
+    --text-dense--line-height: 1.45;
+    --text-body: 1rem;               /* 16px — default body */
+    --text-body--line-height: 1.55;
+    --text-read: 1.0625rem;          /* 17px — learner lesson copy */
+    --text-read--line-height: 1.6;
+    --text-panel: 1rem;              /* 16px — panel titles (display face) */
+    --text-panel--line-height: 1.35;
+    --text-section: 1.25rem;         /* 20px — section headings */
+    --text-section--line-height: 1.3;
+    --text-title: 1.75rem;           /* 28px — page titles */
+    --text-title--line-height: 1.15;
+
+    /* ---- Basalt: volcanic soil. The one dark surface, plus primary text. --- */
+    --color-basalt-950: #0a0d0b;
+    --color-basalt-900: #111512;
+    --color-basalt-800: #1a201c;
+    --color-basalt-700: #252d28;
+    --color-basalt-600: #333c36;
+
+    /* ---- Papyrus / Chalk: dried grass and reed. App and raised surfaces. --- */
+    --color-papyrus: #f1f2ec;
+    --color-chalk: #fbfcf9;
+
+    /* ---- Clay: mineral green-grey. Borders and dividers. ------------------ */
+    --color-clay-100: #e7e8e0;
+    --color-clay-200: #c9cbbf;
+    --color-clay-300: #b0b2a4;
+
+    /* ---- Fern: desaturated green-greys, so even the greys stay in family. -- */
+    --color-fern-400: #7c8378;
+    --color-fern-500: #5c6459;
+    --color-fern-600: #474d45;
+
+    /* ---- Accent: resolved per experience from --xp-* below. ---------------
+       Matched lightness and chroma across the three so they read as siblings
+       differing only in hue. */
+    --color-accent-50: var(--xp-accent-50);
+    --color-accent-100: var(--xp-accent-100);
+    --color-accent-200: var(--xp-accent-200);
+    --color-accent-400: var(--xp-accent-400);
+    --color-accent-500: var(--xp-accent-500);
+    --color-accent-600: var(--xp-accent-600);
+    --color-accent-700: var(--xp-accent-700);
+    --color-accent-on: var(--xp-accent-on);
+
+    /* ---- Status hues. Seven distinct values, deliberately held apart from the
+       accent ramps so a badge never reads as "selected". ------------------- */
+    --color-st-draft: #66655d;
+    --color-st-draft-bg: #eceae2;
+    --color-st-pending: #9a6510;
+    --color-st-pending-bg: #f7ecd8;
+    --color-st-approved: #2f6b84;
+    --color-st-approved-bg: #e2eef3;
+    --color-st-published: #3a6a2c;
+    --color-st-published-bg: #e5eedf;
+    --color-st-archived: #8c887f;
+    --color-st-archived-bg: #efeee8;
+    --color-st-active: #1f7a6b;
+    --color-st-active-bg: #dff0ec;
+    --color-st-completed: #8a6a16;
+    --color-st-completed-bg: #f7eed7;
+
+    /* ---- Feedback -------------------------------------------------------- */
+    --color-danger: #9c3826;
+    --color-danger-bg: #f7e4e0;
+    --color-ok: #3a6a2c;
+    --color-ok-bg: #e5eedf;
+
+    /* ---- Near-square corners: drawn, not soft. --------------------------- */
+    --radius-xs: 1px;
+    --radius-sm: 2px;
+    --radius-md: 3px;
+    --radius-lg: 4px;
+    --radius-xl: 6px;
+}
+
+/* ---------------------------------------------------------------------------
+   Per-experience accent. One shared neutral system; only the hue shifts, so a
+   glance at any screen tells you which context you are in.
+--------------------------------------------------------------------------- */
+:root,
+[data-experience='super-admin'] {
+    /* Kivu Deep — lake water; oversight across the whole estate. */
+    --xp-accent-50: #e7f0f3;
+    --xp-accent-100: #cbe0e7;
+    --xp-accent-200: #9cc3ce;
+    --xp-accent-400: #3a8098;
+    --xp-accent-500: #1f5f73;
+    --xp-accent-600: #184c5c;
+    --xp-accent-700: #123a47;
+    --xp-accent-on: #ffffff;
+}
+
+[data-experience='platform-workspace'] {
+    /* Terrace Green — cultivated hillside; where the work gets made. */
+    --xp-accent-50: #e9f0e7;
+    --xp-accent-100: #d1e2cc;
+    --xp-accent-200: #a7c69d;
+    --xp-accent-400: #598b4b;
+    --xp-accent-500: #3e6b34;
+    --xp-accent-600: #325628;
+    --xp-accent-700: #26421f;
+    --xp-accent-on: #ffffff;
+}
+
+/* Before sign-in there is no experience to signal, so the guest pages carry the
+   house colour. The three experience accents only begin once you are inside one. */
+[data-experience='guest'] {
+    --xp-accent-50: #e9f0e7;
+    --xp-accent-100: #d1e2cc;
+    --xp-accent-200: #a7c69d;
+    --xp-accent-400: #598b4b;
+    --xp-accent-500: #3e6b34;
+    --xp-accent-600: #325628;
+    --xp-accent-700: #26421f;
+    --xp-accent-on: #ffffff;
+}
+
+[data-experience='learner'] {
+    /* Millet Gold — ripening grain; growth and progress. */
+    --xp-accent-50: #f8f0da;
+    --xp-accent-100: #f0e1b7;
+    --xp-accent-200: #dfc57c;
+    --xp-accent-400: #ab8419;
+    --xp-accent-500: #8a6a16;
+    --xp-accent-600: #6e5511;
+    --xp-accent-700: #53400d;
+    --xp-accent-on: #ffffff;
+}
+
+@layer base {
+    html {
+        -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+        background-color: var(--color-papyrus);
+        color: var(--color-basalt-800);
+        font-family: var(--font-sans);
+        font-size: var(--text-body);
+        line-height: var(--text-body--line-height);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        font-family: var(--font-display);
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: var(--color-basalt-900);
+    }
+
+    /* Every interactive element gets a visible keyboard focus state. Scoped to
+       :focus-visible so pointer users never see it. */
+    :focus-visible {
+        outline: 2px solid var(--color-accent-500);
+        outline-offset: 2px;
+        border-radius: 1px;
+    }
+
+    /* The basalt rail needs a ring that survives on a dark surface. */
+    .on-basalt :focus-visible {
+        outline-color: var(--color-clay-200);
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+
+    /* Figures line up in columns without the whole UI going monospace. */
+    .figure {
+        font-family: var(--font-mono);
+        font-feature-settings: 'tnum' 1;
+        letter-spacing: -0.01em;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
