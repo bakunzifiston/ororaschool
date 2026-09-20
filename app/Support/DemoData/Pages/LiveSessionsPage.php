@@ -53,8 +53,8 @@ class LiveSessionsPage
                     ? 'Past sessions keep a recording URL. Upcoming ones keep the meeting link.'
                     : 'Creates a clinic on '.$current['name'].'. Nothing is saved in this build.',
                 [
-                    ['label' => 'Live Sessions', 'route' => 'workspace.sessions', 'params' => ['platform' => $platform]],
-                    ['label' => $isEdit ? $session['title'] : 'New session'],
+                    ['label' => 'Live sessions', 'route' => 'workspace.sessions', 'params' => ['platform' => $platform]],
+                    ['label' => $isEdit ? 'Edit '.$session['title'] : 'Schedule a live session'],
                 ],
             ),
             'session' => $session ?? [

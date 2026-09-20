@@ -74,7 +74,7 @@ class RolesPage
                 'breadcrumb' => [
                     ['label' => 'Orora School', 'route' => 'admin.dashboard'],
                     ['label' => 'Roles', 'route' => 'admin.roles'],
-                    ['label' => 'New role'],
+                    ['label' => 'New custom role'],
                 ],
                 'title' => 'New custom role',
                 'subtitle' => 'System roles cannot be created from here. Tick the permissions this role should carry.',

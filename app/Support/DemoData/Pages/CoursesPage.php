@@ -102,7 +102,7 @@ class CoursesPage
                     : 'Starts as a draft, visible only to '.$current['name'].' staff.',
                 [
                     ['label' => 'Courses', 'route' => 'workspace.courses', 'params' => ['platform' => $platform]],
-                    ['label' => $isEdit ? $course['title'] : 'New course'],
+                    ['label' => $isEdit ? 'Edit '.$course['title'] : 'New course'],
                 ],
             ),
             'course' => $course ?? [

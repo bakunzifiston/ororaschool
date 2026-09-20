@@ -24,7 +24,7 @@
     <ol class="mt-6 grid gap-3">
         @foreach ($page['path']['items'] as $index => $item)
             <li class="flex flex-wrap items-center gap-4 rounded-md border border-clay-200 bg-chalk px-4 py-3">
-                <span class="figure text-micro text-fern-400">{{ $index + 1 }}</span>
+                <span class="figure text-micro text-fern-500">{{ $index + 1 }}</span>
                 <div class="min-w-0 grow">
                     <a href="{{ route('learner.courses.show', ['course' => $item['course']['slug']]) }}"
                        class="font-medium text-basalt-900 hover:text-accent-600">{{ $item['course']['title'] }}</a>

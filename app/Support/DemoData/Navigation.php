@@ -24,9 +24,9 @@ class Navigation
             ['label' => 'Users', 'route' => 'admin.users', 'path' => '/admin/users', 'icon' => 'users'],
             ['label' => 'Roles', 'route' => 'admin.roles', 'path' => '/admin/roles', 'icon' => 'shield'],
             ['label' => 'Permissions', 'route' => 'admin.permissions', 'path' => '/admin/permissions', 'icon' => 'key', 'roles' => ['super-admin']],
-            ['label' => 'Global Content', 'route' => 'admin.content', 'path' => '/admin/content', 'icon' => 'globe'],
+            ['label' => 'Global content', 'route' => 'admin.content', 'path' => '/admin/content', 'icon' => 'globe'],
             ['label' => 'Analytics', 'route' => 'admin.analytics', 'path' => '/admin/analytics', 'icon' => 'chart'],
-            ['label' => 'Activity Logs', 'route' => 'admin.activity', 'path' => '/admin/activity', 'icon' => 'history'],
+            ['label' => 'Activity logs', 'route' => 'admin.activity', 'path' => '/admin/activity', 'icon' => 'history'],
             ['label' => 'Settings', 'route' => 'admin.settings', 'path' => '/admin/settings', 'icon' => 'cog'],
         ];
     }
@@ -45,7 +45,7 @@ class Navigation
             ['label' => 'Instructors', 'route' => 'workspace.instructors', 'path' => '/workspace/{platform}/instructors', 'icon' => 'teacher'],
             ['label' => 'Learners', 'route' => 'workspace.learners', 'path' => '/workspace/{platform}/learners', 'icon' => 'users'],
             ['label' => 'Certificates', 'route' => 'workspace.certificates', 'path' => '/workspace/{platform}/certificates', 'icon' => 'award'],
-            ['label' => 'Live Sessions', 'route' => 'workspace.sessions', 'path' => '/workspace/{platform}/live-sessions', 'icon' => 'video'],
+            ['label' => 'Live sessions', 'route' => 'workspace.sessions', 'path' => '/workspace/{platform}/live-sessions', 'icon' => 'video'],
             ['label' => 'Analytics', 'route' => 'workspace.analytics', 'path' => '/workspace/{platform}/analytics', 'icon' => 'chart'],
         ];
     }
@@ -55,12 +55,23 @@ class Navigation
     {
         return [
             ['label' => 'Dashboard', 'route' => 'learner.dashboard', 'path' => '/learn', 'icon' => 'gauge'],
-            ['label' => 'My Courses', 'route' => 'learner.courses', 'path' => '/learn/courses', 'icon' => 'book'],
-            ['label' => 'Learning Paths', 'route' => 'learner.paths', 'path' => '/learn/paths', 'icon' => 'path'],
+            ['label' => 'My courses', 'route' => 'learner.courses', 'path' => '/learn/courses', 'icon' => 'book'],
+            ['label' => 'Learning paths', 'route' => 'learner.paths', 'path' => '/learn/paths', 'icon' => 'path'],
             ['label' => 'Certificates', 'route' => 'learner.certificates', 'path' => '/learn/certificates', 'icon' => 'award'],
-            ['label' => 'Live Sessions', 'route' => 'learner.sessions', 'path' => '/learn/live-sessions', 'icon' => 'video'],
+            ['label' => 'Live sessions', 'route' => 'learner.sessions', 'path' => '/learn/live-sessions', 'icon' => 'video'],
             ['label' => 'Resources', 'route' => 'learner.resources', 'path' => '/learn/resources', 'icon' => 'file'],
             ['label' => 'Profile', 'route' => 'learner.profile', 'path' => '/learn/profile', 'icon' => 'user'],
+        ];
+    }
+
+    /** Public marketing site: top nav, no sidebar. */
+    public static function public(): array
+    {
+        return [
+            ['label' => 'Home', 'route' => 'home', 'path' => '/', 'icon' => 'sprout'],
+            ['label' => 'Courses', 'route' => 'catalog.courses', 'path' => '/courses', 'icon' => 'book'],
+            ['label' => 'Platforms', 'route' => 'catalog.platforms', 'path' => '/platforms', 'icon' => 'layers'],
+            ['label' => 'Certificate verification', 'route' => 'certificates.lookup', 'path' => '/certificates', 'icon' => 'award'],
         ];
     }
 
@@ -70,6 +81,7 @@ class Navigation
             'super-admin' => self::superAdmin(),
             'platform-workspace' => self::platformWorkspace(),
             'learner' => self::learner(),
+            'public' => self::public(),
             default => [],
         };
     }
@@ -91,7 +103,7 @@ class Navigation
      */
     public static function labelForRoute(string $routeName): string
     {
-        foreach (['super-admin', 'platform-workspace', 'learner'] as $experience) {
+        foreach (['super-admin', 'platform-workspace', 'learner', 'public'] as $experience) {
             foreach (self::for($experience) as $item) {
                 if ($item['route'] === $routeName) {
                     return $item['label'];

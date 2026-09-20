@@ -15,7 +15,7 @@ class SettingsPage
                     ['label' => 'Orora School', 'route' => 'admin.dashboard'],
                     ['label' => 'Settings'],
                 ],
-                'title' => 'Global settings',
+                'title' => 'Settings',
                 'subtitle' => 'Estate-wide defaults. Platform workspaces inherit these unless they override them later.',
             ],
             'values' => [

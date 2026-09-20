@@ -13,11 +13,10 @@
 
     <form method="GET" action="{{ route('workspace.quizzes', ['platform' => $platformSlug]) }}" class="mt-6 flex flex-wrap items-end gap-3">
         <div class="min-w-72 grow">
-            <x-select name="course" label="Course" size="sm"
+            <x-select name="course" label="Course" size="sm" :autosubmit="true"
                       :options="$page['filters']['courses']"
                       :selected="$page['filters']['course']" />
         </div>
-        <x-button type="submit" variant="secondary" size="sm">Filter</x-button>
     </form>
 
     <div class="mt-4">

@@ -9,11 +9,10 @@
 
     <form method="GET" action="{{ route('learner.courses') }}" class="mt-6 flex flex-wrap items-end gap-3">
         <div class="w-52">
-            <x-select name="status" label="Show" size="sm"
+            <x-select name="status" label="Show" size="sm" :autosubmit="true"
                       :options="$page['filters']['statuses']"
                       :selected="$page['filters']['status']" />
         </div>
-        <x-button type="submit" variant="secondary" size="sm">Filter</x-button>
     </form>
 
     <div class="mt-6 grid gap-8">
@@ -24,7 +23,7 @@
                         <h2 class="font-display text-section text-basalt-900">{{ $group['name'] }}</h2>
                         <p class="text-micro text-fern-500">{{ $group['discipline'] }}</p>
                     </div>
-                    <span class="figure text-micro text-fern-400">{{ count($group['courses']) }} {{ count($group['courses']) === 1 ? 'course' : 'courses' }}</span>
+                    <span class="figure text-micro text-fern-500">{{ count($group['courses']) }} {{ count($group['courses']) === 1 ? 'course' : 'courses' }}</span>
                 </header>
 
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -60,9 +59,9 @@
                             <p class="text-micro text-fern-500">{{ $item['platform_name'] }}</p>
                         </div>
                         @if ($item['course']['enrollment_required'])
-                            <x-button size="sm" :href="route('learner.courses.show', ['course' => $item['course']['slug']])">Enrol</x-button>
+                            <x-button :href="route('learner.courses.show', ['course' => $item['course']['slug']])">Enrol</x-button>
                         @else
-                            <x-button size="sm" variant="secondary" :href="route('learner.courses.show', ['course' => $item['course']['slug']])">Start</x-button>
+                            <x-button variant="secondary" :href="route('learner.courses.show', ['course' => $item['course']['slug']])">Start</x-button>
                         @endif
                     </li>
                 @endforeach

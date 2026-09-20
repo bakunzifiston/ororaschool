@@ -23,7 +23,7 @@ class GlobalContentPage
             'header' => [
                 'breadcrumb' => [
                     ['label' => 'Orora School', 'route' => 'admin.dashboard'],
-                    ['label' => 'Global Content'],
+                    ['label' => 'Global content'],
                 ],
                 'title' => 'Global content',
                 'subtitle' => 'Academies and courses across the estate. Open a row to work on it inside that platform’s workspace.',

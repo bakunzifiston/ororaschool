@@ -15,7 +15,7 @@
                                :title="$page['emptyTitle']"
                                :message="$page['emptyMessage']">
                     <x-slot:actions>
-                        <x-button size="sm" :href="route('admin.roles.create')">New custom role</x-button>
+                        <x-button :href="route('admin.roles.create')">New custom role</x-button>
                     </x-slot:actions>
                 </x-empty-state>
             </x-panel>
@@ -33,12 +33,12 @@
                                         System-protected
                                     </span>
                                 @else
-                                    <span class="text-micro text-fern-400">Custom</span>
+                                    <span class="text-micro text-fern-500">Custom</span>
                                 @endif
                             </div>
                             <p class="mt-2 max-w-2xl text-dense leading-relaxed text-fern-500">{{ $role['description'] }}</p>
                         </div>
-                        <p class="figure shrink-0 text-micro text-fern-400">{{ number_format($role['holders']) }} holders</p>
+                        <p class="figure shrink-0 text-micro text-fern-500">{{ number_format($role['holders']) }} holders</p>
                     </a>
                 @endforeach
             </div>

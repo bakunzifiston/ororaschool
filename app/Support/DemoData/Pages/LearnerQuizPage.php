@@ -39,7 +39,7 @@ class LearnerQuizPage
                 $quiz['title'],
                 $quiz['course'].' · '.$quiz['lesson'],
                 [
-                    ['label' => 'My Courses', 'route' => 'learner.courses'],
+                    ['label' => 'My courses', 'route' => 'learner.courses'],
                     ['label' => $quiz['course'], 'route' => 'learner.courses.show', 'params' => ['course' => $quiz['course_slug']]],
                     ['label' => $quiz['title']],
                 ],

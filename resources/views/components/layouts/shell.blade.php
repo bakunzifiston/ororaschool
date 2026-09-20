@@ -3,6 +3,7 @@
     'title' => null,
     'railed' => false,
     'contentClass' => 'max-w-6xl',
+    'mainClass' => 'grow px-4 py-6 sm:px-6 lg:px-8 lg:py-8',
     'user' => [],
 ])
 
@@ -94,13 +95,17 @@
 
         <x-layouts.partials.flash />
 
-        <main class="grow px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+        <main class="{{ $mainClass }}">
             <div class="mx-auto {{ $contentClass }}">
                 {{ $slot }}
             </div>
         </main>
 
-        <x-layouts.partials.footer :experience="$experience" />
+        @isset($footer)
+            {{ $footer }}
+        @else
+            <x-layouts.partials.footer :experience="$experience" />
+        @endisset
     </div>
 
     @livewireScripts

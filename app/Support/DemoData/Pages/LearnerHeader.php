@@ -21,7 +21,10 @@ class LearnerHeader
             $breadcrumb[] = $crumb;
         }
 
-        if ($trail === [] || ($trail[array_key_last($trail)]['label'] ?? null) !== $title) {
+        // An empty trail means there is no section under the home crumb — do
+        // not repeat a greeting or other page title as a fake last segment.
+        $lastLabel = $trail === [] ? null : ($trail[array_key_last($trail)]['label'] ?? null);
+        if ($trail !== [] && strcasecmp((string) $lastLabel, $title) !== 0) {
             $breadcrumb[] = ['label' => $title];
         }
 

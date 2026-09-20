@@ -43,7 +43,7 @@ class Permissions
                 'area' => 'roles',
                 'label' => 'Roles and permissions',
                 'permissions' => [
-                    ['key' => 'roles.view', 'label' => 'View roles', 'hint' => 'See the catalog and what each role can do.'],
+                    ['key' => 'roles.view', 'label' => 'View roles', 'hint' => 'See the catalogue and what each role can do.'],
                     ['key' => 'roles.create', 'label' => 'Create custom roles', 'hint' => 'System roles stay protected; custom ones can be added.'],
                     ['key' => 'roles.update', 'label' => 'Edit role permissions', 'hint' => 'Tick and untick keys on a custom role.'],
                 ],

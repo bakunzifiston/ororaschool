@@ -9,11 +9,10 @@
 
     <form method="GET" action="{{ route('workspace.certificates', ['platform' => $platformSlug]) }}" class="mt-6 flex flex-wrap items-end gap-3">
         <div class="w-48">
-            <x-select name="status" label="Status" size="sm"
+            <x-select name="status" label="Status" size="sm" :autosubmit="true"
                       :options="$page['filters']['statuses']"
                       :selected="$page['filters']['status']" />
         </div>
-        <x-button type="submit" variant="secondary" size="sm">Filter</x-button>
     </form>
 
     <div class="mt-4">

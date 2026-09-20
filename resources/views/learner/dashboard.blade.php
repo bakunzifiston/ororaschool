@@ -1,16 +1,7 @@
 <x-layouts.learner title="My learning">
     <x-page-header :breadcrumb="$page['header']['breadcrumb']"
                    :title="$page['header']['title']"
-                   :subtitle="$page['header']['subtitle']">
-        <x-slot:actions>
-            @if ($page['continue']['lesson'] ?? null)
-                <x-button icon-after="arrow-right"
-                          :href="route('learner.courses.lessons.show', ['course' => $page['continue']['course'], 'lesson' => $page['continue']['lesson']['id']])">
-                    Continue lesson
-                </x-button>
-            @endif
-        </x-slot:actions>
-    </x-page-header>
+                   :subtitle="$page['header']['subtitle']" />
 
     @if ($page['continue'])
         @php $next = $page['continue']; @endphp
@@ -34,30 +25,50 @@
                     </x-button>
                 @endif
             </div>
-        </div>
-    @endif
 
-    <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        @foreach ($page['stats'] as $stat)
-            <x-stat-card :label="$stat['label']" :value="$stat['value']"
-                         :trend="$stat['trend']" :direction="$stat['direction']" :note="$stat['note']" />
-        @endforeach
-    </div>
+            <p class="mt-4 text-dense text-fern-500">
+                <a href="{{ route('learner.certificates') }}" class="font-medium text-accent-700 hover:underline">
+                    {{ $page['certificatesCount'] === 1
+                        ? '1 certificate earned'
+                        : $page['certificatesCount'].' certificates earned' }}
+                </a>
+            </p>
+        </div>
+    @else
+        <p class="mt-6 text-dense text-fern-500">
+            <a href="{{ route('learner.certificates') }}" class="font-medium text-accent-700 hover:underline">
+                {{ $page['certificatesCount'] === 1
+                    ? '1 certificate earned'
+                    : $page['certificatesCount'].' certificates earned' }}
+            </a>
+        </p>
+    @endif
 
     <section class="mt-6 min-w-0">
         <div class="mb-3 flex flex-wrap items-baseline justify-between gap-2">
             <h2 class="font-display text-section text-basalt-900">Courses in progress</h2>
-            <a href="{{ route('learner.courses', ['status' => 'active']) }}" class="text-micro font-medium text-accent-700 hover:underline">All of them</a>
+            <a href="{{ route('learner.courses', ['status' => 'active']) }}" class="text-micro font-medium text-accent-700 hover:underline">All in-progress courses</a>
         </div>
 
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            @foreach ($page['inProgress'] as $enrolment)
-                <x-course-card :course="$enrolment['course_data']"
-                               :platform-label="$enrolment['platform_name']"
-                               :progress="$enrolment['progress']"
-                               :status="$enrolment['status']"
-                               :href="route('learner.courses.show', ['course' => $enrolment['course']])" />
-            @endforeach
-        </div>
+        @if (count($page['inProgress']))
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                @foreach ($page['inProgress'] as $enrolment)
+                    <x-course-card :course="$enrolment['course_data']"
+                                   :platform-label="$enrolment['platform_name']"
+                                   :progress="$enrolment['progress']"
+                                   :status="$enrolment['status']"
+                                   :href="route('learner.courses.show', ['course' => $enrolment['course']])" />
+                @endforeach
+            </div>
+        @else
+            <x-panel :padded="false">
+                <x-empty-state icon="book" title="No courses in progress"
+                               message="When a coordinator enrols you, or you start an open course, the next lesson lands here.">
+                    <x-slot:actions>
+                        <x-button variant="secondary" :href="route('learner.courses')">My courses</x-button>
+                    </x-slot:actions>
+                </x-empty-state>
+            </x-panel>
+        @endif
     </section>
 </x-layouts.learner>

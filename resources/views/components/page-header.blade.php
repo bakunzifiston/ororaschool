@@ -13,7 +13,7 @@
                 @foreach ($breadcrumb as $crumb)
                     <li class="flex items-center gap-1.5">
                         @if (! $loop->first)
-                            <x-icon name="chevron-right" class="h-3 w-3 text-clay-300" />
+                            <x-icon name="chevron-right" class="h-3 w-3 text-fern-500" />
                         @endif
 
                         @php

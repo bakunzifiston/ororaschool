@@ -18,9 +18,11 @@ use Tests\TestCase;
  */
 class ShellTest extends TestCase
 {
-    public function test_root_path_goes_to_the_sign_in_page(): void
+    public function test_root_path_renders_the_public_homepage(): void
     {
-        $this->get('/')->assertRedirect('/login');
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('data-experience="public"', false);
     }
 
     public function test_every_super_admin_destination_renders(): void
@@ -151,9 +153,29 @@ class ShellTest extends TestCase
         $this->assertNotContains('Permissions', array_column($asCurriculumLead, 'label'));
     }
 
+    public function test_nested_staff_pages_keep_the_parent_nav_item_current(): void
+    {
+        $adminUser = $this->get(route('admin.users.show', ['user' => 2]));
+        $adminUser->assertOk();
+        $this->assertMatchesRegularExpression(
+            '/href="'.preg_quote(route('admin.users'), '/').'"[^>]*aria-current="page"/',
+            $adminUser->getContent(),
+        );
+
+        $course = $this->get(route('workspace.courses.show', [
+            'platform' => 'gemura',
+            'course' => 'mastitis-milk-hygiene',
+        ]));
+        $course->assertOk();
+        $this->assertMatchesRegularExpression(
+            '/href="'.preg_quote(route('workspace.courses', ['platform' => 'gemura']), '/').'"[^>]*aria-current="page"/',
+            $course->getContent(),
+        );
+    }
+
     public function test_every_nav_item_has_a_registered_route(): void
     {
-        foreach (['super-admin', 'platform-workspace', 'learner'] as $experience) {
+        foreach (['super-admin', 'platform-workspace', 'learner', 'public'] as $experience) {
             foreach (Navigation::for($experience) as $item) {
                 $this->assertTrue(Route::has($item['route']), "Missing route: {$item['route']}");
             }

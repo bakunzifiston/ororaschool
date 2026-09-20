@@ -7,7 +7,7 @@
 {{-- Empty states tell the reader what to do next. The copy is supplied by the
      page so it can name the actual cohort, platform or queue. --}}
 <div {{ $attributes->merge(['class' => 'flex flex-col items-center justify-center px-6 py-12 text-center']) }}>
-    <span class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-md border border-clay-200 bg-papyrus text-fern-400">
+    <span class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-md border border-clay-200 bg-papyrus text-fern-500">
         @isset($illustration)
             {{ $illustration }}
         @else

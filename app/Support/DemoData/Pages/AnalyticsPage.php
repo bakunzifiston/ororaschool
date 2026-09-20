@@ -26,7 +26,7 @@ class AnalyticsPage
                     ['label' => 'Orora School', 'route' => 'admin.dashboard'],
                     ['label' => 'Analytics'],
                 ],
-                'title' => 'Estate analytics',
+                'title' => 'Analytics',
                 'subtitle' => 'Six months across every platform. Open a workspace for the same numbers scoped to one tenant.',
             ],
             'stats' => [

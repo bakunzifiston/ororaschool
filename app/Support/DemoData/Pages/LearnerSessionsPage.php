@@ -28,7 +28,7 @@ class LearnerSessionsPage
                 'Live sessions',
                 'Clinics on courses you are enrolled in, whichever platform they sit on.',
                 [
-                    ['label' => 'Live Sessions'],
+                    ['label' => 'Live sessions'],
                 ],
             ),
             'upcoming' => array_map($label, $upcoming),

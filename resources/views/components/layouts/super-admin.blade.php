@@ -38,15 +38,6 @@
         </div>
     </x-slot:sidebar>
 
-    <x-slot:topbarStart>
-        <label class="relative flex w-full max-w-sm items-center">
-            <x-icon name="search" class="pointer-events-none absolute left-2.5 h-4 w-4 text-clay-300" />
-            <span class="sr-only">Search platforms, users and courses</span>
-            <input type="search" placeholder="Search platforms, users, courses"
-                   class="h-9 w-full rounded-md border border-clay-200 bg-chalk pl-8 pr-3 text-dense text-basalt-800 placeholder:text-clay-300">
-        </label>
-    </x-slot:topbarStart>
-
     <x-slot:topbarEnd>
         <x-layouts.partials.user-menu :user="$shell['user']" :role="$shell['user']['role']" />
     </x-slot:topbarEnd>

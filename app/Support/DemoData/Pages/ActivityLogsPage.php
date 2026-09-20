@@ -29,7 +29,7 @@ class ActivityLogsPage
             'header' => [
                 'breadcrumb' => [
                     ['label' => 'Orora School', 'route' => 'admin.dashboard'],
-                    ['label' => 'Activity Logs'],
+                    ['label' => 'Activity logs'],
                 ],
                 'title' => 'Activity logs',
                 'subtitle' => 'Who did what, on which platform, and when. Nothing here is deleted — deactivating a platform still leaves its trail.',

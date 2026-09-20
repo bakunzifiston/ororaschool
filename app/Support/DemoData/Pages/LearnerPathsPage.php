@@ -18,7 +18,7 @@ class LearnerPathsPage
                 'Learning paths',
                 'An ordered sequence of courses. Some stay on one platform; others stitch two or three together.',
                 [
-                    ['label' => 'Learning Paths'],
+                    ['label' => 'Learning paths'],
                 ],
             ),
             'paths' => $paths,
@@ -42,7 +42,7 @@ class LearnerPathsPage
                     ? $path['platform_count'].' platforms on one path'
                     : 'All on '.$path['platforms'][0],
                 [
-                    ['label' => 'Learning Paths', 'route' => 'learner.paths'],
+                    ['label' => 'Learning paths', 'route' => 'learner.paths'],
                     ['label' => $path['title']],
                 ],
             ),

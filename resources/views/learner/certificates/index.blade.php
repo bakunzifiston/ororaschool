@@ -20,7 +20,7 @@
                     <div class="mt-2 flex flex-wrap items-center gap-2">
                         <x-status-badge :status="$row['status']" />
                         <a href="{{ route('certificates.verify', ['code' => $row['code']]) }}"
-                           class="text-micro font-medium text-accent-700 hover:underline">View / Share</a>
+                           class="text-micro font-medium text-accent-700 hover:underline">View certificate</a>
                     </div>
                 </div>
             </article>

@@ -1,19 +1,30 @@
-<x-layouts.platform-workspace :title="$page['platform']['name'] . ' workspace'" :platform="$platformSlug">
+<x-layouts.platform-workspace title="Dashboard" :platform="$platformSlug">
     <x-page-header :breadcrumb="$page['header']['breadcrumb']"
                    :title="$page['header']['title']"
                    :subtitle="$page['header']['subtitle']">
         <x-slot:actions>
-            <x-button variant="secondary" icon="video" :href="route('workspace.sessions', ['platform' => $platformSlug])">
-                Live sessions
-            </x-button>
+            <a href="{{ route('workspace.sessions', ['platform' => $platformSlug]) }}"
+               class="text-dense font-medium text-accent-700 hover:underline">Live sessions</a>
             <x-button icon="plus" :href="route('workspace.courses.create', ['platform' => $platformSlug])">New course</x-button>
         </x-slot:actions>
     </x-page-header>
 
-    <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+    <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         @foreach ($page['stats'] as $stat)
             <x-stat-card :label="$stat['label']" :value="$stat['value']"
                          :trend="$stat['trend']" :direction="$stat['direction']" :note="$stat['note']" />
+        @endforeach
+    </div>
+
+    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        @foreach ($page['secondaryStats'] as $stat)
+            <a href="{{ $stat['label'] === 'Instructors'
+                ? route('workspace.instructors', ['platform' => $platformSlug])
+                : route('workspace.certificates', ['platform' => $platformSlug]) }}"
+               class="block rounded-md focus-within:outline-none">
+                <x-stat-card variant="compact" :label="$stat['label']" :value="$stat['value']"
+                             :trend="$stat['trend']" :direction="$stat['direction']" :note="$stat['note']" />
+            </a>
         @endforeach
     </div>
 
@@ -53,7 +64,7 @@
                                     {{ $entry['action_label'] }}
                                     <span class="text-fern-600">{{ $entry['target'] }}</span>
                                 </p>
-                                <p class="mt-0.5 text-micro text-fern-400">{{ $entry['at'] }}</p>
+                                <p class="mt-0.5 text-micro text-fern-500">{{ $entry['at'] }}</p>
                             </div>
                         </li>
                     @endforeach
@@ -84,7 +95,7 @@
                 <x-empty-state icon="video" title="Nothing scheduled this month"
                                message="Field officers book onto clinics up to two weeks ahead.">
                     <x-slot:actions>
-                        <x-button variant="secondary" size="sm" icon="plus"
+                        <x-button variant="secondary" icon="plus"
                                   :href="route('workspace.sessions.create', ['platform' => $platformSlug])">
                             Schedule a session
                         </x-button>

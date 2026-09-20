@@ -1,4 +1,4 @@
-<x-layouts.super-admin title="Estate analytics">
+<x-layouts.super-admin title="Analytics">
     <x-page-header :breadcrumb="$page['header']['breadcrumb']"
                    :title="$page['header']['title']"
                    :subtitle="$page['header']['subtitle']" />

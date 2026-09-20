@@ -15,8 +15,8 @@
     ];
 
     $sizes = [
-        'sm' => 'h-7 px-2.5 text-micro gap-1.5',
-        'md' => 'h-9 px-3.5 text-dense gap-2',
+        'sm' => 'h-11 px-2.5 text-micro gap-1.5 sm:h-7',
+        'md' => 'h-11 px-3.5 text-dense gap-2 sm:h-9',
         'lg' => 'h-11 px-5 text-body gap-2',
     ];
 

@@ -23,7 +23,7 @@
                 @foreach ($page['quiz']['items'] as $index => $item)
                     <li class="rounded-md border border-clay-200 bg-chalk px-4 py-3">
                         <p class="text-dense font-medium text-basalt-900">
-                            <span class="figure text-micro text-fern-400">{{ $index + 1 }}.</span>
+                            <span class="figure text-micro text-fern-500">{{ $index + 1 }}.</span>
                             {{ $item['prompt'] }}
                         </p>
                         <ul class="mt-3 grid gap-1.5">

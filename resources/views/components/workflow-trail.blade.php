@@ -34,7 +34,7 @@
                 'inline-flex items-center gap-1.5 rounded-sm px-2 py-1 text-micro font-medium',
                 'border border-basalt-800 bg-basalt-800 text-clay-100' => $state === 'current',
                 'border border-clay-200 bg-papyrus text-fern-500' => $state === 'done',
-                'border border-dashed border-clay-300 bg-transparent text-fern-400' => $state === 'todo',
+                'border border-dashed border-clay-300 bg-transparent text-fern-500' => $state === 'todo',
             ])>
                 @if ($state === 'done')
                     <x-icon name="check" class="h-3 w-3" />

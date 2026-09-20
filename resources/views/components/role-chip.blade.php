@@ -25,7 +25,7 @@
 
     @if ($removable)
         <button type="button"
-                class="-mr-0.5 ml-0.5 rounded-xs {{ $elevated ? 'text-fern-400 hover:text-white' : 'text-fern-400 hover:text-basalt-900' }}"
+                class="-mr-0.5 ml-0.5 rounded-xs {{ $elevated ? 'text-fern-400 hover:text-white' : 'text-fern-500 hover:text-basalt-900' }}"
                 aria-label="Remove the {{ $meta['label'] }} role">
             <x-icon name="x" class="h-3 w-3" />
         </button>

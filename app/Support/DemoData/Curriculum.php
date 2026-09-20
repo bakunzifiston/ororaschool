@@ -59,6 +59,7 @@ class Curriculum
                     'module_id' => $module['id'],
                     'body' => self::body($lesson['id']),
                     'quiz' => self::quizFor($lesson['id']),
+                    'is_preview' => (bool) ($lesson['is_preview'] ?? false),
                 ]);
             }
         }
@@ -112,7 +113,7 @@ class Curriculum
                 [
                     'id' => 'm-hygiene-1', 'title' => 'Why somatic cell counts move', 'order' => 1,
                     'lessons' => [
-                        ['id' => 'l-cmt-1', 'title' => 'Reading a CMT paddle', 'type' => 'video', 'duration' => 12],
+                        ['id' => 'l-cmt-1', 'title' => 'Reading a CMT paddle', 'type' => 'video', 'duration' => 12, 'is_preview' => true],
                         ['id' => 'l-cmt-2', 'title' => 'Scoring trace, weak positive and strong positive', 'type' => 'text', 'duration' => 8],
                         ['id' => 'l-cmt-3', 'title' => 'CMT field sheet', 'type' => 'pdf', 'duration' => 4],
                     ],
@@ -136,7 +137,7 @@ class Curriculum
                 [
                     'id' => 'm-tag-1', 'title' => 'The tag and the pliers', 'order' => 1,
                     'lessons' => [
-                        ['id' => 'l-tag-1', 'title' => 'Placing an ear tag without tearing', 'type' => 'video', 'duration' => 11],
+                        ['id' => 'l-tag-1', 'title' => 'Placing an ear tag without tearing', 'type' => 'video', 'duration' => 11, 'is_preview' => true],
                         ['id' => 'l-tag-2', 'title' => 'The herd register columns', 'type' => 'text', 'duration' => 7],
                         ['id' => 'l-tag-3', 'title' => 'Ear-tag application checklist', 'type' => 'pdf', 'duration' => 3],
                     ],
@@ -174,7 +175,7 @@ class Curriculum
                 'title' => 'Module '.$i,
                 'order' => $i,
                 'lessons' => [
-                    ['id' => 'l-'.$courseSlug.'-'.$i.'-a', 'title' => 'Introduction', 'type' => 'video', 'duration' => 8],
+                    ['id' => 'l-'.$courseSlug.'-'.$i.'-a', 'title' => 'Introduction', 'type' => 'video', 'duration' => 8, 'is_preview' => $i === 1 && in_array($courseSlug, ['farm-record-keeping', 'evening-intake-lactometer'], true)],
                     ['id' => 'l-'.$courseSlug.'-'.$i.'-b', 'title' => 'Field notes', 'type' => 'text', 'duration' => 6],
                 ],
             ];

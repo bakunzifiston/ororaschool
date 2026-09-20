@@ -25,7 +25,7 @@ class LearnerLessonPage
                 $lesson['title'],
                 $course['title'].' · '.$lesson['module'],
                 [
-                    ['label' => 'My Courses', 'route' => 'learner.courses'],
+                    ['label' => 'My courses', 'route' => 'learner.courses'],
                     ['label' => $course['title'], 'route' => 'learner.courses.show', 'params' => ['course' => $courseSlug]],
                     ['label' => $lesson['title']],
                 ],

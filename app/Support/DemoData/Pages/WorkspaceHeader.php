@@ -22,7 +22,8 @@ class WorkspaceHeader
             $breadcrumb[] = $crumb;
         }
 
-        if ($trail === [] || ($trail[array_key_last($trail)]['label'] ?? null) !== $title) {
+        $lastLabel = $trail === [] ? null : ($trail[array_key_last($trail)]['label'] ?? null);
+        if ($trail === [] || strcasecmp((string) $lastLabel, $title) !== 0) {
             $breadcrumb[] = ['label' => $title];
         }
 

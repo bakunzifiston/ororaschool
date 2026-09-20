@@ -7,7 +7,7 @@
         <x-panel title="On this platform">
             <x-role-chip :role="$page['role']" show-scope />
             <p class="mt-3 text-micro text-fern-500">{{ $page['person']['email'] }}</p>
-            <p class="text-micro text-fern-400">Last seen {{ $page['person']['last_seen'] }}</p>
+            <p class="text-micro text-fern-500">Last seen {{ $page['person']['last_seen'] }}</p>
         </x-panel>
 
         <x-panel class="lg:col-span-2" title="Assigned courses" :padded="false">

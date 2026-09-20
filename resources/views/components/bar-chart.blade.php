@@ -32,7 +32,7 @@
 
     <div class="mt-2 flex gap-1.5">
         @foreach ($labels as $label)
-            <span class="min-w-0 flex-1 truncate text-center text-micro text-fern-400">{{ $label }}</span>
+            <span class="min-w-0 flex-1 truncate text-center text-micro text-fern-500">{{ $label }}</span>
         @endforeach
     </div>
 </figure>

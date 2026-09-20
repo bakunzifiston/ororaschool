@@ -30,7 +30,7 @@
             <span class="hidden truncate text-micro leading-tight text-fern-500 sm:block">{{ $current['discipline'] ?? '' }}</span>
         </span>
 
-        <x-icon name="chevron-down" class="h-3.5 w-3.5 text-fern-400 transition-transform"
+        <x-icon name="chevron-down" class="h-3.5 w-3.5 text-fern-500 transition-transform"
                 ::class="open && 'rotate-180'" />
     </button>
 
