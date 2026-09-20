@@ -220,6 +220,18 @@ class Courses
                 'modules' => 3, 'lessons' => 8, 'duration' => 120, 'enrolled' => 74,
                 'level' => 'Foundation', 'updated' => '30 Nov 2025',
             ],
+
+            // Published on an inactive platform — must never appear on public pages.
+            [
+                'slug' => 'layer-vaccination-calendars',
+                'platform' => 'ubworozi',
+                'title' => 'Layer Vaccination Calendars for Small Flocks',
+                'summary' => 'Keep a vaccination calendar that a district vet will accept: dates, batch numbers and the birds that missed a round.',
+                'instructor' => 'Marie-Claire Uwase',
+                'status' => 'published',
+                'modules' => 3, 'lessons' => 9, 'duration' => 130, 'enrolled' => 88,
+                'level' => 'Foundation', 'updated' => '12 Jun 2026',
+            ],
         ];
     }
 
@@ -261,17 +273,18 @@ class Courses
             'cold-chain-collection-centres' => ['academy' => 'Collection centres', 'academy_slug' => 'collection-centres', 'category' => 'Temperature logs'],
             'heat-detection-ai-timing' => ['academy' => 'Herd fertility', 'academy_slug' => 'herd-fertility', 'category' => 'Artificial insemination', 'certificate_eligible' => true],
             'silage-maize-stover-napier' => ['academy' => 'Herd fertility', 'academy_slug' => 'herd-fertility', 'category' => 'Dry-season feed'],
-            'evening-intake-lactometer' => ['academy' => 'Collection centres', 'academy_slug' => 'collection-centres', 'category' => 'Evening intake', 'enrollment_required' => false],
+            'evening-intake-lactometer' => ['academy' => 'Collection centres', 'academy_slug' => 'collection-centres', 'category' => 'Evening intake', 'enrollment_required' => false, 'language' => 'Kinyarwanda'],
             'colostrum-calf-rearing' => ['academy' => 'Milk hygiene', 'academy_slug' => 'milk-hygiene', 'category' => 'Calf rearing'],
             'animal-identification-eartags' => ['academy' => 'Animal identification', 'academy_slug' => 'identification', 'category' => 'Ear-tag application', 'certificate_eligible' => true],
-            'movement-permits-transport' => ['academy' => 'Movement and transport', 'academy_slug' => 'movement', 'category' => 'Roadblock checks'],
+            'movement-permits-transport' => ['academy' => 'Movement and transport', 'academy_slug' => 'movement', 'category' => 'Roadblock checks', 'paid' => true],
             'traceable-chain-kraal-abattoir' => ['academy' => 'Outbreak traceback', 'academy_slug' => 'traceback', 'category' => 'Slaughter batches'],
             'outbreak-traceback-drills' => ['academy' => 'Outbreak traceback', 'academy_slug' => 'traceback', 'category' => 'Exposure windows'],
             'kraal-register-reconciliation' => ['academy' => 'Animal identification', 'academy_slug' => 'identification', 'category' => 'Herd register'],
             'market-gate-checks' => ['academy' => 'Movement and transport', 'academy_slug' => 'movement', 'category' => 'Market gates'],
-            'least-cost-ration-formulation' => ['academy' => 'Ration formulation', 'academy_slug' => 'ration', 'category' => 'Local ingredients'],
+            'least-cost-ration-formulation' => ['academy' => 'Ration formulation', 'academy_slug' => 'ration', 'category' => 'Local ingredients', 'paid' => true],
             'aflatoxin-control-maize-bran' => ['academy' => 'Feed safety and storage', 'academy_slug' => 'feed-safety', 'category' => 'Moisture control'],
             'mineral-supplementation-lactating' => ['academy' => 'Feed safety and storage', 'academy_slug' => 'feed-safety', 'category' => 'Mineral licks', 'certificate_eligible' => false],
+            'layer-vaccination-calendars' => ['academy' => 'Poultry housing', 'academy_slug' => 'poultry-houses', 'category' => 'Vaccination'],
         ];
     }
 

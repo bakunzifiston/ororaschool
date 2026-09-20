@@ -46,7 +46,7 @@
                     <header class="flex items-baseline justify-between gap-3 border-b-2 border-basalt-800 bg-papyrus px-4 py-2.5">
                         <div>
                             <h2 class="font-display text-panel font-semibold text-basalt-900">{{ $group['label'] }}</h2>
-                            <p class="figure text-micro text-fern-400">{{ $group['area'] }}.*</p>
+                            <p class="figure text-micro text-fern-500">{{ $group['area'] }}.*</p>
                         </div>
                         <p class="figure text-micro text-fern-500">{{ $groupHeld }}/{{ count($group['permissions']) }}</p>
                     </header>
@@ -68,7 +68,7 @@
                                        class="mt-1 h-4 w-4 shrink-0 rounded-xs border-clay-300 accent-[var(--color-accent-500)]">
                                 <label for="{{ $id }}" class="min-w-0 grow {{ $locked ? 'cursor-default' : 'cursor-pointer' }}">
                                     <span class="block text-dense font-medium text-basalt-800">{{ $permission['label'] }}</span>
-                                    <span class="mt-0.5 block font-mono text-micro text-fern-400">{{ $permission['key'] }}</span>
+                                    <span class="mt-0.5 block font-mono text-micro text-fern-500">{{ $permission['key'] }}</span>
                                     <span class="mt-0.5 block text-micro leading-relaxed text-fern-500">{{ $permission['hint'] }}</span>
                                 </label>
                             </li>

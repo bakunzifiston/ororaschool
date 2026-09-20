@@ -8,35 +8,35 @@
     </x-page-header>
 
     <div class="mt-6">
-        @if (! count($page['rows']))
-            <x-panel :padded="false">
-                <x-empty-state icon="teacher"
-                               :title="$page['emptyTitle']"
-                               :message="$page['emptyMessage']" />
-            </x-panel>
-        @else
-            <ul class="grid gap-3">
-                @foreach ($page['rows'] as $row)
-                    <li>
-                        <a href="{{ route('workspace.instructors.show', ['platform' => $platformSlug, 'instructor' => $row['id']]) }}"
-                           class="flex flex-wrap items-start justify-between gap-4 rounded-md border border-clay-200 bg-chalk px-4 py-3.5 transition-colors hover:border-clay-300">
-                            <span class="flex items-center gap-3">
-                                <x-avatar :name="$row['name']" size="md" />
-                                <span>
-                                    <span class="block font-medium text-basalt-900">{{ $row['name'] }}</span>
-                                    <span class="block text-micro text-fern-500">{{ $row['district'] }}</span>
-                                </span>
-                            </span>
-                            <span class="min-w-0 text-right">
-                                <span class="figure block text-micro text-fern-400">{{ $row['courses_count'] }} courses</span>
-                                @if (count($row['courses']))
-                                    <span class="mt-0.5 block truncate text-micro text-fern-500">{{ implode(' · ', $row['courses']) }}</span>
-                                @endif
-                            </span>
-                        </a>
-                    </li>
-                @endforeach
-            </ul>
-        @endif
+        <x-panel variant="table" :padded="false">
+            <x-data-table :columns="[
+                                ['key' => 'name', 'label' => 'Instructor'],
+                                ['key' => 'district', 'label' => 'District'],
+                                ['key' => 'courses_count', 'label' => 'Courses', 'align' => 'right'],
+                                ['key' => 'courses', 'label' => 'Teaching'],
+                            ]"
+                          :empty-title="$page['emptyTitle']"
+                          :empty-message="$page['emptyMessage']"
+                          min-width="44rem">
+                @if (count($page['rows']))
+                    @foreach ($page['rows'] as $row)
+                        <tr class="border-b border-clay-100 last:border-b-0 hover:bg-papyrus">
+                            <td class="px-3 py-2.5">
+                                <a href="{{ route('workspace.instructors.show', ['platform' => $platformSlug, 'instructor' => $row['id']]) }}"
+                                   class="flex items-center gap-2">
+                                    <x-avatar :name="$row['name']" size="sm" />
+                                    <span class="font-medium text-basalt-900 hover:text-accent-600">{{ $row['name'] }}</span>
+                                </a>
+                            </td>
+                            <td class="px-3 py-2.5 text-dense">{{ $row['district'] }}</td>
+                            <td class="figure px-3 py-2.5 text-right text-micro">{{ $row['courses_count'] }}</td>
+                            <td class="px-3 py-2.5 text-micro text-fern-500">
+                                {{ count($row['courses']) ? implode(' · ', $row['courses']) : '—' }}
+                            </td>
+                        </tr>
+                    @endforeach
+                @endif
+            </x-data-table>
+        </x-panel>
     </div>
 </x-layouts.platform-workspace>

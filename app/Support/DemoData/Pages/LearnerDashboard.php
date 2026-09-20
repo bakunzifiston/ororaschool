@@ -11,25 +11,23 @@ use App\Support\DemoData\LearnerProgress;
  */
 class LearnerDashboard
 {
-    public static function data(): array
+    public static function data(bool $empty = false): array
     {
         $user = DemoData::currentUser('learner');
-        $inProgress = LearnerProgress::inProgress();
-        $completed = LearnerProgress::completed();
-        $continue = LearnerProgress::continueLesson();
-        $certificates = IssuedCertificates::forLearner(LearnerProgress::LEARNER_ID);
+        $inProgress = $empty ? [] : LearnerProgress::inProgress();
+        $completed = $empty ? [] : LearnerProgress::completed();
+        $continue = $empty ? null : LearnerProgress::continueLesson();
+        $certificates = $empty ? [] : IssuedCertificates::forLearner(LearnerProgress::LEARNER_ID);
         $platforms = array_values(array_unique(array_column(array_merge($inProgress, $completed), 'platform_name')));
 
         return [
             'user' => $user,
             'header' => LearnerHeader::make(
                 'Welcome back, '.$user['name'],
-                'One learning record — '.implode(', ', $platforms).' together. Nothing here is a separate account.',
+                $platforms === []
+                    ? 'One learning record across every platform you train on. Nothing here is a separate account.'
+                    : 'One learning record — '.implode(', ', $platforms).' together. Nothing here is a separate account.',
             ),
-            'stats' => [
-                ['label' => 'Courses in progress', 'value' => (string) count($inProgress), 'trend' => null, 'direction' => null, 'note' => count($platforms).' platforms'],
-                ['label' => 'Certificates earned', 'value' => (string) count($certificates), 'trend' => $certificates !== [] ? 'Latest '.$certificates[0]['issued'] : null, 'direction' => null, 'note' => null],
-            ],
             'continue' => $continue,
             'inProgress' => $inProgress,
             'completed' => $completed,

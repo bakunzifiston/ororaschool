@@ -27,7 +27,7 @@
                         </div>
                         <form method="POST" action="{{ route('learner.sessions.join', ['session' => $session['id']]) }}">
                             @csrf
-                            <x-button type="submit" size="sm">Join</x-button>
+                            <x-button type="submit">Join</x-button>
                         </form>
                     </li>
                 @empty

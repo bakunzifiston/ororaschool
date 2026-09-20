@@ -74,7 +74,7 @@ class UsersPage
                 'breadcrumb' => [
                     ['label' => 'Orora School', 'route' => 'admin.dashboard'],
                     ['label' => 'Users', 'route' => 'admin.users'],
-                    ['label' => $isEdit ? $user['name'] : 'New user'],
+                    ['label' => $isEdit ? 'Edit '.$user['name'] : 'Invite a user'],
                 ],
                 'title' => $isEdit ? 'Edit '.$user['name'] : 'Invite a user',
                 'subtitle' => $isEdit

@@ -14,7 +14,7 @@
         <x-avatar :name="$user['name'] ?? ''" size="sm" />
         <span class="hidden min-w-0 md:block">
             <span class="block truncate text-micro font-medium text-basalt-800">{{ $user['name'] ?? '' }}</span>
-            <span class="block truncate text-micro text-fern-400">{{ $user['title'] ?? '' }}</span>
+            <span class="block truncate text-micro text-fern-500">{{ $user['title'] ?? '' }}</span>
         </span>
     </span>
 

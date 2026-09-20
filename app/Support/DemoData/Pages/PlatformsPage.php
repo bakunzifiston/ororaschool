@@ -58,7 +58,7 @@ class PlatformsPage
                 'breadcrumb' => [
                     ['label' => 'Orora School', 'route' => 'admin.dashboard'],
                     ['label' => 'Platforms', 'route' => 'admin.platforms'],
-                    ['label' => $isEdit ? $platform['name'] : 'New platform'],
+                    ['label' => $isEdit ? 'Edit '.$platform['name'] : 'Add a platform'],
                 ],
                 'title' => $isEdit ? 'Edit '.$platform['name'] : 'Add a platform',
                 'subtitle' => $isEdit

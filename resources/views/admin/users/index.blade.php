@@ -23,7 +23,7 @@
                       :options="$page['filters']['platforms']"
                       :selected="$page['filters']['platform']" />
         </div>
-        <x-button type="submit" variant="secondary" size="sm">Filter</x-button>
+        <x-button type="submit" variant="secondary">Apply filters</x-button>
     </form>
 
     <div class="mt-4">

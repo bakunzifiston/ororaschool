@@ -9,14 +9,20 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
             fonts: [
-                bunny('Bitter', { weights: [500, 600, 700] }),
-                bunny('IBM Plex Sans', { weights: [400, 500, 600] }),
-                bunny('IBM Plex Mono', { weights: [400, 500] }),
+                bunny('Bitter', { weights: [500, 600, 700], optimizedFallbacks: false }),
+                bunny('IBM Plex Sans', { weights: [400, 500, 600], optimizedFallbacks: false }),
+                bunny('IBM Plex Mono', { weights: [400, 500], optimizedFallbacks: false }),
             ],
         }),
         tailwindcss(),
     ],
     server: {
+        host: '127.0.0.1',
+        port: 5173,
+        strictPort: true,
+        hmr: {
+            host: '127.0.0.1',
+        },
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },

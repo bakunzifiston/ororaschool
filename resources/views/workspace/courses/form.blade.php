@@ -23,7 +23,7 @@
                 <div>
                     <p class="mb-1.5 text-dense font-medium text-basalt-800">Thumbnail</p>
                     <div class="flex items-center gap-3 rounded-md border border-dashed border-clay-300 bg-papyrus px-4 py-5">
-                        <span class="inline-flex h-12 w-12 items-center justify-center rounded-md border border-clay-200 bg-chalk text-fern-400">
+                        <span class="inline-flex h-12 w-12 items-center justify-center rounded-md border border-clay-200 bg-chalk text-fern-500">
                             <x-icon name="upload" class="h-5 w-5" />
                         </span>
                         <div class="min-w-0">

@@ -23,7 +23,7 @@
                                 <span class="block truncate text-micro text-fern-500">{{ $platform['discipline'] }}</span>
                             </span>
 
-                            <x-icon name="link" class="h-4 w-4 shrink-0 text-fern-400" />
+                            <x-icon name="link" class="h-4 w-4 shrink-0 text-fern-500" />
                         </button>
                     </li>
                 @endforeach

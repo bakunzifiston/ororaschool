@@ -24,6 +24,11 @@
         'scheduled' => ['label' => 'Scheduled', 'class' => 'border border-st-pending/30 bg-st-pending-bg text-st-pending', 'icon' => null, 'dot' => true],
         'live' => ['label' => 'Live', 'class' => 'border border-st-published bg-st-published text-white', 'icon' => null, 'dot' => true],
         'cancelled' => ['label' => 'Cancelled', 'class' => 'border border-transparent bg-st-archived-bg text-st-archived', 'icon' => 'x', 'dot' => false],
+        'free' => ['label' => 'Free', 'class' => 'border border-clay-200 bg-papyrus text-fern-600', 'icon' => null, 'dot' => false],
+        'paid' => ['label' => 'Paid', 'class' => 'border border-clay-200 bg-papyrus text-fern-600', 'icon' => null, 'dot' => false],
+        'eligible' => ['label' => 'Certificate eligible', 'class' => 'border border-clay-200 bg-papyrus text-fern-600', 'icon' => 'award', 'dot' => false],
+        'preview' => ['label' => 'Preview available', 'class' => 'border border-accent-200 bg-accent-50 text-accent-700', 'icon' => null, 'dot' => false],
+        'not_found' => ['label' => 'Not found', 'class' => 'border border-st-pending/30 bg-st-pending-bg text-st-pending', 'icon' => null, 'dot' => true],
     ];
 
     // Tolerate either spelling so fixtures and forms can use whichever reads better.

@@ -17,6 +17,10 @@ use App\Http\Controllers\Learner\LibraryController as LearnerLibraryController;
 use App\Http\Controllers\Learner\PathController as LearnerPathController;
 use App\Http\Controllers\Learner\QuizController as LearnerQuizController;
 use App\Http\Controllers\LearnerController;
+use App\Http\Controllers\Public\CourseController as PublicCourseController;
+use App\Http\Controllers\Public\HomeController as PublicHomeController;
+use App\Http\Controllers\Public\PageController as PublicPageController;
+use App\Http\Controllers\Public\PlatformController as PublicPlatformController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\Workspace\AnalyticsController as WorkspaceAnalyticsController;
 use App\Http\Controllers\Workspace\CategoryController as WorkspaceCategoryController;
@@ -36,11 +40,23 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | Orora School — UI shell routes
 |--------------------------------------------------------------------------
-| Super Admin (F3), Platform Workspace (F4) and Learner (F5) are real pages.
-| Nav items still need a matching named route so a rail link can never 404.
+| Public (F-Public), Super Admin (F3), Platform Workspace (F4) and Learner (F5)
+| are real pages. Nav items still need a matching named route so a rail link
+| can never 404.
 */
 
-Route::redirect('/', '/login');
+Route::get('/', [PublicHomeController::class, 'index'])->name('home');
+Route::get('/about', [PublicPageController::class, 'about'])->name('about');
+Route::get('/contact', [PublicPageController::class, 'contact'])->name('contact');
+Route::get('/courses', [PublicCourseController::class, 'index'])->name('catalog.courses');
+Route::get('/courses/{course}', [PublicCourseController::class, 'show'])->name('catalog.courses.show');
+Route::get('/platforms', [PublicPlatformController::class, 'index'])->name('catalog.platforms');
+Route::get('/platforms/{platform}', [PublicPlatformController::class, 'show'])->name('catalog.platforms.show');
+Route::get('/certificates', [CertificateVerificationController::class, 'index'])->name('certificates.lookup');
+Route::get('/certificates/{code}', [CertificateVerificationController::class, 'show'])->name('certificates.verify');
+Route::get('/verify/{code}', function (string $code) {
+    return redirect()->route('certificates.verify', ['code' => $code]);
+});
 
 // ---- Unauthenticated pages (Phase F2) --------------------------------------
 // Conventional Laravel route names, so real auth can take these over without
@@ -140,8 +156,6 @@ Route::whereIn('platform', Platforms::slugs())->group(function () {
 
     Route::get('/workspace/{platform}/analytics', [WorkspaceAnalyticsController::class, 'index'])->name('workspace.analytics');
 });
-
-Route::get('/verify/{code}', [CertificateVerificationController::class, 'show'])->name('certificates.verify');
 
 // ---- Learner (Phase F5) ----------------------------------------------------
 Route::get('/learn', [LearnerController::class, 'dashboard'])->name('learner.dashboard');

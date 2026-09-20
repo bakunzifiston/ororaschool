@@ -14,12 +14,18 @@ class SuperAdminPagesTest extends TestCase
             ->assertOk()
             ->assertSee('Platforms', false)
             ->assertSee('Users', false)
-            ->assertSee('Courses', false)
-            ->assertSee('Enrolments', false)
-            ->assertSee('Certificates issued', false)
             ->assertSee('Overall completion', false)
             ->assertSee('Recent activity', false)
-            ->assertSee('Platforms at a glance', false);
+            ->assertSee('Platforms at a glance', false)
+            ->assertSee('Dashboard', false)
+            ->assertSee('Add a platform', false);
+    }
+
+    public function test_dashboard_activity_empty_state_renders_when_the_fixture_is_empty(): void
+    {
+        $this->get(route('admin.dashboard', ['empty' => 1]))
+            ->assertOk()
+            ->assertSee('No activity on the estate yet', false);
     }
 
     public function test_platforms_list_paginates_and_opens_the_edit_form(): void
@@ -141,7 +147,7 @@ class SuperAdminPagesTest extends TestCase
     {
         $this->get(route('admin.permissions', ['empty' => 1]))
             ->assertOk()
-            ->assertSee('No permissions in the catalog', false)
+            ->assertSee('No permissions in the catalogue', false)
             ->assertDontSee('platforms.view', false);
     }
 

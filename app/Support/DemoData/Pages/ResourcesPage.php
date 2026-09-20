@@ -55,7 +55,7 @@ class ResourcesPage
                 'Files stay on '.$current['name'].'. Upload is a placeholder in this build.',
                 [
                     ['label' => 'Resources', 'route' => 'workspace.resources', 'params' => ['platform' => $platform]],
-                    ['label' => 'Upload'],
+                    ['label' => 'Upload a resource'],
                 ],
             ),
             'types' => Resources::types(),

@@ -9,11 +9,10 @@
 
     <form method="GET" action="{{ route('learner.resources') }}" class="mt-6 flex flex-wrap items-end gap-3">
         <div class="w-52">
-            <x-select name="type" label="Type" size="sm"
+            <x-select name="type" label="Type" size="sm" :autosubmit="true"
                       :options="$page['filters']['types']"
                       :selected="$page['filters']['type']" />
         </div>
-        <x-button type="submit" variant="secondary" size="sm">Filter</x-button>
     </form>
 
     <div class="mt-4">
@@ -36,7 +35,7 @@
                             <td class="px-3 py-2.5 text-dense text-fern-500">{{ $row['attached_to'] }}</td>
                             <td class="px-3 py-2.5 text-micro capitalize text-fern-500">{{ $row['type'] }}</td>
                             <td class="px-3 py-2.5 text-right">
-                                <span class="text-micro font-medium text-accent-700">Download</span>
+                                <a href="#{{ $row['slug'] }}" class="text-dense font-medium text-accent-700 hover:underline">Download</a>
                             </td>
                         </tr>
                     @endforeach

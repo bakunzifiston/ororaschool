@@ -16,7 +16,7 @@
         <x-layouts.partials.brand :href="route('learner.dashboard')" class="shrink-0" />
 
         {{-- Seven destinations: a horizontal bar from md up, a disclosure below. --}}
-        <nav class="hidden min-w-0 md:flex md:items-center md:gap-0.5" aria-label="Primary navigation">
+        <nav class="hidden min-w-0 flex-1 justify-center md:flex md:items-center md:gap-1" aria-label="Primary navigation">
             @foreach ($shell['navigation'] as $item)
                 @php $active = Route::has($item['route']) && request()->routeIs($item['route'], $item['route'].'.*'); @endphp
 
@@ -60,7 +60,7 @@
                                    'text-basalt-800 hover:bg-papyrus' => ! $active,
                                ])
                                @if ($active) aria-current="page" @endif>
-                                <x-icon :name="$item['icon']" class="h-4 w-4 text-fern-400" />
+                                <x-icon :name="$item['icon']" class="h-4 w-4 text-fern-500" />
                                 {{ $item['label'] }}
                             </a>
                         </li>
@@ -73,7 +73,7 @@
                     <x-avatar :name="$shell['user']['name']" size="sm" />
                     <span class="min-w-0">
                         <span class="block truncate text-dense text-basalt-800">{{ $shell['user']['name'] }}</span>
-                        <span class="block truncate text-micro text-fern-400">{{ $shell['user']['title'] }}</span>
+                        <span class="block truncate text-micro text-fern-500">{{ $shell['user']['title'] }}</span>
                     </span>
                 </span>
 

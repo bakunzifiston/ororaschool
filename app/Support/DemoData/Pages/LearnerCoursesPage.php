@@ -19,7 +19,7 @@ class LearnerCoursesPage
                 'My courses',
                 'Every course you are on, grouped by platform. Same record — not three logins.',
                 [
-                    ['label' => 'My Courses'],
+                    ['label' => 'My courses'],
                 ],
             ),
             'filters' => [
@@ -55,7 +55,7 @@ class LearnerCoursesPage
                 $course['title'],
                 ($syllabus['platform']['name'] ?? '').' · '.$course['instructor'],
                 [
-                    ['label' => 'My Courses', 'route' => 'learner.courses'],
+                    ['label' => 'My courses', 'route' => 'learner.courses'],
                     ['label' => $course['title']],
                 ],
             ),

@@ -1,4 +1,4 @@
-<x-layouts.super-admin title="Global settings">
+<x-layouts.super-admin title="Settings">
     <x-page-header :breadcrumb="$page['header']['breadcrumb']"
                    :title="$page['header']['title']"
                    :subtitle="$page['header']['subtitle']" />

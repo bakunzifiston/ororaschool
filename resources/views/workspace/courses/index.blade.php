@@ -19,7 +19,7 @@
                       :options="$page['filters']['academies']"
                       :selected="$page['filters']['academy']" />
         </div>
-        <x-button type="submit" variant="secondary" size="sm">Filter</x-button>
+        <x-button type="submit" variant="secondary">Apply filters</x-button>
     </form>
 
     <div class="mt-4">
@@ -48,7 +48,7 @@
                                     </span>
                                     <span class="min-w-0">
                                         <span class="block font-medium text-basalt-900 hover:text-accent-600">{{ $row['title'] }}</span>
-                                        <span class="text-micro text-fern-400">{{ $row['lessons'] }} lessons</span>
+                                        <span class="text-micro text-fern-500">{{ $row['lessons'] }} lessons</span>
                                     </span>
                                 </a>
                             </td>

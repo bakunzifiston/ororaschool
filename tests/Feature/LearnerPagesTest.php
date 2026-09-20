@@ -19,10 +19,19 @@ class LearnerPagesTest extends TestCase
             ->assertSee('Movement Permits', false)
             ->assertSee('Aflatoxin Control', false)
             ->assertSee('Courses in progress', false)
-            ->assertSee('Certificates earned', false)
+            ->assertSee('certificates earned', false)
             ->assertSee('Audio: a clean milking sequence', false)
             ->assertDontSee('three separate accounts', false)
             ->assertDontSee('OroraFarm', false);
+    }
+
+    public function test_dashboard_in_progress_empty_state_renders_when_the_fixture_is_empty(): void
+    {
+        $this->get(route('learner.dashboard', ['empty' => 1]))
+            ->assertOk()
+            ->assertSee('No courses in progress', false)
+            ->assertSee('All in-progress courses', false)
+            ->assertDontSee('Continue lesson', false);
     }
 
     public function test_my_courses_groups_by_platform_and_filters_progress(): void
@@ -166,7 +175,7 @@ class LearnerPagesTest extends TestCase
             ->assertOk()
             ->assertSee('OS-GEM-2026-1841', false)
             ->assertSee('OS-BCH-2026-0498', false)
-            ->assertSee('View / Share', false)
+            ->assertSee('View certificate', false)
             ->assertSee(route('certificates.verify', ['code' => 'OS-GEM-2026-1841']), false);
 
         $this->get(route('learner.sessions'))

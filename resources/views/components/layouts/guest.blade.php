@@ -14,7 +14,7 @@
     <x-slot:masthead>
         <div class="on-basalt bg-basalt-900">
             <div class="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
-                <x-layouts.partials.brand :href="route('login')" on-basalt />
+                <x-layouts.partials.brand :href="route('home')" on-basalt />
                 <p class="text-micro text-fern-400">Training and certification</p>
             </div>
         </div>
@@ -23,7 +23,7 @@
     <div class="py-4 sm:py-8">
         {{ $slot }}
 
-        <p class="mt-8 border-t border-clay-200 pt-4 text-micro leading-relaxed text-fern-400">
+        <p class="mt-8 border-t border-clay-200 pt-4 text-micro leading-relaxed text-fern-500">
             Orora School serves {{ $platforms->join(', ', ' and ') }}.
             Your training record follows you across every platform you work on.
         </p>

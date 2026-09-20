@@ -32,7 +32,7 @@
             <p class="mt-1 text-dense text-fern-500">Label, value, optional trend with direction, optional note.</p>
 
             @foreach (['a', 'b'] as $set)
-                <p class="mt-5 mb-2 text-micro text-fern-400">{{ $page['stats'][$set]['caption'] }}</p>
+                <p class="mt-5 mb-2 text-micro text-fern-500">{{ $page['stats'][$set]['caption'] }}</p>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach ($page['stats'][$set]['items'] as $stat)
                         <x-stat-card :label="$stat['label']" :value="$stat['value']"
@@ -51,7 +51,7 @@
             </p>
 
             @foreach (['a', 'b'] as $set)
-                <p class="mt-5 mb-2 text-micro text-fern-400">{{ $page['statuses'][$set]['caption'] }}</p>
+                <p class="mt-5 mb-2 text-micro text-fern-500">{{ $page['statuses'][$set]['caption'] }}</p>
                 <div class="flex flex-wrap items-center gap-2">
                     @foreach ($page['statuses'][$set]['items'] as $status)
                         <x-status-badge :status="$status" />
@@ -68,7 +68,7 @@
             <div class="mt-5 grid grid-cols-1 gap-6 lg:grid-cols-2">
                 @foreach (['a', 'b'] as $set)
                     <div class="min-w-0">
-                        <p class="mb-3 text-micro text-fern-400">{{ $page['progress'][$set]['caption'] }}</p>
+                        <p class="mb-3 text-micro text-fern-500">{{ $page['progress'][$set]['caption'] }}</p>
                         <div class="grid gap-4">
                             @foreach ($page['progress'][$set]['items'] as $bar)
                                 <x-progress-bar :value="$bar['value']" :label="$bar['label']" :meta="$bar['meta']"
@@ -88,7 +88,7 @@
             </p>
 
             @foreach (['a', 'b'] as $set)
-                <p class="mt-5 mb-2 text-micro text-fern-400">{{ $page['roles'][$set]['caption'] }}</p>
+                <p class="mt-5 mb-2 text-micro text-fern-500">{{ $page['roles'][$set]['caption'] }}</p>
                 <div class="flex flex-wrap items-center gap-2">
                     @foreach ($page['roles'][$set]['items'] as $role)
                         <x-role-chip :role="$role"
@@ -108,7 +108,7 @@
             </p>
 
             @foreach (['a', 'b'] as $set)
-                <p class="mt-5 mb-2 text-micro text-fern-400">{{ $page['courseCards'][$set]['caption'] }}</p>
+                <p class="mt-5 mb-2 text-micro text-fern-500">{{ $page['courseCards'][$set]['caption'] }}</p>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach ($page['courseCards'][$set]['items'] as $item)
                         <x-course-card :course="$item['course']"
@@ -131,7 +131,7 @@
             <div class="mt-5 grid grid-cols-1 gap-6">
                 @foreach (['a', 'b', 'c'] as $set)
                     <div class="min-w-0">
-                        <p class="mb-2 text-micro text-fern-400">{{ $page['tables'][$set]['caption'] }}</p>
+                        <p class="mb-2 text-micro text-fern-500">{{ $page['tables'][$set]['caption'] }}</p>
                         <x-panel variant="table" :padded="false">
                             <x-data-table :columns="$page['tables'][$set]['columns']"
                                           :rows="$page['tables'][$set]['rows']"

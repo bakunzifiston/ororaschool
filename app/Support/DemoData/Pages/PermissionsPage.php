@@ -22,12 +22,12 @@ class PermissionsPage
                     ['label' => 'Orora School', 'route' => 'admin.dashboard'],
                     ['label' => 'Permissions'],
                 ],
-                'title' => 'Permission catalog',
+                'title' => 'Permissions',
                 'subtitle' => $total.' keys, grouped by area. Assign them on a role — they are not granted to people directly.',
             ],
             'catalog' => $catalog,
             'total' => $total,
-            'emptyTitle' => 'No permissions in the catalog',
+            'emptyTitle' => 'No permissions in the catalogue',
             'emptyMessage' => 'Keys are grouped by area (platforms.*, courses.*, certificates.*). They are assigned on a role, not granted to people directly.',
         ];
     }

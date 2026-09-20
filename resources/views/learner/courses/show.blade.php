@@ -50,7 +50,7 @@
                     @foreach ($module['lessons'] as $lesson)
                         <li class="flex flex-wrap items-center gap-3 px-4 py-2.5">
                             @if ($lesson['state'] === 'locked')
-                                <span class="flex min-w-0 grow items-center gap-2 text-dense text-fern-400">
+                                <span class="flex min-w-0 grow items-center gap-2 text-dense text-fern-500">
                                     <x-icon name="lock" class="h-3.5 w-3.5" />
                                     {{ $lesson['title'] }}
                                 </span>
@@ -64,7 +64,7 @@
                             @elseif ($lesson['state'] === 'in_progress')
                                 <x-status-badge status="active">In progress</x-status-badge>
                             @else
-                                <span class="text-micro text-fern-400">Locked</span>
+                                <span class="text-micro text-fern-500">Locked</span>
                             @endif
                         </li>
                     @endforeach

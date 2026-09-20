@@ -6,7 +6,7 @@
             @php
                 $exists = Route::has($item['route']);
                 $url = $exists ? route($item['route'], $params) : null;
-                $active = $exists && request()->routeIs($item['route']);
+                $active = $exists && request()->routeIs($item['route'], $item['route'].'.*');
             @endphp
 
             <li>

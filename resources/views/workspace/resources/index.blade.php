@@ -10,11 +10,10 @@
 
     <form method="GET" action="{{ route('workspace.resources', ['platform' => $platformSlug]) }}" class="mt-6 flex flex-wrap items-end gap-3">
         <div class="w-52">
-            <x-select name="type" label="Type" size="sm"
+            <x-select name="type" label="Type" size="sm" :autosubmit="true"
                       :options="$page['filters']['types']"
                       :selected="$page['filters']['type']" />
         </div>
-        <x-button type="submit" variant="secondary" size="sm">Filter</x-button>
     </form>
 
     <div class="mt-4">
@@ -35,7 +34,7 @@
                             <td class="px-3 py-2.5 font-medium text-basalt-900">{{ $row['title'] }}</td>
                             <td class="px-3 py-2.5 text-micro capitalize text-fern-500">{{ $row['type'] }}</td>
                             <td class="px-3 py-2.5 text-dense text-fern-600">{{ $row['attached_to'] }}</td>
-                            <td class="figure px-3 py-2.5 text-right text-micro text-fern-400">{{ $row['size'] }}</td>
+                            <td class="figure px-3 py-2.5 text-right text-micro text-fern-500">{{ $row['size'] }}</td>
                         </tr>
                     @endforeach
                 @endif

@@ -11,7 +11,7 @@ class WorkspacePagesTest extends TestCase
     {
         $this->get(route('workspace.dashboard', ['platform' => 'gemura']))
             ->assertOk()
-            ->assertSee('Gemura workspace', false)
+            ->assertSee('Dashboard', false)
             ->assertSee('Dairy and livestock', false)
             ->assertSee('Courses', false)
             ->assertSee('Learners', false)
@@ -26,7 +26,7 @@ class WorkspacePagesTest extends TestCase
 
         $this->get(route('workspace.dashboard', ['platform' => 'buchapro']))
             ->assertOk()
-            ->assertSee('BuchaPro workspace', false)
+            ->assertSee('Dashboard', false)
             ->assertSee('Livestock traceability', false)
             ->assertSee('51%', false)
             ->assertSee('Ear-Tag Registration', false)
