@@ -2,20 +2,39 @@
 
 namespace App\Support\DemoData;
 
+use App\Models\Course;
+use App\Models\Module;
+
 /**
- * FIXTURE LAYER — DELETE WHEN REAL DATA ARRIVES.
- *
- * Modules with nested lessons. Content types: video, text, pdf, audio,
- * external, live_session.
+ * Course syllabus. Reads modules and lessons from MySQL. The catalogue()
+ * fixture remains the seed source until authors write curriculum in the app.
  */
 class Curriculum
 {
+    /**
+     * Seed payload for one course: authored rows, or a generated fallback.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public static function fixtureModulesFor(string $courseSlug): array
+    {
+        return self::catalogue()[$courseSlug] ?? self::fallback($courseSlug);
+    }
+
     /**
      * @return list<array<string, mixed>>
      */
     public static function modulesFor(string $courseSlug): array
     {
-        return self::catalogue()[$courseSlug] ?? self::fallback($courseSlug);
+        $course = self::courseWithSyllabus($courseSlug);
+
+        if (! $course) {
+            return [];
+        }
+
+        return $course->curriculumModules
+            ->map(fn (Module $module) => $module->toSyllabusArray())
+            ->all();
     }
 
     /**
@@ -25,15 +44,21 @@ class Curriculum
      */
     public static function lessonsOn(string $platform): array
     {
+        $courses = Course::query()
+            ->whereHas('platform', fn ($query) => $query->where('slug', $platform))
+            ->with(['curriculumModules.lessons'])
+            ->orderBy('id')
+            ->get();
+
         $lessons = [];
 
-        foreach (Courses::forPlatform($platform) as $course) {
-            foreach (self::modulesFor($course['slug']) as $module) {
-                foreach ($module['lessons'] as $lesson) {
-                    $lessons[] = array_merge($lesson, [
-                        'course' => $course['title'],
-                        'course_slug' => $course['slug'],
-                        'module' => $module['title'],
+        foreach ($courses as $course) {
+            foreach ($course->curriculumModules as $module) {
+                foreach ($module->lessons as $lesson) {
+                    $lessons[] = array_merge($lesson->toSyllabusArray(), [
+                        'course' => $course->title,
+                        'course_slug' => $course->slug,
+                        'module' => $module->title,
                     ]);
                 }
             }
@@ -49,22 +74,31 @@ class Curriculum
      */
     public static function lessonsFor(string $courseSlug): array
     {
+        $course = self::courseWithSyllabus($courseSlug);
+
+        if (! $course) {
+            return [];
+        }
+
         $lessons = [];
 
-        foreach (self::modulesFor($courseSlug) as $module) {
-            foreach ($module['lessons'] as $lesson) {
-                $lessons[] = array_merge($lesson, [
-                    'course_slug' => $courseSlug,
-                    'module' => $module['title'],
-                    'module_id' => $module['id'],
-                    'body' => self::body($lesson['id']),
-                    'quiz' => self::quizFor($lesson['id']),
-                    'is_preview' => (bool) ($lesson['is_preview'] ?? false),
-                ]);
+        foreach ($course->curriculumModules as $module) {
+            foreach ($module->lessons as $lesson) {
+                $lesson->setRelation('course', $course);
+                $lesson->setRelation('module', $module);
+                $lessons[] = $lesson->toPageArray();
             }
         }
 
         return $lessons;
+    }
+
+    private static function courseWithSyllabus(string $courseSlug): ?Course
+    {
+        return Course::query()
+            ->where('slug', $courseSlug)
+            ->with(['curriculumModules.lessons'])
+            ->first();
     }
 
     public static function findLesson(string $courseSlug, string $lessonId): ?array

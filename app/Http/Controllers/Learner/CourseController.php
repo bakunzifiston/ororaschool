@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Learner;
 
 use App\Http\Controllers\Controller;
+use App\Models\Course;
+use App\Models\Enrolment;
 use App\Support\DemoData\Pages\LearnerCoursesPage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -30,11 +32,13 @@ class CourseController extends Controller
         ]);
     }
 
-    public function enroll(string $course): RedirectResponse
+    public function enroll(Request $request, Course $course): RedirectResponse
     {
-        abort_unless(LearnerCoursesPage::show($course), 404);
+        abort_unless($course->status === 'published', 404);
+
+        Enrolment::enrol($request->user(), $course);
 
         return redirect()->route('learner.courses.show', ['course' => $course])
-            ->with('status', 'Enrolled. Nothing was written in this build — the course would open on your record.');
+            ->with('status', 'Enrolled. The course is on your learning record.');
     }
 }

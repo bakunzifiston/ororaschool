@@ -13,7 +13,15 @@ class LearnerDashboard
 {
     public static function data(bool $empty = false): array
     {
+        $authenticated = auth()->user();
         $user = DemoData::currentUser('learner');
+
+        if ($authenticated) {
+            $user['name'] = $authenticated->name;
+            $user['email'] = $authenticated->email;
+            $user['district'] = $authenticated->district;
+        }
+
         $inProgress = $empty ? [] : LearnerProgress::inProgress();
         $completed = $empty ? [] : LearnerProgress::completed();
         $continue = $empty ? null : LearnerProgress::continueLesson();

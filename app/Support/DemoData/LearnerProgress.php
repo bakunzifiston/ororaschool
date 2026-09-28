@@ -2,6 +2,10 @@
 
 namespace App\Support\DemoData;
 
+use App\Models\Course;
+use App\Models\Enrolment;
+use Illuminate\Support\Facades\Auth;
+
 /**
  * FIXTURE LAYER — DELETE WHEN REAL DATA ARRIVES.
  *
@@ -18,7 +22,18 @@ class LearnerProgress
      */
     public static function enrolments(): array
     {
-        return array_map([self::class, 'hydrate'], Courses::enrolments());
+        $user = Auth::user();
+
+        if (! $user) {
+            return [];
+        }
+
+        return $user->enrolments()
+            ->with(['course.platform', 'course.academy'])
+            ->orderByDesc('enrolled_at')
+            ->get()
+            ->map(fn (Enrolment $enrolment) => $enrolment->toProgressArray())
+            ->all();
     }
 
     public static function findEnrolment(string $courseSlug): ?array
@@ -122,15 +137,19 @@ class LearnerProgress
      */
     public static function syllabus(string $courseSlug): ?array
     {
-        $course = Courses::find($courseSlug);
+        $courseModel = Course::query()
+            ->with(['platform', 'academy'])
+            ->where('slug', $courseSlug)
+            ->first();
 
-        if (! $course || $course['status'] === 'draft') {
+        if (! $courseModel || $courseModel->status === 'draft') {
             return null;
         }
 
+        $course = PublicCatalog::present($courseModel);
         $enrolment = self::findEnrolment($courseSlug);
         $enrolled = (bool) $enrolment;
-        $requiresEnrolment = (bool) ($course['enrollment_required'] ?? true);
+        $requiresEnrolment = (bool) $course['enrollment_required'];
         $lessons = Curriculum::lessonsFor($courseSlug);
         $done = $enrolled ? (int) $enrolment['lessons_done'] : 0;
 
@@ -149,7 +168,6 @@ class LearnerProgress
 
                 $items[] = array_merge($lesson, [
                     'state' => $state,
-                    'quiz' => Curriculum::quizFor($lesson['id']),
                 ]);
             }
 
@@ -245,21 +263,30 @@ class LearnerProgress
      */
     public static function available(): array
     {
-        $taken = array_column(Courses::enrolments(), 'course');
+        $taken = array_column(self::enrolments(), 'course');
         $rows = [];
 
         foreach (['evening-intake-lactometer', 'kraal-register-reconciliation'] as $slug) {
-            $course = Courses::find($slug);
-
-            if (! $course || in_array($slug, $taken, true)) {
+            if (in_array($slug, $taken, true)) {
                 continue;
             }
 
-            $platform = Platforms::find($course['platform']) ?? [];
+            $course = Course::query()
+                ->with(['platform', 'academy'])
+                ->where('slug', $slug)
+                ->where('status', 'published')
+                ->first();
+
+            if (! $course) {
+                continue;
+            }
+
+            $presented = PublicCatalog::present($course);
+
             $rows[] = [
-                'course' => $course,
-                'platform_name' => $platform['name'] ?? '',
-                'platform_slug' => $course['platform'],
+                'course' => $presented,
+                'platform_name' => $presented['platform_name'],
+                'platform_slug' => $presented['platform'],
             ];
         }
 
@@ -271,7 +298,7 @@ class LearnerProgress
      */
     public static function sessions(): array
     {
-        $slugs = array_column(Courses::enrolments(), 'course');
+        $slugs = array_column(self::enrolments(), 'course');
 
         return array_values(array_filter(
             LiveSessions::all(),
@@ -336,26 +363,6 @@ class LearnerProgress
             ['at' => '28 Aug 2026', 'platform' => 'FeedGrid', 'title' => 'Opened Aflatoxin Control in Maize Bran Storage', 'detail' => 'First lesson only — moisture is the whole story.'],
             ['at' => '14 Aug 2026', 'platform' => 'BuchaPro', 'title' => 'Certificate OS-BCH-2026-0498 issued', 'detail' => 'Animal Identification and Ear-Tag Registration.'],
             ['at' => '04 May 2024', 'platform' => 'Orora School', 'title' => 'Learning record opened', 'detail' => 'One record. Courses from every platform sit on it.'],
-        ];
-    }
-
-    /**
-     * @param  array<string, mixed>  $enrolment
-     * @return array<string, mixed>
-     */
-    private static function hydrate(array $enrolment): array
-    {
-        $course = Courses::find($enrolment['course']) ?? [];
-        $platform = Platforms::find($course['platform'] ?? '') ?? [];
-        $lessons = Curriculum::lessonsFor($enrolment['course']);
-        $index = min((int) $enrolment['lessons_done'], max(0, count($lessons) - 1));
-
-        return $enrolment + [
-            'course_data' => $course,
-            'platform_name' => $platform['name'] ?? '',
-            'platform_slug' => $course['platform'] ?? '',
-            'platform_discipline' => $platform['discipline'] ?? '',
-            'lesson' => $lessons[$index] ?? null,
         ];
     }
 

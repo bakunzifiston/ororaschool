@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Support\DemoData\IssuedCertificates;
+use App\Models\Certificate;
 use App\Support\DemoData\Pages\PublicHeader;
 use App\Support\DemoData\Pages\PublicPages;
-use App\Support\DemoData\Platforms;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -27,10 +26,12 @@ class CertificateVerificationController extends Controller
 
     public function show(string $code): View
     {
-        $row = IssuedCertificates::findByCode($code);
-        $platform = $row ? Platforms::find($row['platform']) : null;
+        $certificate = Certificate::query()
+            ->with(['platform', 'course'])
+            ->where('code', $code)
+            ->first();
 
-        if (! $row) {
+        if (! $certificate) {
             return view('public.verify', [
                 'page' => [
                     'header' => PublicHeader::make(
@@ -52,11 +53,12 @@ class CertificateVerificationController extends Controller
             ]);
         }
 
-        $valid = $row['status'] === 'valid';
+        $valid = $certificate->status === 'valid';
+        $platformName = $certificate->platform->name;
 
         $title = $valid ? 'Certificate verified' : 'Certificate revoked';
         $subtitle = $valid
-            ? 'This number was minted on '.($platform['name'] ?? $row['platform']).'.'
+            ? 'This number was minted on '.$platformName.'.'
             : 'This number was minted, then revoked. It is no longer valid.';
 
         return view('public.verify', [
@@ -71,12 +73,12 @@ class CertificateVerificationController extends Controller
                 ),
                 'found' => true,
                 'valid' => $valid,
-                'code' => $row['code'],
-                'learner' => $row['learner'],
-                'course' => $row['course'],
-                'issued_at' => $row['issued'],
-                'status' => $row['status'],
-                'platform' => $platform['name'] ?? $row['platform'],
+                'code' => $certificate->code,
+                'learner' => $certificate->learner_name,
+                'course' => $certificate->course->title,
+                'issued_at' => $certificate->issued_at->format('j M Y'),
+                'status' => $certificate->status,
+                'platform' => $platformName,
                 'title' => $title,
                 'subtitle' => $subtitle,
             ],

@@ -8,6 +8,13 @@ use Tests\TestCase;
 
 class SuperAdminPagesTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->actingAsSuperAdmin();
+    }
+
     public function test_dashboard_renders_the_required_estate_stats(): void
     {
         $this->get(route('admin.dashboard'))

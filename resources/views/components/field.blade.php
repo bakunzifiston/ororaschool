@@ -15,6 +15,12 @@
 ])
 
 @php
+    $error = $error ?? $errors->first($name);
+
+    if ($type !== 'password' && ! $readonly) {
+        $value = old($name, $value);
+    }
+
     $id = 'field-' . $name;
     $describedBy = array_filter([$hint ? $id . '-hint' : null, $error ? $id . '-error' : null]);
 

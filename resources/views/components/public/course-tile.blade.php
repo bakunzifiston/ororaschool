@@ -10,12 +10,22 @@
     $glyph = $glyphs[$course['platform'] ?? ''] ?? 'book';
     $lessons = (int) ($course['lessons'] ?? 0);
     $enrolled = (int) ($course['enrolled'] ?? 0);
+    $cover = $course['cover'] ?? null;
 @endphp
 
 <article {{ $attributes->merge(['class' => 'public-card public-card-hover flex min-w-0 flex-col overflow-hidden']) }}>
-    <div class="relative flex h-28 items-center justify-center bg-accent-50">
-        <x-icon :name="$glyph" class="h-8 w-8 text-accent-400" />
-        <span class="absolute left-3 top-3 rounded-sm bg-chalk px-2 py-0.5 text-micro font-medium text-basalt-800">
+    <div class="relative aspect-[16/9] overflow-hidden bg-accent-50">
+        @if ($cover)
+            <img src="{{ asset($cover) }}"
+                 alt=""
+                 width="1400" height="788"
+                 class="h-full w-full object-cover">
+        @else
+            <div class="flex h-full items-center justify-center">
+                <x-icon :name="$glyph" class="h-8 w-8 text-accent-400" />
+            </div>
+        @endif
+        <span class="absolute left-3 top-3 rounded-sm bg-chalk/95 px-2 py-0.5 text-micro font-medium text-basalt-800">
             {{ $course['platform_name'] ?? '' }}
         </span>
     </div>

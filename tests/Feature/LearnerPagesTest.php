@@ -2,10 +2,23 @@
 
 namespace Tests\Feature;
 
+use App\Models\Course;
+use App\Models\Enrolment;
+use App\Models\Lesson;
+use App\Models\Module;
+use App\Models\Quiz;
+use App\Models\User;
 use Tests\TestCase;
 
 class LearnerPagesTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->actingAsLearnerWithRecord();
+    }
+
     public function test_dashboard_shows_courses_from_three_platforms_on_one_record(): void
     {
         $this->get(route('learner.dashboard'))
@@ -72,6 +85,18 @@ class LearnerPagesTest extends TestCase
             ->assertRedirect(route('learner.courses.show', ['course' => 'kraal-register-reconciliation']))
             ->assertSessionHas('status');
 
+        $course = Course::query()->where('slug', 'kraal-register-reconciliation')->first();
+
+        $this->assertDatabaseHas('enrolments', [
+            'user_id' => auth()->id(),
+            'course_id' => $course->id,
+            'status' => 'active',
+        ]);
+
+        $this->get(route('learner.courses.show', ['course' => 'kraal-register-reconciliation']))
+            ->assertOk()
+            ->assertSee('Continue', false);
+
         $this->get(route('learner.courses.show', ['course' => 'evening-intake-lactometer']))
             ->assertOk()
             ->assertSee('Enrolment is not required', false)
@@ -84,6 +109,32 @@ class LearnerPagesTest extends TestCase
             ->assertSee('In progress', false)
             ->assertSee('Locked', false)
             ->assertDontSee('Enrolment is required', false);
+    }
+
+    public function test_syllabus_reads_persisted_modules_not_the_fixture(): void
+    {
+        $course = Course::query()->where('slug', 'evening-intake-lactometer')->first();
+
+        Module::query()->where('course_id', $course->id)->delete();
+
+        $module = Module::factory()->for($course)->create([
+            'slug' => 'm-lacto-dusk',
+            'title' => 'Lactometer at dusk',
+            'sort_order' => 1,
+        ]);
+
+        Lesson::factory()->for($course)->for($module)->create([
+            'slug' => 'l-lacto-dusk',
+            'title' => 'Hold the glass to the light',
+            'sort_order' => 1,
+            'is_preview' => true,
+        ]);
+
+        $this->get(route('learner.courses.show', ['course' => 'evening-intake-lactometer']))
+            ->assertOk()
+            ->assertSee('Lactometer at dusk', false)
+            ->assertSee('Hold the glass to the light', false)
+            ->assertDontSee('Field notes', false);
     }
 
     public function test_lesson_viewer_renders_content_types_and_rejects_locked_lessons(): void
@@ -125,6 +176,48 @@ class LearnerPagesTest extends TestCase
             ->assertSessionHas('status');
     }
 
+    public function test_completing_the_current_lesson_unlocks_the_next_one(): void
+    {
+        $enrolment = Enrolment::query()
+            ->where('user_id', auth()->id())
+            ->whereHas('course', fn ($query) => $query->where('slug', 'mastitis-milk-hygiene'))
+            ->first();
+
+        $this->assertSame(4, $enrolment->lessons_done);
+
+        $this->from(route('learner.courses.lessons.show', ['course' => 'mastitis-milk-hygiene', 'lesson' => 'l-milk-2']))
+            ->post(route('learner.courses.lessons.complete', ['course' => 'mastitis-milk-hygiene', 'lesson' => 'l-milk-2']))
+            ->assertRedirect(route('learner.courses.lessons.show', ['course' => 'mastitis-milk-hygiene', 'lesson' => 'l-milk-2']));
+
+        $this->assertSame(5, $enrolment->fresh()->lessons_done);
+
+        $this->get(route('learner.courses.lessons.show', ['course' => 'mastitis-milk-hygiene', 'lesson' => 'l-milk-3']))
+            ->assertOk();
+    }
+
+    public function test_a_learner_does_not_see_another_learners_enrolments(): void
+    {
+        $this->actingAs(User::factory()->learner()->create());
+
+        $this->get(route('learner.dashboard'))
+            ->assertOk()
+            ->assertSee('No courses in progress', false)
+            ->assertDontSee('Mastitis Detection', false);
+    }
+
+    public function test_enrolment_is_rejected_for_a_draft_course(): void
+    {
+        $course = Course::factory()->draft()->create();
+
+        $this->post(route('learner.courses.enroll', ['course' => $course]))
+            ->assertNotFound();
+
+        $this->assertDatabaseMissing('enrolments', [
+            'user_id' => auth()->id(),
+            'course_id' => $course->id,
+        ]);
+    }
+
     public function test_quiz_is_single_page_and_shows_a_mock_result(): void
     {
         $this->get(route('learner.quizzes.show', ['quiz' => 'cmt-paddle-reading']))
@@ -149,6 +242,39 @@ class LearnerPagesTest extends TestCase
             ->assertOk()
             ->assertSee('Not yet', false)
             ->assertSee('40%', false);
+    }
+
+    public function test_a_missing_quiz_is_not_found(): void
+    {
+        $this->get(route('learner.quizzes.show', ['quiz' => 'not-a-quiz']))
+            ->assertNotFound();
+    }
+
+    public function test_quiz_page_reads_persisted_questions(): void
+    {
+        $course = Course::query()->where('slug', 'evening-intake-lactometer')->first();
+
+        Quiz::factory()->for($course)->create([
+            'slug' => 'dusk-lactometer-band',
+            'title' => 'Dusk lactometer band',
+            'lesson_title' => 'Hold the glass to the light',
+            'pass_score' => 80,
+            'attempt_limit' => 2,
+            'items' => [
+                [
+                    'prompt' => 'Read the stem at eye level?',
+                    'options' => ['Yes, at the meniscus', 'From above the jar'],
+                    'correct' => 0,
+                ],
+            ],
+        ]);
+
+        $this->get(route('learner.quizzes.show', ['quiz' => 'dusk-lactometer-band']))
+            ->assertOk()
+            ->assertSee('Dusk lactometer band', false)
+            ->assertSee('Read the stem at eye level?', false)
+            ->assertSee('Yes, at the meniscus', false)
+            ->assertDontSee('A trace reaction on the CMT paddle', false);
     }
 
     public function test_learning_paths_distinguish_single_and_cross_platform(): void

@@ -2,8 +2,11 @@
 
 namespace App\Support\DemoData;
 
+use App\Models\Quiz;
+
 /**
- * FIXTURE LAYER — DELETE WHEN REAL DATA ARRIVES.
+ * Quiz definitions. Reads from MySQL. fixtureRecords() remains the seed source
+ * until authors write quizzes in the app.
  */
 class Quizzes
 {
@@ -12,38 +15,53 @@ class Quizzes
      */
     public static function forPlatform(string $platform): array
     {
-        return array_values(array_filter(
-            self::all(),
-            fn (array $quiz) => $quiz['platform'] === $platform,
-        ));
+        return Quiz::query()
+            ->onPlatform($platform)
+            ->with(['course.platform'])
+            ->orderBy('id')
+            ->get()
+            ->map(fn (Quiz $quiz) => $quiz->toPageArray())
+            ->all();
     }
 
     public static function find(string $slug): ?array
     {
-        foreach (self::all() as $quiz) {
-            if ($quiz['slug'] === $slug) {
-                return $quiz;
-            }
-        }
+        $quiz = Quiz::query()
+            ->where('slug', $slug)
+            ->with(['course.platform'])
+            ->first();
 
-        return null;
+        return $quiz?->toPageArray();
     }
 
     public static function findForPlatform(string $slug, string $platform): ?array
     {
-        $quiz = self::find($slug);
+        $quiz = Quiz::query()
+            ->onPlatform($platform)
+            ->where('slug', $slug)
+            ->with(['course.platform'])
+            ->first();
 
-        if (! $quiz || $quiz['platform'] !== $platform) {
-            return null;
-        }
-
-        return $quiz;
+        return $quiz?->toPageArray();
     }
 
     /**
      * @return list<array<string, mixed>>
      */
     public static function all(): array
+    {
+        return Quiz::query()
+            ->with(['course.platform'])
+            ->orderBy('id')
+            ->get()
+            ->map(fn (Quiz $quiz) => $quiz->toPageArray())
+            ->all();
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public static function fixtureRecords(): array
     {
         return [
             [

@@ -13,11 +13,25 @@ class LearnerProfilePage
 {
     public static function data(): array
     {
+        $authenticated = auth()->user();
         $user = DemoData::currentUser('learner');
-        $platforms = array_map(
+
+        if ($authenticated) {
+            $user['name'] = $authenticated->name;
+            $user['email'] = $authenticated->email;
+            $user['district'] = $authenticated->district;
+        }
+
+        $platformSlugs = array_values(array_unique(array_column(LearnerProgress::enrolments(), 'platform_slug')));
+
+        if ($platformSlugs === []) {
+            $platformSlugs = $user['platforms'];
+        }
+
+        $platforms = array_values(array_filter(array_map(
             fn (string $slug) => Platforms::find($slug),
-            $user['platforms'],
-        );
+            $platformSlugs,
+        )));
 
         return [
             'header' => LearnerHeader::make(
@@ -28,7 +42,7 @@ class LearnerProfilePage
                 ],
             ),
             'user' => $user,
-            'platforms' => array_values(array_filter($platforms)),
+            'platforms' => $platforms,
             'history' => LearnerProgress::history(),
         ];
     }

@@ -19,11 +19,5 @@
         <x-button :href="$dashboardUrl" size="lg" icon-after="arrow-right" class="mt-6 w-full">
             {{ $page['submit'] }}
         </x-button>
-
-        <x-slot:footer>
-            <span class="text-micro">
-                Opening the {{ $previewLabel }} shell — the preview chosen at sign-in.
-            </span>
-        </x-slot:footer>
     </x-auth-sheet>
 </x-layouts.guest>

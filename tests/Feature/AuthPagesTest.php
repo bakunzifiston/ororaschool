@@ -2,18 +2,21 @@
 
 namespace Tests\Feature;
 
-use App\Support\DemoData\Pages\AuthPages;
+use App\Models\User;
 use App\Support\DemoData\Platforms;
+use App\UserRole;
+use Database\Seeders\CatalogSeeder;
+use Database\Seeders\UserSeeder;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\URL;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
-/**
- * Phase F2 checks for the unauthenticated pages.
- *
- * Nothing authenticates, so these assert the shape instead: every page renders in
- * the guest layout with no sidebar, every form posts somewhere real, and the
- * temporary preview control does what it claims and is labelled as temporary.
- */
 class AuthPagesTest extends TestCase
 {
     /** @return array<string, array{0: string}> */
@@ -23,8 +26,6 @@ class AuthPagesTest extends TestCase
             'login' => ['login'],
             'register' => ['register'],
             'forgot password' => ['password.request'],
-            'verification notice' => ['verification.notice'],
-            'verified confirmation' => ['verification.verified'],
         ];
     }
 
@@ -34,9 +35,7 @@ class AuthPagesTest extends TestCase
         $this->get(route($name))
             ->assertOk()
             ->assertSee('data-experience="guest"', false)
-            // No sidebar anywhere in the unauthenticated experience.
             ->assertDontSee('<aside', false)
-            // Nor any of the signed-in chrome.
             ->assertDontSee('Sign out</span>', false);
     }
 
@@ -63,51 +62,122 @@ class AuthPagesTest extends TestCase
             ->assertSee('name="password"', false)
             ->assertSee('autocomplete="current-password"', false)
             ->assertSee(route('password.request'), false)
-            ->assertSee(route('register'), false);
+            ->assertSee(route('register'), false)
+            ->assertDontSee('name="preview_as"', false)
+            ->assertDontSee('Temporary — no authentication in this build', false);
     }
 
-    public function test_the_preview_control_is_marked_temporary_and_offers_three_shells(): void
+    public function test_a_verified_learner_is_signed_in_and_sent_to_their_dashboard(): void
     {
-        $response = $this->get(route('login'));
+        $user = User::factory()->learner()->create([
+            'password' => 'password12',
+        ]);
 
-        $response->assertSee('Temporary — no authentication in this build', false)
-            ->assertSee('name="preview_as"', false);
-
-        foreach (['Super Admin', 'Platform Admin', 'Learner'] as $label) {
-            $response->assertSee($label, false);
-        }
-    }
-
-    public function test_the_preview_control_opens_the_shell_it_names(): void
-    {
-        $this->post(route('login.attempt'), ['preview_as' => 'super-admin'])
-            ->assertRedirect(route('admin.dashboard'))
-            ->assertSessionHas('status');
-
-        $this->post(route('login.attempt'), ['preview_as' => 'learner'])
+        $this->from(route('login'))
+            ->post(route('login.attempt'), [
+                'email' => $user->email,
+                'password' => 'password12',
+            ])
             ->assertRedirect(route('learner.dashboard'));
 
-        $this->post(route('login.attempt'), ['preview_as' => 'platform-workspace'])
-            ->assertRedirect(route('workspace.dashboard', ['platform' => 'gemura']));
+        $this->assertAuthenticatedAs($user);
     }
 
-    public function test_an_unknown_preview_value_falls_back_to_the_learner_shell(): void
+    public function test_a_verified_super_admin_is_sent_to_the_estate_dashboard(): void
     {
-        $this->post(route('login.attempt'), ['preview_as' => 'nonsense'])
-            ->assertRedirect(route('learner.dashboard'));
+        $user = User::factory()->superAdmin()->create([
+            'password' => 'password12',
+        ]);
 
-        $this->post(route('login.attempt'))
-            ->assertRedirect(route('learner.dashboard'));
+        $this->post(route('login.attempt'), [
+            'email' => $user->email,
+            'password' => 'password12',
+        ])->assertRedirect(route('admin.dashboard'));
+
+        $this->assertAuthenticatedAs($user);
     }
 
-    public function test_the_chosen_preview_carries_through_to_the_verified_page(): void
+    public function test_wrong_credentials_are_rejected_without_signing_anyone_in(): void
     {
-        $this->post(route('login.attempt'), ['preview_as' => 'super-admin']);
+        $user = User::factory()->create([
+            'password' => 'password12',
+        ]);
 
-        $this->get(route('verification.verified'))
-            ->assertOk()
-            ->assertSee(route('admin.dashboard'), false)
-            ->assertSee('Super Admin', false);
+        $this->from(route('login'))
+            ->post(route('login.attempt'), [
+                'email' => $user->email,
+                'password' => 'not-the-password',
+            ])
+            ->assertRedirect(route('login'))
+            ->assertSessionHasErrors('email');
+
+        $this->assertGuest();
+    }
+
+    public function test_an_inactive_account_is_rejected_with_the_same_error_as_wrong_credentials(): void
+    {
+        $user = User::factory()->inactive()->create([
+            'password' => 'password12',
+        ]);
+
+        $this->from(route('login'))
+            ->post(route('login.attempt'), [
+                'email' => $user->email,
+                'password' => 'password12',
+            ])
+            ->assertRedirect(route('login'))
+            ->assertSessionHasErrors('email');
+
+        $this->assertGuest();
+    }
+
+    public function test_an_empty_login_is_rejected(): void
+    {
+        $this->from(route('login'))
+            ->post(route('login.attempt'))
+            ->assertRedirect(route('login'))
+            ->assertSessionHasErrors(['email', 'password']);
+
+        $this->assertGuest();
+    }
+
+    public function test_guests_are_sent_to_sign_in_from_the_dashboards(): void
+    {
+        $this->get(route('admin.dashboard'))->assertRedirect(route('login'));
+        $this->get(route('workspace.dashboard', ['platform' => 'gemura']))->assertRedirect(route('login'));
+        $this->get(route('learner.dashboard'))->assertRedirect(route('login'));
+    }
+
+    public function test_a_learner_cannot_open_staff_shells(): void
+    {
+        $this->actingAsLearner();
+
+        $this->get(route('admin.dashboard'))->assertForbidden();
+        $this->get(route('workspace.dashboard', ['platform' => 'gemura']))->assertForbidden();
+    }
+
+    public function test_platform_staff_cannot_open_the_estate_or_learner_shells(): void
+    {
+        $this->actingAsPlatformStaff();
+
+        $this->get(route('admin.dashboard'))->assertForbidden();
+        $this->get(route('learner.dashboard'))->assertForbidden();
+    }
+
+    public function test_a_super_admin_can_open_a_platform_workspace(): void
+    {
+        $this->actingAsSuperAdmin()
+            ->get(route('workspace.dashboard', ['platform' => 'gemura']))
+            ->assertOk();
+    }
+
+    public function test_an_unverified_learner_is_sent_to_confirm_their_email(): void
+    {
+        $user = User::factory()->unverified()->learner()->create();
+
+        $this->actingAs($user)
+            ->get(route('learner.dashboard'))
+            ->assertRedirect(route('verification.notice'));
     }
 
     public function test_registration_leads_with_platform_linking(): void
@@ -129,34 +199,164 @@ class AuthPagesTest extends TestCase
             ->assertSessionHas('status', fn (string $status) => str_contains($status, 'Gemura'));
     }
 
-    public function test_direct_registration_sends_people_to_confirm_their_email(): void
+    public function test_direct_registration_creates_an_unverified_learner_and_asks_them_to_confirm(): void
     {
-        $this->post(route('register.store'))
+        Notification::fake();
+
+        $this->post(route('register.store'), [
+            'name' => 'Placide Bizimana',
+            'district' => 'Gatsibo',
+            'email' => 'new.learner@umuhinzi.rw',
+            'password' => 'password12',
+        ])
             ->assertRedirect(route('verification.notice'))
             ->assertSessionHas('status');
+
+        $user = User::query()->where('email', 'new.learner@umuhinzi.rw')->first();
+
+        $this->assertNotNull($user);
+        $this->assertSame(UserRole::Learner, $user->role);
+        $this->assertSame('active', $user->status);
+        $this->assertFalse($user->hasVerifiedEmail());
+        $this->assertAuthenticatedAs($user);
+
+        Notification::assertSentTo($user, VerifyEmail::class);
+    }
+
+    public function test_direct_registration_rejects_an_empty_form(): void
+    {
+        $this->from(route('register'))
+            ->post(route('register.store'))
+            ->assertRedirect(route('register'))
+            ->assertSessionHasErrors(['name', 'district', 'email', 'password']);
+
+        $this->assertGuest();
+        $this->assertDatabaseCount('users', 0);
+    }
+
+    public function test_direct_registration_rejects_a_password_shorter_than_ten_characters(): void
+    {
+        $this->from(route('register'))
+            ->post(route('register.store'), [
+                'name' => 'Placide Bizimana',
+                'district' => 'Gatsibo',
+                'email' => 'short.password@umuhinzi.rw',
+                'password' => 'password1',
+            ])
+            ->assertRedirect(route('register'))
+            ->assertSessionHasErrors('password');
+
+        $this->assertDatabaseMissing('users', ['email' => 'short.password@umuhinzi.rw']);
     }
 
     public function test_reset_link_copy_does_not_disclose_whether_an_account_exists(): void
     {
+        Notification::fake();
+
         $this->from(route('password.request'))
             ->post(route('password.email'), ['email' => 'nobody@example.rw'])
             ->assertRedirect(route('password.request'))
             ->assertSessionHas('status', fn (string $status) => str_starts_with($status, 'If that address'));
+
+        Notification::assertNothingSent();
     }
 
-    public function test_saving_a_new_password_returns_to_sign_in(): void
+    public function test_a_known_address_is_sent_a_reset_link_without_a_different_response(): void
     {
-        $this->post(route('password.update'))
-            ->assertRedirect(route('login'))
-            ->assertSessionHas('status');
+        Notification::fake();
+
+        $user = User::factory()->create();
+
+        $this->from(route('password.request'))
+            ->post(route('password.email'), ['email' => $user->email])
+            ->assertRedirect(route('password.request'))
+            ->assertSessionHas('status', fn (string $status) => str_starts_with($status, 'If that address'));
+
+        Notification::assertSentTo($user, ResetPassword::class);
+    }
+
+    public function test_saving_a_new_password_signs_the_learner_in(): void
+    {
+        $user = User::factory()->learner()->create([
+            'password' => 'password12',
+        ]);
+        $token = Password::broker()->createToken($user);
+
+        $this->post(route('password.update'), [
+            'token' => $token,
+            'email' => $user->email,
+            'password' => 'newpassword12',
+            'password_confirmation' => 'newpassword12',
+        ])->assertRedirect(route('learner.dashboard'));
+
+        $this->assertAuthenticatedAs($user->fresh());
+        $this->assertTrue(Hash::check('newpassword12', $user->fresh()->password));
+    }
+
+    public function test_an_invalid_reset_token_is_rejected(): void
+    {
+        $user = User::factory()->create();
+
+        $this->from(route('password.reset', ['token' => 'not-a-token', 'email' => $user->email]))
+            ->post(route('password.update'), [
+                'token' => 'not-a-token',
+                'email' => $user->email,
+                'password' => 'newpassword12',
+                'password_confirmation' => 'newpassword12',
+            ])
+            ->assertRedirect(route('password.reset', ['token' => 'not-a-token', 'email' => $user->email]))
+            ->assertSessionHasErrors('email');
+
+        $this->assertGuest();
+    }
+
+    public function test_guests_are_sent_to_sign_in_from_the_verification_notice(): void
+    {
+        $this->get(route('verification.notice'))
+            ->assertRedirect(route('login'));
+    }
+
+    public function test_the_verification_notice_names_the_signed_in_address(): void
+    {
+        $user = User::factory()->unverified()->create();
+
+        $this->actingAs($user)
+            ->get(route('verification.notice'))
+            ->assertOk()
+            ->assertSee('data-experience="guest"', false)
+            ->assertSee($user->email, false)
+            ->assertSee('Sign out', false);
     }
 
     public function test_resending_verification_names_the_address_it_went_to(): void
     {
-        $this->from(route('verification.notice'))
+        Notification::fake();
+
+        $user = User::factory()->unverified()->create();
+
+        $this->actingAs($user)
+            ->from(route('verification.notice'))
             ->post(route('verification.send'))
             ->assertRedirect(route('verification.notice'))
-            ->assertSessionHas('status', fn (string $status) => str_contains($status, AuthPages::pendingEmail()));
+            ->assertSessionHas('status', fn (string $status) => str_contains($status, $user->email));
+
+        Notification::assertSentTo($user, VerifyEmail::class);
+    }
+
+    public function test_a_signed_verification_link_confirms_the_address(): void
+    {
+        $user = User::factory()->unverified()->learner()->create();
+
+        $url = URL::temporarySignedRoute('verification.verify', now()->addMinutes(60), [
+            'id' => $user->id,
+            'hash' => sha1($user->email),
+        ]);
+
+        $this->actingAs($user)
+            ->get($url)
+            ->assertRedirect(route('verification.verified'));
+
+        $this->assertTrue($user->fresh()->hasVerifiedEmail());
     }
 
     public function test_guest_pages_show_flashed_messages(): void
@@ -180,5 +380,28 @@ class AuthPagesTest extends TestCase
         foreach ([route('login'), route('password.reset', ['token' => 'abc']), route('register')] as $url) {
             $this->get($url)->assertSee('Show password', false);
         }
+    }
+
+    public function test_the_user_seeder_creates_the_three_demo_accounts(): void
+    {
+        $this->seed(CatalogSeeder::class);
+        $this->seed(UserSeeder::class);
+
+        $this->assertTrue(Auth::attempt([
+            'email' => 'g.mukandayisenga@ororaschool.rw',
+            'password' => 'password12',
+        ]));
+        Auth::logout();
+
+        $this->assertTrue(Auth::attempt([
+            'email' => 's.nyirahabimana@gemura.rw',
+            'password' => 'password12',
+        ]));
+        Auth::logout();
+
+        $this->assertTrue(Auth::attempt([
+            'email' => 'p.bizimana@umuhinzi.rw',
+            'password' => 'password12',
+        ]));
     }
 }

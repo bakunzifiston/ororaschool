@@ -27,6 +27,8 @@ class ShellTest extends TestCase
 
     public function test_every_super_admin_destination_renders(): void
     {
+        $this->actingAsSuperAdmin();
+
         foreach (Navigation::superAdmin() as $item) {
             $this->get(route($item['route']))
                 ->assertOk()
@@ -37,6 +39,8 @@ class ShellTest extends TestCase
 
     public function test_every_workspace_destination_renders_for_every_reachable_platform(): void
     {
+        $this->actingAsPlatformStaff();
+
         foreach (DemoData::accessiblePlatforms() as $platform) {
             foreach (Navigation::platformWorkspace() as $item) {
                 $this->get(route($item['route'], ['platform' => $platform['slug']]))
@@ -49,6 +53,8 @@ class ShellTest extends TestCase
 
     public function test_every_learner_destination_renders(): void
     {
+        $this->actingAsLearner();
+
         foreach (Navigation::learner() as $item) {
             $this->get(route($item['route']))
                 ->assertOk()
@@ -64,7 +70,8 @@ class ShellTest extends TestCase
 
     public function test_switcher_lists_only_the_platforms_the_fixture_user_works_on(): void
     {
-        $response = $this->get(route('workspace.dashboard', ['platform' => 'gemura']));
+        $response = $this->actingAsPlatformStaff()
+            ->get(route('workspace.dashboard', ['platform' => 'gemura']));
 
         // Solange reaches three of the four platforms; OroraFarm is not hers.
         foreach (['Gemura', 'BuchaPro', 'FeedGrid'] as $name) {
@@ -76,7 +83,8 @@ class ShellTest extends TestCase
 
     public function test_each_switcher_entry_points_at_that_platforms_dashboard(): void
     {
-        $response = $this->get(route('workspace.dashboard', ['platform' => 'gemura']));
+        $response = $this->actingAsPlatformStaff()
+            ->get(route('workspace.dashboard', ['platform' => 'gemura']));
 
         foreach (['gemura', 'buchapro', 'feedgrid'] as $slug) {
             $response->assertSee(route('workspace.dashboard', ['platform' => $slug]), false);
@@ -85,6 +93,8 @@ class ShellTest extends TestCase
 
     public function test_workspace_content_is_scoped_to_the_platform_in_the_route(): void
     {
+        $this->actingAsPlatformStaff();
+
         $this->get(route('workspace.dashboard', ['platform' => 'gemura']))
             ->assertSee('Mastitis Detection', false)
             ->assertDontSee('Aflatoxin Control', false);
@@ -132,16 +142,19 @@ class ShellTest extends TestCase
             ->assertSee('No learners on this cohort yet', false);
     }
 
-    public function test_sign_out_placeholder_lands_on_the_sign_in_page_with_a_message(): void
+    public function test_sign_out_ends_the_session_and_returns_to_sign_in(): void
     {
+        $this->actingAsSuperAdmin();
+
         $this->from(route('admin.dashboard'))
             ->post(route('sign-out'))
             ->assertRedirect(route('login'))
             ->assertSessionHas('status');
 
-        $this->withSession(['status' => 'Signed out'])
-            ->get(route('admin.dashboard'))
-            ->assertSee('Signed out', false);
+        $this->assertGuest();
+
+        $this->get(route('login'))
+            ->assertSee('Signed out.', false);
     }
 
     public function test_role_gated_nav_is_hidden_from_a_persona_without_the_role(): void
@@ -155,12 +168,16 @@ class ShellTest extends TestCase
 
     public function test_nested_staff_pages_keep_the_parent_nav_item_current(): void
     {
+        $this->actingAsSuperAdmin();
+
         $adminUser = $this->get(route('admin.users.show', ['user' => 2]));
         $adminUser->assertOk();
         $this->assertMatchesRegularExpression(
             '/href="'.preg_quote(route('admin.users'), '/').'"[^>]*aria-current="page"/',
             $adminUser->getContent(),
         );
+
+        $this->actingAsPlatformStaff();
 
         $course = $this->get(route('workspace.courses.show', [
             'platform' => 'gemura',
@@ -184,6 +201,8 @@ class ShellTest extends TestCase
 
     public function test_every_platform_in_the_fixture_set_has_a_workspace_that_renders(): void
     {
+        $this->actingAsSuperAdmin();
+
         foreach (Platforms::slugs() as $slug) {
             $this->get(route('workspace.dashboard', ['platform' => $slug]))->assertOk();
         }

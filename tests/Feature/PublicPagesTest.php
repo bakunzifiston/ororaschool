@@ -2,12 +2,24 @@
 
 namespace Tests\Feature;
 
+use App\Models\Course;
+use App\Models\Lesson;
+use App\Models\Module;
+use App\Models\Platform;
 use App\Support\DemoData\Courses;
 use App\Support\DemoData\PublicCatalog;
+use Database\Seeders\CatalogSeeder;
 use Tests\TestCase;
 
 class PublicPagesTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seed(CatalogSeeder::class);
+    }
+
     public function test_the_catalog_query_excludes_unpublished_and_inactive_platform_courses(): void
     {
         $allTitles = array_column(Courses::all(), 'title');
@@ -157,6 +169,35 @@ class PublicPagesTest extends TestCase
             ->assertNotFound();
     }
 
+    public function test_course_landing_syllabus_reads_persisted_lessons(): void
+    {
+        $platform = Platform::factory()->create([
+            'slug' => 'nyagatare-syllabus',
+            'status' => 'active',
+        ]);
+
+        $course = Course::factory()->for($platform)->create([
+            'title' => 'Terracing with a spirit level',
+            'slug' => 'terracing-spirit-level-syllabus',
+            'status' => 'published',
+        ]);
+
+        $module = Module::factory()->for($course)->create([
+            'title' => 'Set the pegs',
+        ]);
+
+        Lesson::factory()->for($course)->for($module)->preview()->create([
+            'title' => 'Sight the terrace from the downhill edge',
+        ]);
+
+        $this->get(route('catalog.courses.show', ['course' => $course->slug]))
+            ->assertOk()
+            ->assertSee('Set the pegs', false)
+            ->assertSee('Sight the terrace from the downhill edge', false)
+            ->assertSee('Preview available', false)
+            ->assertDontSee('Hold the paddle level', false);
+    }
+
     public function test_certificate_verification_is_public_and_exposes_only_the_named_fields(): void
     {
         $this->get(route('certificates.lookup'))
@@ -185,5 +226,30 @@ class PublicPagesTest extends TestCase
 
         $this->get('/verify/OS-GEM-2026-1847')
             ->assertRedirect(route('certificates.verify', ['code' => 'OS-GEM-2026-1847']));
+    }
+
+    public function test_a_published_course_persisted_in_mysql_appears_in_the_public_catalogue(): void
+    {
+        $platform = Platform::factory()->create([
+            'name' => 'Nyagatare Field School',
+            'slug' => 'nyagatare-field',
+            'status' => 'active',
+        ]);
+
+        Course::factory()->for($platform)->create([
+            'title' => 'Terracing with a spirit level',
+            'slug' => 'terracing-spirit-level',
+            'status' => 'published',
+        ]);
+
+        Course::factory()->for($platform)->draft()->create([
+            'title' => 'Hidden draft on Nyagatare',
+            'slug' => 'hidden-draft-nyagatare',
+        ]);
+
+        $this->get(route('catalog.courses', ['platform' => 'nyagatare-field']))
+            ->assertOk()
+            ->assertSee('Terracing with a spirit level', false)
+            ->assertDontSee('Hidden draft on Nyagatare', false);
     }
 }

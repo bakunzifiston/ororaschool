@@ -48,6 +48,7 @@ class Platforms
                 'created' => '11 Apr 2023',
                 'description' => 'Season planning, plot records and enterprise costing for smallholdings across the Eastern Province.',
                 'completion_rate' => 68,
+                'cover' => 'images/platforms/ororafarm.jpg',
             ],
             [
                 'slug' => 'gemura',
@@ -63,6 +64,7 @@ class Platforms
                 'created' => '02 Jul 2023',
                 'description' => 'Milk hygiene, collection-centre practice and herd fertility for the Northern Province dairy belt.',
                 'completion_rate' => 74,
+                'cover' => 'images/platforms/gemura.jpg',
             ],
             [
                 'slug' => 'buchapro',
@@ -78,6 +80,7 @@ class Platforms
                 'created' => '19 Feb 2024',
                 'description' => 'Animal identification, movement records and outbreak traceback for the Kigali livestock corridor.',
                 'completion_rate' => 51,
+                'cover' => 'images/platforms/buchapro.jpg',
             ],
             [
                 'slug' => 'feedgrid',
@@ -93,6 +96,7 @@ class Platforms
                 'created' => '30 Jun 2024',
                 'description' => 'Ration formulation, feed safety and on-farm storage for mills and cooperatives.',
                 'completion_rate' => 62,
+                'cover' => 'images/platforms/feedgrid.jpg',
             ],
             [
                 'slug' => 'ubworozi',

@@ -3,8 +3,9 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use App\Support\DemoData\People;
+use App\UserRole;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
@@ -18,8 +19,6 @@ class UserFactory extends Factory
     protected static ?string $password;
 
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array
@@ -28,18 +27,47 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => static::$password ??= 'password12',
+            'role' => UserRole::Learner,
+            'district' => fake()->randomElement(People::districts()),
+            'status' => 'active',
             'remember_token' => Str::random(10),
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
     public function unverified(): static
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    public function superAdmin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::SuperAdmin,
+            'district' => 'Kigali',
+        ]);
+    }
+
+    public function platformStaff(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::PlatformStaff,
+        ]);
+    }
+
+    public function learner(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Learner,
+        ]);
+    }
+
+    public function inactive(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'archived',
         ]);
     }
 }

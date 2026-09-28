@@ -34,26 +34,12 @@
                 </dl>
             </div>
 
-            <div class="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
-                <div class="public-card p-4">
-                    <p class="text-micro font-medium text-fern-500">Course progress</p>
-                    <p class="mt-1 font-display text-panel font-semibold text-basalt-900">Mastitis Detection</p>
-                    <p class="mt-1 text-micro text-fern-500">Gemura · 12 of 18 lessons</p>
-                    <div class="mt-3 h-1.5 overflow-hidden rounded-full bg-clay-100">
-                        <div class="h-full w-2/3 rounded-full bg-accent-500"></div>
-                    </div>
-                </div>
-                <div class="public-card mt-3 p-4">
-                    <p class="text-micro font-medium text-fern-500">Certificate</p>
-                    <p class="mt-1 font-display text-panel font-semibold text-basalt-900">Verified on Gemura</p>
-                    <p class="mt-1 font-mono text-micro text-fern-500">OS-GEM-2026-1847</p>
-                </div>
-                <div class="mt-3 flex flex-wrap gap-2">
-                    @foreach ($page['platforms'] as $platform)
-                        <span class="inline-flex items-center gap-1.5 rounded-md border border-clay-200 bg-chalk px-2.5 py-1.5 text-micro text-basalt-800">
-                            {{ $platform['name'] }}
-                        </span>
-                    @endforeach
+            <div class="mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
+                <div class="public-card overflow-hidden">
+                    <img src="{{ asset('images/home/hero.jpg') }}"
+                         alt="Farmers and a field officer reviewing a terraced plot in the Rwandan highlands."
+                         width="1600" height="1200"
+                         class="aspect-[4/3] w-full object-cover">
                 </div>
             </div>
         </div>

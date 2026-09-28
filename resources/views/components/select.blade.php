@@ -12,6 +12,8 @@
 ])
 
 @php
+    $error = $error ?? $errors->first($name);
+    $selected = old($name, $selected);
     $id = 'field-' . $name;
 
     // Accepts either a flat list of labels or a value => label map.

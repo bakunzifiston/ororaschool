@@ -2,48 +2,68 @@
 
 namespace App\Support\DemoData;
 
+use App\Models\Academy;
+use App\Models\Course;
+use App\Models\Platform;
+use Illuminate\Database\Eloquent\Builder;
+
 /**
- * FIXTURE LAYER — DELETE WHEN REAL DATA ARRIVES.
- *
- * The public catalogue query. Every public page reads from here, never from
- * Courses::all() directly, so unpublished courses and courses on inactive
- * platforms cannot leak into a view by accident.
+ * Public catalogue query. Reads published courses on active platforms from
+ * MySQL. Syllabus previews still come from the curriculum fixture until
+ * modules and lessons are persisted.
  */
 class PublicCatalog
 {
     public const PER_PAGE = 6;
 
     /**
-     * Published courses on an active platform. This is the only set the
-     * public site is allowed to display.
-     *
      * @return list<array<string, mixed>>
      */
     public static function publishedCourses(): array
     {
-        $active = array_column(Platforms::active(), 'slug');
-
-        return array_values(array_filter(
-            Courses::all(),
-            fn (array $course) => $course['status'] === 'published'
-                && in_array($course['platform'], $active, true),
-        ));
+        return self::publishedQuery()
+            ->orderBy('id')
+            ->get()
+            ->map(fn (Course $course) => self::present($course))
+            ->all();
     }
 
     /**
-     * @param  array<string, mixed>  $course
      * @return array<string, mixed>
      */
-    public static function present(array $course): array
+    public static function present(Course $course): array
     {
-        $platform = Platforms::find($course['platform']) ?? [];
+        $platform = $course->platform;
+        $academy = $course->academy;
 
-        return array_merge($course, [
-            'platform_name' => $platform['name'] ?? '',
-            'platform_discipline' => $platform['discipline'] ?? '',
-            'platform_tagline' => $platform['tagline'] ?? '',
-            'href' => route('catalog.courses.show', ['course' => $course['slug']]),
-        ]);
+        return [
+            'id' => $course->id,
+            'slug' => $course->slug,
+            'platform' => $platform->slug,
+            'title' => $course->title,
+            'summary' => $course->summary,
+            'description' => $course->description,
+            'instructor' => $course->instructor,
+            'instructors' => array_values(array_filter([$course->instructor])),
+            'status' => $course->status,
+            'modules' => $course->modules,
+            'lessons' => $course->lessons,
+            'duration' => $course->duration,
+            'enrolled' => $course->enrolled,
+            'difficulty' => $course->difficulty,
+            'language' => $course->language,
+            'paid' => $course->paid,
+            'certificate_eligible' => $course->certificate_eligible,
+            'enrollment_required' => $course->enrollment_required,
+            'category' => $course->category ?? '',
+            'academy' => $academy?->name ?? '',
+            'academy_slug' => $academy?->slug ?? '',
+            'cover' => $course->cover ?? $platform->cover,
+            'platform_name' => $platform->name,
+            'platform_discipline' => $platform->discipline,
+            'platform_tagline' => $platform->tagline,
+            'href' => route('catalog.courses.show', ['course' => $course->slug]),
+        ];
     }
 
     /**
@@ -52,7 +72,7 @@ class PublicCatalog
      */
     public static function filter(array $filters = []): array
     {
-        $rows = self::publishedCourses();
+        $query = self::publishedQuery();
 
         $platform = (string) ($filters['platform'] ?? '');
         $academy = (string) ($filters['academy'] ?? '');
@@ -62,45 +82,42 @@ class PublicCatalog
         $search = mb_strtolower(trim((string) ($filters['q'] ?? '')));
 
         if ($platform !== '') {
-            $rows = array_values(array_filter($rows, fn (array $course) => $course['platform'] === $platform));
+            $query->whereHas('platform', fn (Builder $builder) => $builder->where('slug', $platform));
         }
 
         if ($academy !== '') {
-            $rows = array_values(array_filter($rows, fn (array $course) => $course['academy_slug'] === $academy));
+            $query->whereHas('academy', fn (Builder $builder) => $builder->where('slug', $academy));
         }
 
         if ($difficulty !== '') {
-            $rows = array_values(array_filter($rows, fn (array $course) => $course['difficulty'] === $difficulty));
+            $query->where('difficulty', $difficulty);
         }
 
         if ($language !== '') {
-            $rows = array_values(array_filter(
-                $rows,
-                fn (array $course) => str_contains((string) $course['language'], $language),
-            ));
+            $query->where('language', 'like', '%'.self::escapeLike($language).'%');
         }
 
         if ($price === 'free') {
-            $rows = array_values(array_filter($rows, fn (array $course) => ! $course['paid']));
+            $query->where('paid', false);
         }
 
         if ($price === 'paid') {
-            $rows = array_values(array_filter($rows, fn (array $course) => (bool) $course['paid']));
+            $query->where('paid', true);
         }
 
         if ($search !== '') {
-            $rows = array_values(array_filter($rows, function (array $course) use ($search) {
-                $haystack = mb_strtolower(implode(' ', [
-                    $course['title'] ?? '',
-                    $course['summary'] ?? '',
-                    $course['description'] ?? '',
-                ]));
-
-                return str_contains($haystack, $search);
-            }));
+            $term = '%'.self::escapeLike($search).'%';
+            $query->where(function (Builder $builder) use ($term) {
+                $builder->where('title', 'like', $term)
+                    ->orWhere('summary', 'like', $term)
+                    ->orWhere('description', 'like', $term);
+            });
         }
 
-        return array_map([self::class, 'present'], $rows);
+        return $query->orderBy('id')
+            ->get()
+            ->map(fn (Course $course) => self::present($course))
+            ->all();
     }
 
     /**
@@ -108,60 +125,58 @@ class PublicCatalog
      */
     public static function featured(int $limit = 4): array
     {
-        $rows = self::publishedCourses();
-        usort($rows, fn (array $a, array $b) => ($b['enrolled'] ?? 0) <=> ($a['enrolled'] ?? 0));
-
-        return array_map([self::class, 'present'], array_slice($rows, 0, $limit));
+        return self::publishedQuery()
+            ->orderByDesc('enrolled')
+            ->orderBy('id')
+            ->limit($limit)
+            ->get()
+            ->map(fn (Course $course) => self::present($course))
+            ->all();
     }
 
     public static function findPublished(string $slug): ?array
     {
-        foreach (self::publishedCourses() as $course) {
-            if ($course['slug'] === $slug) {
-                return self::present($course);
-            }
-        }
+        $course = self::publishedQuery()
+            ->where('slug', $slug)
+            ->first();
 
-        return null;
+        return $course ? self::present($course) : null;
     }
 
     /**
-     * Active platforms with a published-course count the public site can trust.
-     *
      * @return list<array<string, mixed>>
      */
     public static function activePlatforms(): array
     {
-        $published = self::publishedCourses();
-
-        return array_map(function (array $platform) use ($published) {
-            $count = count(array_filter(
-                $published,
-                fn (array $course) => $course['platform'] === $platform['slug'],
-            ));
-
-            $academies = array_values(array_filter(
-                Academies::forPlatform($platform['slug']),
-                fn (array $academy) => $academy['status'] === 'published',
-            ));
-
-            return array_merge($platform, [
-                'public_courses' => $count,
-                'public_academies' => $academies,
-                'href' => route('catalog.platforms.show', ['platform' => $platform['slug']]),
-            ]);
-        }, Platforms::active());
+        return Platform::query()
+            ->active()
+            ->with([
+                'academies' => fn ($query) => $query->where('status', 'published')->orderBy('name'),
+            ])
+            ->withCount([
+                'courses as public_courses' => fn (Builder $query) => $query->where('status', 'published'),
+            ])
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get()
+            ->map(fn (Platform $platform) => self::presentPlatform($platform))
+            ->all();
     }
 
     public static function findActivePlatform(string $slug): ?array
     {
-        foreach (self::activePlatforms() as $platform) {
-            if ($platform['slug'] === $slug) {
-                return $platform;
-            }
-        }
+        $platform = Platform::query()
+            ->active()
+            ->with([
+                'academies' => fn ($query) => $query->where('status', 'published')->orderBy('name'),
+            ])
+            ->withCount([
+                'courses as public_courses' => fn (Builder $query) => $query->where('status', 'published'),
+            ])
+            ->where('slug', $slug)
+            ->first();
 
-        return null;
+        return $platform ? self::presentPlatform($platform) : null;
     }
 
     /**
@@ -170,8 +185,8 @@ class PublicCatalog
     public static function stats(): array
     {
         return [
-            'courses' => count(self::publishedCourses()),
-            'platforms' => count(Platforms::active()),
+            'courses' => self::publishedQuery()->count(),
+            'platforms' => Platform::query()->active()->count(),
         ];
     }
 
@@ -204,17 +219,20 @@ class PublicCatalog
     }
 
     /**
-     * Filter option maps derived from the published-on-active set, so a draft
-     * academy never appears as a public filter.
-     *
      * @return array<string, mixed>
      */
     public static function filterOptions(?string $platform = null): array
     {
         $platform = $platform !== null && $platform !== '' ? $platform : null;
-        $source = $platform
-            ? array_values(array_filter(self::publishedCourses(), fn (array $course) => $course['platform'] === $platform))
-            : self::publishedCourses();
+
+        $courses = self::publishedQuery()
+            ->when($platform, fn (Builder $query) => $query->whereHas(
+                'platform',
+                fn (Builder $builder) => $builder->where('slug', $platform),
+            ))
+            ->with(['platform', 'academy'])
+            ->orderBy('id')
+            ->get();
 
         $platforms = ['' => 'All platforms'];
         foreach (self::activePlatforms() as $row) {
@@ -222,15 +240,15 @@ class PublicCatalog
         }
 
         $academies = ['' => 'All academies'];
-        foreach ($source as $course) {
-            if (($course['academy_slug'] ?? '') !== '') {
-                $academies[$course['academy_slug']] = $course['academy'];
+        foreach ($courses as $course) {
+            if ($course->academy) {
+                $academies[$course->academy->slug] = $course->academy->name;
             }
         }
 
         $difficulties = ['' => 'Any difficulty'];
-        foreach ($source as $course) {
-            $difficulties[$course['difficulty']] = $course['difficulty'];
+        foreach ($courses as $course) {
+            $difficulties[$course->difficulty] = $course->difficulty;
         }
 
         return [
@@ -248,5 +266,50 @@ class PublicCatalog
                 'paid' => 'Paid',
             ],
         ];
+    }
+
+    /**
+     * @return Builder<Course>
+     */
+    private static function publishedQuery(): Builder
+    {
+        return Course::query()
+            ->with(['platform', 'academy'])
+            ->published()
+            ->onActivePlatform();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function presentPlatform(Platform $platform): array
+    {
+        return [
+            'slug' => $platform->slug,
+            'name' => $platform->name,
+            'discipline' => $platform->discipline,
+            'tagline' => $platform->tagline,
+            'description' => $platform->description,
+            'steward' => $platform->steward,
+            'region' => $platform->region,
+            'status' => $platform->status,
+            'cover' => $platform->cover,
+            'public_courses' => (int) $platform->public_courses,
+            'public_academies' => $platform->academies
+                ->map(fn (Academy $academy) => [
+                    'slug' => $academy->slug,
+                    'platform' => $platform->slug,
+                    'name' => $academy->name,
+                    'status' => $academy->status,
+                ])
+                ->values()
+                ->all(),
+            'href' => route('catalog.platforms.show', ['platform' => $platform->slug]),
+        ];
+    }
+
+    private static function escapeLike(string $value): string
+    {
+        return str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $value);
     }
 }

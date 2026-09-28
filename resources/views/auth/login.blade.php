@@ -23,9 +23,6 @@
 
             <x-checkbox name="remember" :label="$page['remember']" :hint="$page['rememberHint']" />
 
-            {{-- TEMPORARY: decides where this form lands. Remove with real auth. --}}
-            <x-dev.preview-as />
-
             <x-button type="submit" size="lg" class="w-full">{{ $page['submit'] }}</x-button>
         </form>
 

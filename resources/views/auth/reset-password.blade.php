@@ -6,7 +6,7 @@
 
             {{-- Shown, not hidden: people need to see which account they are
                  changing when a link arrives days later. --}}
-            <x-field name="email" type="email" label="Account" :value="$page['email']" readonly />
+            <x-field name="email" type="email" label="Account" :value="$page['email']" :readonly="filled($page['email'])" />
 
             <x-field name="password" type="password"
                      :label="$page['fields']['password']['label']"

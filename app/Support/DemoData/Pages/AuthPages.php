@@ -14,15 +14,6 @@ use App\Support\DemoData\Platforms;
  */
 class AuthPages
 {
-    /**
-     * The address a fixture visitor is recovering or verifying. Real flows read
-     * this from the signed token or the authenticated user.
-     */
-    public static function pendingEmail(): string
-    {
-        return 'p.bizimana@umuhinzi.rw';
-    }
-
     public static function login(): array
     {
         return [
@@ -65,14 +56,18 @@ class AuthPages
         ];
     }
 
-    public static function resetPassword(string $token): array
+    public static function resetPassword(string $token, string $email = ''): array
     {
+        $subtitle = $email !== ''
+            ? 'Choose a new password for '.$email.'. You will be signed in once it is saved.'
+            : 'Choose a new password. You will be signed in once it is saved.';
+
         return [
             'title' => 'Set a new password',
             'step' => 'Step 2 of 2',
             'token' => $token,
-            'email' => self::pendingEmail(),
-            'subtitle' => 'Choose a new password for '.self::pendingEmail().'. You will be signed in once it is saved.',
+            'email' => $email,
+            'subtitle' => $subtitle,
             'fields' => [
                 'password' => [
                     'label' => 'New password',
@@ -88,12 +83,12 @@ class AuthPages
         ];
     }
 
-    public static function verifyNotice(): array
+    public static function verifyNotice(string $email): array
     {
         return [
             'title' => 'Confirm your email address',
-            'email' => self::pendingEmail(),
-            'subtitle' => 'We sent a confirmation link to '.self::pendingEmail()
+            'email' => $email,
+            'subtitle' => 'We sent a confirmation link to '.$email
                 .'. Open it and you will land straight on your dashboard.',
             'reasons' => [
                 'Certificates are issued to this address, so it has to be one you can open.',
@@ -106,12 +101,12 @@ class AuthPages
         ];
     }
 
-    public static function verified(): array
+    public static function verified(string $email): array
     {
         return [
             'title' => 'Email confirmed',
-            'email' => self::pendingEmail(),
-            'subtitle' => self::pendingEmail().' is confirmed. Certificates and live session links will '
+            'email' => $email,
+            'subtitle' => $email.' is confirmed. Certificates and live session links will '
                 .'come to this address from now on.',
             'next' => [
                 'Pick up the course closest to finishing on your dashboard.',
@@ -152,27 +147,6 @@ class AuthPages
             'submit' => 'Create my account',
             'footer' => 'Already have an account?',
             'footerLink' => 'Sign in',
-        ];
-    }
-
-    /**
-     * TEMPORARY — the preview selector's options. Removed with real auth.
-     */
-    public static function previewOptions(): array
-    {
-        return [
-            'super-admin' => [
-                'label' => 'Super Admin',
-                'detail' => 'all four platforms',
-            ],
-            'platform-workspace' => [
-                'label' => 'Platform Admin',
-                'detail' => 'the Gemura workspace',
-            ],
-            'learner' => [
-                'label' => 'Learner',
-                'detail' => 'a dairy farmer mid-course',
-            ],
         ];
     }
 }

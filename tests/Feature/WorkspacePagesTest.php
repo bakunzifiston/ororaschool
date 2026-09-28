@@ -3,10 +3,18 @@
 namespace Tests\Feature;
 
 use App\Support\DemoData\People;
+use Database\Seeders\CatalogSeeder;
 use Tests\TestCase;
 
 class WorkspacePagesTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->actingAsPlatformStaff();
+    }
+
     public function test_dashboard_shows_platform_scoped_stats_activity_and_upcoming_sessions(): void
     {
         $this->get(route('workspace.dashboard', ['platform' => 'gemura']))
@@ -130,6 +138,8 @@ class WorkspacePagesTest extends TestCase
 
     public function test_modules_builder_nests_lessons_with_content_types(): void
     {
+        $this->seed(CatalogSeeder::class);
+
         $this->get(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
             ->assertOk()
             ->assertSee('Why somatic cell counts move', false)
@@ -153,6 +163,8 @@ class WorkspacePagesTest extends TestCase
 
     public function test_quizzes_and_builder_are_scoped_to_the_platform(): void
     {
+        $this->seed(CatalogSeeder::class);
+
         $this->get(route('workspace.quizzes', ['platform' => 'gemura']))
             ->assertOk()
             ->assertSee('CMT paddle reading', false)
@@ -263,6 +275,8 @@ class WorkspacePagesTest extends TestCase
 
         $this->post(route('workspace.certificates.revoke', ['platform' => 'buchapro', 'certificate' => 'OS-GEM-2026-1847']))
             ->assertNotFound();
+
+        $this->seed(CatalogSeeder::class);
 
         $this->get(route('certificates.verify', ['code' => 'OS-GEM-2026-1847']))
             ->assertOk()
