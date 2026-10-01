@@ -3,49 +3,65 @@
     'options' => [],
     'showPlatformFilter' => true,
     'formAction' => '',
-    'posted' => false,
 ])
 
-<form method="GET" action="{{ $formAction }}"
-      @class([
-          'grid gap-3 sm:grid-cols-2 lg:grid-cols-3' => ! $posted,
-          'border-y border-clay-200 py-5' => $posted,
-      ])>
-    <div @class(['contents' => ! $posted, 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3' => $posted])>
-        <x-field name="q" label="Search" size="sm"
-                 :value="$filters['q'] ?? ''"
-                 placeholder="Title or description" />
+@php
+    $selects = [];
 
-        @if ($showPlatformFilter)
-            <x-select name="platform" label="Platform" size="sm"
-                      :options="$options['platforms'] ?? []"
-                      :selected="$filters['platform'] ?? ''" />
-        @endif
+    if ($showPlatformFilter) {
+        $selects[] = ['name' => 'platform', 'label' => 'Platform', 'options' => $options['platforms'] ?? []];
+    }
 
-        <x-select name="academy" label="Academy" size="sm"
-                  :options="$options['academies'] ?? []"
-                  :selected="$filters['academy'] ?? ''" />
+    $selects[] = ['name' => 'academy', 'label' => 'Academy', 'options' => $options['academies'] ?? []];
+    $selects[] = ['name' => 'difficulty', 'label' => 'Difficulty', 'options' => $options['difficulties'] ?? []];
+    $selects[] = ['name' => 'language', 'label' => 'Language', 'options' => $options['languages'] ?? []];
+    $selects[] = ['name' => 'price', 'label' => 'Price', 'options' => $options['prices'] ?? []];
 
-        <x-select name="difficulty" label="Difficulty" size="sm"
-                  :options="$options['difficulties'] ?? []"
-                  :selected="$filters['difficulty'] ?? ''" />
+    $hasActiveFilters = filled($filters['q'] ?? '')
+        || collect($selects)->contains(fn (array $select) => filled($filters[$select['name']] ?? ''));
+@endphp
 
-        <x-select name="language" label="Language" size="sm"
-                  :options="$options['languages'] ?? []"
-                  :selected="$filters['language'] ?? ''" />
-
-        <x-select name="price" label="Price" size="sm"
-                  :options="$options['prices'] ?? []"
-                  :selected="$filters['price'] ?? ''" />
-
-        <div class="flex items-end gap-2">
-            @if ($posted)
-                <x-button type="submit" variant="secondary">Apply filters</x-button>
-                <x-button variant="ghost" :href="$formAction">Clear</x-button>
-            @else
-                <x-button type="submit" variant="secondary" size="sm">Filter</x-button>
-                <x-button variant="ghost" size="sm" :href="$formAction">Clear</x-button>
-            @endif
+<form method="GET" action="{{ $formAction }}" class="public-filters">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div class="relative min-w-0 flex-1">
+            <label for="public-filter-q" class="sr-only">Search</label>
+            <x-icon name="search" class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-fern-500" />
+            <input id="public-filter-q"
+                   type="search"
+                   name="q"
+                   value="{{ $filters['q'] ?? '' }}"
+                   placeholder="Search courses"
+                   class="h-11 w-full rounded-full border border-clay-200 bg-chalk py-0 pr-4 pl-10 text-dense text-basalt-800 placeholder:text-fern-500">
         </div>
+        <x-button type="submit" class="w-full sm:w-auto">Search</x-button>
+    </div>
+
+    <div class="mt-3 flex flex-wrap items-center gap-2">
+        @foreach ($selects as $select)
+            @php
+                $value = $filters[$select['name']] ?? '';
+                $active = filled($value);
+            @endphp
+
+            <label for="public-filter-{{ $select['name'] }}" class="sr-only">{{ $select['label'] }}</label>
+            <select id="public-filter-{{ $select['name'] }}"
+                    name="{{ $select['name'] }}"
+                    onchange="this.form.submit()"
+                    @class([
+                        'h-11 min-w-0 flex-1 rounded-full border px-3.5 text-dense sm:max-w-44 sm:flex-none',
+                        'border-accent-200 bg-accent-50 text-accent-700' => $active,
+                        'border-clay-200 bg-chalk text-basalt-800' => ! $active,
+                    ])>
+                @foreach ($select['options'] as $optionValue => $optionLabel)
+                    <option value="{{ $optionValue }}" @selected((string) $optionValue === (string) $value)>{{ $optionLabel }}</option>
+                @endforeach
+            </select>
+        @endforeach
+
+        @if ($hasActiveFilters)
+            <a href="{{ $formAction }}" class="inline-flex h-11 items-center px-2 text-dense font-medium text-accent-700 hover:underline">
+                Clear
+            </a>
+        @endif
     </div>
 </form>

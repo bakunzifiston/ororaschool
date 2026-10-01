@@ -19,15 +19,15 @@ class Navigation
     public static function superAdmin(): array
     {
         return [
-            ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'path' => '/admin', 'icon' => 'gauge'],
-            ['label' => 'Platforms', 'route' => 'admin.platforms', 'path' => '/admin/platforms', 'icon' => 'layers'],
-            ['label' => 'Users', 'route' => 'admin.users', 'path' => '/admin/users', 'icon' => 'users'],
-            ['label' => 'Roles', 'route' => 'admin.roles', 'path' => '/admin/roles', 'icon' => 'shield'],
-            ['label' => 'Permissions', 'route' => 'admin.permissions', 'path' => '/admin/permissions', 'icon' => 'key', 'roles' => ['super-admin']],
-            ['label' => 'Global content', 'route' => 'admin.content', 'path' => '/admin/content', 'icon' => 'globe'],
-            ['label' => 'Analytics', 'route' => 'admin.analytics', 'path' => '/admin/analytics', 'icon' => 'chart'],
-            ['label' => 'Activity logs', 'route' => 'admin.activity', 'path' => '/admin/activity', 'icon' => 'history'],
-            ['label' => 'Settings', 'route' => 'admin.settings', 'path' => '/admin/settings', 'icon' => 'cog'],
+            ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'path' => '/admin', 'icon' => 'gauge', 'group' => 'Overview'],
+            ['label' => 'Analytics', 'route' => 'admin.analytics', 'path' => '/admin/analytics', 'icon' => 'chart', 'group' => 'Overview'],
+            ['label' => 'Platforms', 'route' => 'admin.platforms', 'path' => '/admin/platforms', 'icon' => 'layers', 'group' => 'Management'],
+            ['label' => 'Users', 'route' => 'admin.users', 'path' => '/admin/users', 'icon' => 'users', 'group' => 'Management'],
+            ['label' => 'Roles', 'route' => 'admin.roles', 'path' => '/admin/roles', 'icon' => 'shield', 'group' => 'Management'],
+            ['label' => 'Permissions', 'route' => 'admin.permissions', 'path' => '/admin/permissions', 'icon' => 'key', 'roles' => ['super-admin'], 'group' => 'Management'],
+            ['label' => 'Global content', 'route' => 'admin.content', 'path' => '/admin/content', 'icon' => 'globe', 'group' => 'Content'],
+            ['label' => 'Activity logs', 'route' => 'admin.activity', 'path' => '/admin/activity', 'icon' => 'history', 'group' => 'System'],
+            ['label' => 'Settings', 'route' => 'admin.settings', 'path' => '/admin/settings', 'icon' => 'cog', 'group' => 'System'],
         ];
     }
 
@@ -71,7 +71,7 @@ class Navigation
             ['label' => 'Home', 'route' => 'home', 'path' => '/', 'icon' => 'sprout'],
             ['label' => 'Courses', 'route' => 'catalog.courses', 'path' => '/courses', 'icon' => 'book'],
             ['label' => 'Platforms', 'route' => 'catalog.platforms', 'path' => '/platforms', 'icon' => 'layers'],
-            ['label' => 'Certificate verification', 'route' => 'certificates.lookup', 'path' => '/certificates', 'icon' => 'award'],
+            ['label' => 'Certificate Verification', 'route' => 'certificates.lookup', 'path' => '/certificates', 'icon' => 'award'],
         ];
     }
 

@@ -17,7 +17,7 @@
         'published' => ['label' => 'Published', 'class' => 'border border-st-published bg-st-published text-white', 'icon' => null, 'dot' => false],
         'archived' => ['label' => 'Archived', 'class' => 'border border-transparent bg-st-archived-bg text-st-archived', 'icon' => 'archive', 'dot' => false],
         'active' => ['label' => 'Active', 'class' => 'border border-st-active bg-transparent text-st-active', 'icon' => null, 'dot' => true],
-        'inactive' => ['label' => 'Inactive', 'class' => 'border border-transparent bg-st-archived-bg text-st-archived', 'icon' => 'archive', 'dot' => false],
+        'inactive' => ['label' => 'Inactive', 'class' => 'border border-st-pending/30 bg-st-pending-bg text-st-pending', 'icon' => null, 'dot' => true],
         'completed' => ['label' => 'Completed', 'class' => 'border border-st-completed bg-st-completed text-white', 'icon' => 'check', 'dot' => false],
         'valid' => ['label' => 'Valid', 'class' => 'border border-st-active bg-transparent text-st-active', 'icon' => 'check', 'dot' => false],
         'revoked' => ['label' => 'Revoked', 'class' => 'border border-transparent bg-st-archived-bg text-st-archived', 'icon' => 'archive', 'dot' => false],
@@ -41,7 +41,7 @@
     ];
 @endphp
 
-<span {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5 whitespace-nowrap rounded-sm px-2 py-0.5 text-micro font-medium ' . $style['class']]) }}>
+<span {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-0.5 text-micro font-medium ' . $style['class']]) }}>
     @if ($style['dot'])
         <span class="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true"></span>
     @endif

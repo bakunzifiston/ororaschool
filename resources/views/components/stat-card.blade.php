@@ -5,6 +5,7 @@
     'direction' => null,
     'note' => null,
     'variant' => 'default',
+    'icon' => null,
 ])
 
 @php
@@ -20,9 +21,16 @@
     for supporting counts that must not compete with the ranked row.
 --}}
 <div {{ $attributes->merge(['class' => $compact
-    ? 'min-w-0 rounded-md border border-clay-200 bg-chalk px-3 py-2.5'
-    : 'min-w-0 rounded-md border border-clay-200 border-l-2 border-l-accent-500 bg-chalk px-4 py-3.5']) }}>
-    <p class="truncate text-micro text-fern-500">{{ $label }}</p>
+    ? 'app-stat min-w-0 rounded-md border border-clay-200 bg-chalk px-3.5 py-3'
+    : 'app-stat min-w-0 rounded-md border border-clay-200 bg-chalk px-5 py-4']) }}>
+    <div class="flex items-start justify-between gap-3">
+        <p class="truncate text-micro text-fern-500">{{ $label }}</p>
+        @if ($icon)
+            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-50 text-accent-600" aria-hidden="true">
+                <x-icon :name="$icon" class="h-4 w-4" />
+            </span>
+        @endif
+    </div>
 
     <p @class(['figure mt-1.5 leading-none text-basalt-900', 'text-section' => $compact, 'text-title' => ! $compact])>
         {{ $value }}
@@ -35,8 +43,9 @@
                     'inline-flex items-center gap-0.5 text-micro font-medium',
                     'figure' => $monoTrend,
                     'text-ok' => $direction === 'up',
+                    'text-st-pending' => $direction === 'warn',
                     'text-danger' => $direction === 'down',
-                    'text-fern-500' => ! in_array($direction, ['up', 'down'], true),
+                    'text-fern-500' => ! in_array($direction, ['up', 'down', 'warn'], true),
                 ])>
                     @if ($direction === 'up')
                         <x-icon name="arrow-up" class="h-3 w-3" />

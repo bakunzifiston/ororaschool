@@ -31,7 +31,7 @@
     $link = $href ?? ($course['href'] ?? null);
 @endphp
 
-<article {{ $attributes->merge(['class' => 'group flex min-w-0 flex-col rounded-md border border-clay-200 bg-chalk transition-colors hover:border-clay-300 focus-within:border-accent-500']) }}>
+<article {{ $attributes->merge(['class' => 'app-card group flex min-w-0 flex-col rounded-md border border-clay-200 bg-chalk transition-colors hover:border-clay-300 focus-within:border-accent-500']) }}>
 
     <div class="relative flex h-24 items-center justify-center rounded-t-md border-b border-clay-200 bg-accent-50">
         <x-icon :name="$glyph" class="h-7 w-7 text-accent-400" />

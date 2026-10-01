@@ -9,7 +9,7 @@
         </x-slot:actions>
     </x-page-header>
 
-    <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         @foreach ($page['stats'] as $stat)
             <x-stat-card :label="$stat['label']" :value="$stat['value']"
                          :trend="$stat['trend']" :direction="$stat['direction']" :note="$stat['note']" />
@@ -28,7 +28,7 @@
         @endforeach
     </div>
 
-    <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         @forelse ($page['recent'] as $course)
             <x-course-card :course="$course"
                            :platform-label="$page['platform']['name'] . ' · ' . $course['level']"
@@ -45,7 +45,7 @@
         @endforelse
     </div>
 
-    <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-5">
+    <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-5">
         <x-panel class="lg:col-span-3" title="Recent activity" :padded="false">
             <x-slot:actions>
                 <x-button variant="ghost" size="sm" :href="route('workspace.courses', ['platform' => $platformSlug])" icon-after="arrow-right">
@@ -56,7 +56,7 @@
             @if (count($page['activity']))
                 <ul class="divide-y divide-clay-100">
                     @foreach ($page['activity'] as $entry)
-                        <li class="flex gap-2.5 px-4 py-2.5">
+                        <li class="flex gap-3 px-5 py-3.5">
                             <x-avatar :name="$entry['actor']" size="sm" class="mt-0.5" />
                             <div class="min-w-0">
                                 <p class="text-dense leading-snug text-basalt-800">
@@ -85,7 +85,7 @@
             @if (count($page['sessions']))
                 <ul class="divide-y divide-clay-100">
                     @foreach ($page['sessions'] as $session)
-                        <li class="px-4 py-2.5">
+                        <li class="px-5 py-3.5">
                             <p class="text-dense font-medium text-basalt-900">{{ $session['title'] }}</p>
                             <p class="mt-0.5 text-micro text-fern-500">{{ $session['instructor'] }} · {{ $session['starts'] }}</p>
                         </li>

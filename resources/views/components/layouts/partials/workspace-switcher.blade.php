@@ -19,9 +19,9 @@
             x-on:click="open = ! open"
             :aria-expanded="open ? 'true' : 'false'"
             aria-controls="{{ $id }}"
-            class="flex h-9 items-center gap-2 rounded-md border border-clay-200 bg-chalk pl-1.5 pr-2 text-left transition-colors hover:border-fern-400">
+            class="flex h-9 items-center gap-2 rounded-full border border-clay-200 bg-chalk pl-1.5 pr-2.5 text-left transition-colors hover:border-fern-400">
         <span class="sr-only">Change platform. Currently </span>
-        <span class="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-sm bg-accent-500 text-micro font-semibold text-accent-on" aria-hidden="true">
+        <span class="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-500 text-micro font-semibold text-accent-on" aria-hidden="true">
             {{ mb_substr($current['name'] ?? '?', 0, 1) }}
         </span>
 
@@ -44,7 +44,7 @@
          x-transition:leave="transition ease-in duration-100"
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
-         class="absolute left-0 z-50 mt-1 w-72 origin-top overflow-hidden rounded-md border border-clay-200 bg-chalk">
+         class="absolute left-0 z-50 mt-1.5 w-72 origin-top overflow-hidden rounded-lg border border-clay-200 bg-chalk shadow-lg">
 
         <p class="border-b border-clay-100 px-3 py-2 text-micro text-fern-500">
             Platforms you work on
@@ -65,7 +65,7 @@
                            'bg-accent-50' => $isCurrent,
                            'hover:bg-papyrus' => ! $isCurrent,
                        ])>
-                        <span class="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border {{ $isCurrent ? 'border-accent-500 bg-accent-500 text-accent-on' : 'border-clay-200 bg-papyrus text-fern-500' }} text-micro font-semibold"
+                        <span class="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border {{ $isCurrent ? 'border-accent-500 bg-accent-500 text-accent-on' : 'border-clay-200 bg-papyrus text-fern-500' }} text-micro font-semibold"
                               aria-hidden="true">
                             {{ mb_substr($platform['name'], 0, 1) }}
                         </span>

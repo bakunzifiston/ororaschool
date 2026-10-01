@@ -4,7 +4,7 @@
     'subtitle' => null,
 ])
 
-<header {{ $attributes->merge(['class' => 'border-b border-clay-200 pb-5']) }}>
+<header {{ $attributes->merge(['class' => 'page-header border-b border-clay-200 pb-5']) }}>
     @if (count($breadcrumb))
         {{-- Sentence case at body weight: orientation, not a tracked-out
              all-caps eyebrow. --}}
@@ -41,7 +41,7 @@
         <div class="min-w-0 max-w-2xl">
             <h1 class="text-title text-basalt-900">{{ $title }}</h1>
             @if ($subtitle)
-                <p class="mt-1.5 text-dense text-fern-500">{{ $subtitle }}</p>
+                <p class="mt-2 text-dense leading-relaxed text-fern-500">{{ $subtitle }}</p>
             @endif
         </div>
 

@@ -7,7 +7,7 @@
         </x-slot:actions>
     </x-page-header>
 
-    <form method="GET" action="{{ route('admin.activity') }}" class="mt-6 flex flex-wrap items-end gap-3">
+    <form method="GET" action="{{ route('admin.activity') }}" class="app-filters">
         <div class="w-56">
             <x-select name="user" label="User" size="sm"
                       :options="$page['filters']['users']"
@@ -35,7 +35,7 @@
                           min-width="56rem">
                 @if (count($page['rows']))
                     @foreach ($page['rows'] as $row)
-                        <tr class="border-b border-clay-100 last:border-b-0 hover:bg-papyrus">
+                        <tr class="border-b border-clay-100 last:border-b-0 hover:bg-accent-50/60">
                             <td class="px-3 py-2.5">
                                 <span class="flex items-center gap-2">
                                     <x-avatar :name="$row['user']" size="sm" />

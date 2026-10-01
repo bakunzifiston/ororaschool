@@ -8,7 +8,7 @@
         </x-slot:actions>
     </x-page-header>
 
-    <form method="GET" action="{{ route('workspace.resources', ['platform' => $platformSlug]) }}" class="mt-6 flex flex-wrap items-end gap-3">
+    <form method="GET" action="{{ route('workspace.resources', ['platform' => $platformSlug]) }}" class="app-filters">
         <div class="w-52">
             <x-select name="type" label="Type" size="sm" :autosubmit="true"
                       :options="$page['filters']['types']"
@@ -30,7 +30,7 @@
                           min-width="48rem">
                 @if (count($page['rows']))
                     @foreach ($page['rows'] as $row)
-                        <tr class="border-b border-clay-100 last:border-b-0 hover:bg-papyrus">
+                        <tr class="border-b border-clay-100 last:border-b-0 hover:bg-accent-50/60">
                             <td class="px-3 py-2.5 font-medium text-basalt-900">{{ $row['title'] }}</td>
                             <td class="px-3 py-2.5 text-micro capitalize text-fern-500">{{ $row['type'] }}</td>
                             <td class="px-3 py-2.5 text-dense text-fern-600">{{ $row['attached_to'] }}</td>

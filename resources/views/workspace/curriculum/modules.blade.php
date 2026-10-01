@@ -10,7 +10,7 @@
         </x-slot:actions>
     </x-page-header>
 
-    <form method="GET" action="{{ route('workspace.modules', ['platform' => $platformSlug]) }}" class="mt-6 flex flex-wrap items-end gap-3">
+    <form method="GET" action="{{ route('workspace.modules', ['platform' => $platformSlug]) }}" class="app-filters">
         <div class="min-w-72 grow">
             <x-select name="course" label="Course" size="sm" :autosubmit="true"
                       :options="$page['courses']"

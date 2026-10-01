@@ -12,7 +12,7 @@
     };
 @endphp
 
-<span {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5 whitespace-nowrap rounded-sm border px-2 py-0.5 text-micro ' . $tone]) }}>
+<span {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-micro ' . $tone]) }}>
     @if ($elevated)
         <x-icon name="shield" class="h-3 w-3" />
     @endif

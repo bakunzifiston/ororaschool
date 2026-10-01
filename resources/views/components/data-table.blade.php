@@ -27,11 +27,11 @@
             <table class="w-full border-collapse text-dense" style="min-width: {{ $minWidth }}">
                 <thead>
                     {{-- Ledger rule: one heavier line under the head, hairlines between records. --}}
-                    <tr class="border-b-2 border-basalt-800">
+                    <tr class="border-b border-clay-200">
                         @foreach ($columns as $column)
                             <th scope="col"
                                 @class([
-                                    'px-3 py-2 text-micro font-medium text-fern-500',
+                                    'px-4 py-3 text-micro font-medium text-fern-500',
                                     'text-right' => ($column['align'] ?? 'left') === 'right',
                                     'text-left' => ($column['align'] ?? 'left') !== 'right',
                                 ])>
@@ -46,11 +46,11 @@
                         {{ $slot }}
                     @else
                         @foreach ($rows as $row)
-                            <tr class="border-b border-clay-100 transition-colors last:border-b-0 hover:bg-papyrus">
+                            <tr class="border-b border-clay-100 transition-colors last:border-b-0 hover:bg-accent-50/60">
                                 @foreach ($columns as $column)
                                     @php $value = $row[$column['key']] ?? null; @endphp
                                     <td @class([
-                                        'px-3 py-2.5 align-middle',
+                                        'px-4 py-3 align-middle',
                                         'text-right' => ($column['align'] ?? 'left') === 'right',
                                         'figure text-micro text-fern-500' => $column['numeric'] ?? false,
                                         'text-basalt-800' => ! ($column['numeric'] ?? false),

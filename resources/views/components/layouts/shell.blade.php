@@ -3,7 +3,7 @@
     'title' => null,
     'railed' => false,
     'contentClass' => 'max-w-6xl',
-    'mainClass' => 'grow px-4 py-6 sm:px-6 lg:px-8 lg:py-8',
+    'mainClass' => 'min-w-0 grow px-4 py-6 sm:px-6 lg:px-8 lg:py-10',
     'user' => [],
 ])
 
@@ -32,9 +32,9 @@
 
     @if ($railed)
         {{-- Mobile bar. The rail becomes a drawer below lg. --}}
-        <div class="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between gap-3 border-b border-clay-200 bg-chalk px-3 lg:hidden">
+        <div class="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between gap-3 border-b border-clay-200 bg-chalk/90 px-3 backdrop-blur lg:hidden">
             <button type="button" x-on:click="nav = true"
-                    class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-clay-200 text-fern-500"
+                    class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-clay-200 text-fern-500"
                     aria-label="Open navigation">
                 <x-icon name="menu" class="h-4 w-4" />
             </button>
@@ -48,7 +48,7 @@
                 <x-layouts.partials.brand />
             @endisset
 
-            <x-avatar :name="$user['name'] ?? ''" size="sm" />
+            <x-layouts.partials.user-menu :user="$user" compact menu-id="mobile-account-menu" />
         </div>
 
         <div x-show="nav" x-cloak x-on:click="nav = false"
@@ -56,14 +56,14 @@
 
         {{-- Hidden below lg by default so the rail renders without waiting on
              Alpine; the drawer toggle forces it visible. --}}
-        <aside class="on-basalt fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-basalt-900 lg:flex lg:w-60"
+        <aside class="on-basalt fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-basalt-900 lg:flex lg:w-64"
                :class="nav && '!flex'"
                aria-label="Primary navigation">
             {{ $sidebar }}
         </aside>
     @endif
 
-    <div @class(['flex grow flex-col', 'lg:pl-60' => $railed])>
+    <div @class(['flex min-w-0 grow flex-col', 'lg:pl-64' => $railed])>
 
         {{-- Full-bleed band above the flash region. The guest layout uses it for
              its basalt masthead; the app layouts have a top bar instead. --}}
@@ -73,7 +73,7 @@
 
         @if (isset($topbarStart) || isset($topbarEnd))
         <header @class([
-            'sticky top-0 z-20 h-14 shrink-0 items-center gap-4 border-b border-clay-200 bg-papyrus/95 px-4 backdrop-blur sm:px-6',
+            'sticky top-0 z-20 h-14 shrink-0 items-center gap-4 border-b border-clay-200 bg-chalk/90 px-4 backdrop-blur sm:px-6',
             'hidden lg:flex lg:px-8' => $railed,
             'flex' => ! $railed,
         ])>
@@ -96,7 +96,7 @@
         <x-layouts.partials.flash />
 
         <main class="{{ $mainClass }}">
-            <div class="mx-auto {{ $contentClass }}">
+            <div class="mx-auto min-w-0 {{ $contentClass }}">
                 {{ $slot }}
             </div>
         </main>

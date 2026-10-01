@@ -3,7 +3,7 @@
                    :title="$page['header']['title']"
                    :subtitle="$page['header']['subtitle']" />
 
-    <form method="POST" action="{{ route('admin.settings.update') }}" class="mt-6 max-w-2xl">
+    <form method="POST" action="{{ route('admin.settings.update') }}" class="mt-8 max-w-2xl">
         @csrf
 
         <x-panel title="Certificates" subtitle="The certificate numbering format minted when a learner finishes.">

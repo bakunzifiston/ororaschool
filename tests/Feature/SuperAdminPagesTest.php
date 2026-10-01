@@ -19,13 +19,17 @@ class SuperAdminPagesTest extends TestCase
     {
         $this->get(route('admin.dashboard'))
             ->assertOk()
-            ->assertSee('Platforms', false)
-            ->assertSee('Users', false)
-            ->assertSee('Overall completion', false)
+            ->assertSee('A real-time overview of the Orora School learning ecosystem.', false)
+            ->assertSee('Total Platforms', false)
+            ->assertSee('Total Users', false)
+            ->assertSee('Active Learners', false)
+            ->assertSee('Completion Rate', false)
             ->assertSee('Recent activity', false)
-            ->assertSee('Platforms at a glance', false)
+            ->assertSee('Platform overview', false)
+            ->assertSee('Platform health', false)
+            ->assertSee('Needs attention', false)
             ->assertSee('Dashboard', false)
-            ->assertSee('Add a platform', false);
+            ->assertSee('Add platform', false);
     }
 
     public function test_dashboard_activity_empty_state_renders_when_the_fixture_is_empty(): void
@@ -33,6 +37,16 @@ class SuperAdminPagesTest extends TestCase
         $this->get(route('admin.dashboard', ['empty' => 1]))
             ->assertOk()
             ->assertSee('No activity on the estate yet', false);
+    }
+
+    public function test_dashboard_surfaces_items_that_need_attention(): void
+    {
+        $this->get(route('admin.dashboard'))
+            ->assertOk()
+            ->assertSee('awaiting review', false)
+            ->assertSee('inactive', false)
+            ->assertSee('waiting to be activated', false)
+            ->assertDontSee('Everything is up to date.', false);
     }
 
     public function test_platforms_list_paginates_and_opens_the_edit_form(): void

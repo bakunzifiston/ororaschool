@@ -11,7 +11,7 @@
         </x-slot:actions>
     </x-page-header>
 
-    <form method="GET" action="{{ route('workspace.quizzes', ['platform' => $platformSlug]) }}" class="mt-6 flex flex-wrap items-end gap-3">
+    <form method="GET" action="{{ route('workspace.quizzes', ['platform' => $platformSlug]) }}" class="app-filters">
         <div class="min-w-72 grow">
             <x-select name="course" label="Course" size="sm" :autosubmit="true"
                       :options="$page['filters']['courses']"
@@ -34,7 +34,7 @@
                           min-width="52rem">
                 @if (count($page['rows']))
                     @foreach ($page['rows'] as $row)
-                        <tr class="border-b border-clay-100 last:border-b-0 hover:bg-papyrus">
+                        <tr class="border-b border-clay-100 last:border-b-0 hover:bg-accent-50/60">
                             <td class="px-3 py-2.5">
                                 <a href="{{ route('workspace.quizzes.show', ['platform' => $platformSlug, 'quiz' => $row['slug']]) }}"
                                    class="font-medium text-basalt-900 hover:text-accent-600">{{ $row['title'] }}</a>

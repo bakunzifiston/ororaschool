@@ -12,7 +12,7 @@
         <div class="flex h-14 shrink-0 items-center justify-between gap-2 px-4">
             <x-layouts.partials.brand :href="route('workspace.dashboard', $params)" on-basalt />
             <button type="button" x-on:click="nav = false"
-                    class="rounded-sm p-1 text-fern-400 hover:text-white lg:hidden"
+                    class="rounded-full p-1.5 text-fern-400 hover:bg-basalt-800 hover:text-white lg:hidden"
                     aria-label="Close navigation">
                 <x-icon name="x" class="h-4 w-4" />
             </button>
@@ -20,7 +20,7 @@
 
         {{-- Which platform this rail is scoped to. The switcher itself lives in
              the top bar, per the approved layout. --}}
-        <div class="border-y border-basalt-800 px-4 py-3">
+        <div class="mx-3 rounded-lg bg-basalt-800 px-3 py-2.5">
             <p class="text-micro text-fern-400">Platform</p>
             <p class="mt-0.5 truncate text-dense text-white">{{ $shell['platform']['name'] }}</p>
             <p class="truncate text-micro text-fern-400">{{ $shell['platform']['discipline'] }}</p>
@@ -29,7 +29,7 @@
         <x-layouts.partials.sidebar-nav :items="$shell['navigation']" :params="$params" />
 
         <div class="shrink-0 border-t border-basalt-800 p-3">
-            <div class="flex items-center gap-2.5">
+            <div class="flex items-center gap-2.5 rounded-lg px-1 py-1">
                 <x-avatar :name="$shell['user']['name']" size="md" on-basalt />
                 <div class="min-w-0">
                     <p class="truncate text-dense text-white">{{ $shell['user']['name'] }}</p>
@@ -52,7 +52,7 @@
     </x-slot:topbarStart>
 
     <x-slot:topbarEnd>
-        <x-layouts.partials.user-menu :user="$shell['user']" :role="$shell['user']['role']" />
+        <x-layouts.partials.user-menu :user="$shell['user']" :role="$shell['role']" />
     </x-slot:topbarEnd>
 
     {{ $slot }}

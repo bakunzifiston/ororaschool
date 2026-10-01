@@ -8,7 +8,7 @@
         </x-slot:actions>
     </x-page-header>
 
-    <div class="mt-6">
+    <div class="mt-8">
         @if (! count($page['roles']))
             <x-panel :padded="false">
                 <x-empty-state icon="shield"
@@ -23,7 +23,7 @@
             <div class="grid grid-cols-1 gap-3">
                 @foreach ($page['roles'] as $role)
                     <a href="{{ route('admin.roles.edit', $role['key']) }}"
-                       class="flex flex-wrap items-start justify-between gap-4 rounded-md border border-clay-200 bg-chalk px-4 py-3.5 transition-colors hover:border-clay-300">
+                       class="app-card flex flex-wrap items-start justify-between gap-4 rounded-md border border-clay-200 bg-chalk px-5 py-4 transition-colors hover:border-clay-300">
                         <div class="min-w-0 grow">
                             <div class="flex flex-wrap items-center gap-2">
                                 <x-role-chip :role="$role['key']" />

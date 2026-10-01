@@ -8,7 +8,7 @@
         </x-slot:actions>
     </x-page-header>
 
-    <div class="mt-6">
+    <div class="mt-8">
         @if (! count($page['catalog']))
             <x-panel :padded="false">
                 <x-empty-state icon="key"

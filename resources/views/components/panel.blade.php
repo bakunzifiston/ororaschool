@@ -13,9 +13,9 @@
      * secondary asides.
      */
     $variants = [
-        'plain' => 'rounded-md border border-clay-200 bg-chalk',
-        'table' => 'rounded-md border border-clay-200 bg-chalk',
-        'quiet' => 'rounded-md border border-clay-100 bg-papyrus',
+        'plain' => 'app-panel rounded-md border border-clay-200 bg-chalk',
+        'table' => 'app-panel rounded-md border border-clay-200 bg-chalk',
+        'quiet' => 'app-panel rounded-md border border-clay-100 bg-papyrus',
     ];
 @endphp
 
@@ -23,7 +23,7 @@
      page into horizontal overflow when this panel is a grid or flex item. --}}
 <section {{ $attributes->merge(['class' => 'min-w-0 ' . ($variants[$variant] ?? $variants['plain'])]) }}>
     @if ($title || isset($actions))
-        <header class="flex flex-wrap items-center justify-between gap-3 border-b border-clay-200 px-4 py-3">
+        <header class="flex flex-wrap items-center justify-between gap-3 border-b border-clay-200 px-5 py-3.5">
             <div class="min-w-0">
                 @if ($title)
                     <h2 class="truncate font-display text-panel font-semibold text-basalt-900">{{ $title }}</h2>

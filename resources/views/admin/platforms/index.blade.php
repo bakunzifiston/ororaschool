@@ -8,7 +8,7 @@
         </x-slot:actions>
     </x-page-header>
 
-    <div class="mt-6">
+    <div class="mt-8">
         <x-panel variant="table" :padded="false">
             <x-data-table :columns="$page['columns']"
                           :rows="$page['rows']"
@@ -18,8 +18,8 @@
                           min-width="48rem">
                 @if (count($page['rows']))
                     @foreach ($page['rows'] as $row)
-                        <tr class="border-b border-clay-100 last:border-b-0 hover:bg-papyrus">
-                            <td class="px-3 py-2.5">
+                        <tr class="border-b border-clay-100 last:border-b-0 hover:bg-accent-50/60">
+                            <td class="px-4 py-3">
                                 <a href="{{ route('admin.platforms.edit', $row['slug']) }}"
                                    class="font-medium text-basalt-900 hover:text-accent-600">{{ $row['name'] }}</a>
                                 <p class="text-micro text-fern-500">{{ $row['discipline'] }}</p>

@@ -1,24 +1,27 @@
-<x-layouts.public title="Contact and support">
-    <x-public.trail :items="[
-        ['label' => 'Home', 'route' => 'home'],
-        ['label' => 'Contact and support'],
-    ]" />
+<x-layouts.public title="Contact and support" flush>
+    <x-public.section tone="accent" class="grow">
+        <x-public.trail :items="[
+            ['label' => 'Home', 'route' => 'home'],
+            ['label' => 'Contact and support'],
+        ]" />
 
-    <h1 class="font-display text-title text-basalt-900">Contact and support</h1>
-    <p class="mt-3 max-w-xl text-read leading-relaxed text-fern-600">
-        Your field coordinator can usually resolve a roster question faster than a public form.
-    </p>
+        <div class="grid items-start gap-10 lg:grid-cols-2 lg:gap-16">
+            <x-public.page-heading
+                title="Contact and support"
+                :subtitle="$page['header']['subtitle'] ?? 'For enrolment, a lost certificate number, or a course that will not open, write to the school desk.'" />
 
-    <dl class="mt-8 grid max-w-xl gap-4 text-dense">
-        <div>
-            <dt class="text-micro text-fern-500">Email</dt>
-            <dd class="mt-0.5">
-                <a href="mailto:{{ $page['email'] }}" class="font-medium text-accent-700 hover:underline">{{ $page['email'] }}</a>
-            </dd>
+            <dl class="public-card grid gap-6 p-6 text-dense sm:p-8">
+                <div>
+                    <dt class="text-micro text-fern-500">Email</dt>
+                    <dd class="mt-1">
+                        <a href="mailto:{{ $page['email'] }}" class="font-medium text-accent-700 hover:underline">{{ $page['email'] }}</a>
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-micro text-fern-500">Telephone</dt>
+                    <dd class="mt-1 text-basalt-900">{{ $page['phone'] }}</dd>
+                </div>
+            </dl>
         </div>
-        <div>
-            <dt class="text-micro text-fern-500">Telephone</dt>
-            <dd class="mt-0.5 text-basalt-900">{{ $page['phone'] }}</dd>
-        </div>
-    </dl>
+    </x-public.section>
 </x-layouts.public>

@@ -23,7 +23,7 @@
                           min-width="52rem">
                 @if (count($page['rows']))
                     @foreach ($page['rows'] as $row)
-                        <tr class="border-b border-clay-100 last:border-b-0 hover:bg-papyrus">
+                        <tr class="border-b border-clay-100 last:border-b-0 hover:bg-accent-50/60">
                             <td class="px-3 py-2.5">
                                 <a href="{{ route('workspace.modules', ['platform' => $platformSlug, 'course' => $row['course_slug']]) }}"
                                    class="font-medium text-basalt-900 hover:text-accent-600">{{ $row['title'] }}</a>

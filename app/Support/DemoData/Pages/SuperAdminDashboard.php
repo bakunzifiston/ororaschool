@@ -4,6 +4,8 @@ namespace App\Support\DemoData\Pages;
 
 use App\Support\DemoData\Academies;
 use App\Support\DemoData\ActivityLogs;
+use App\Support\DemoData\Courses;
+use App\Support\DemoData\IssuedCertificates;
 use App\Support\DemoData\People;
 use App\Support\DemoData\Platforms;
 
@@ -15,34 +17,86 @@ class SuperAdminDashboard
     public static function data(bool $empty = false): array
     {
         $platforms = Platforms::all();
+        $courses = Courses::all();
         $learners = array_sum(array_column($platforms, 'learners'));
         $staff = count(People::staff());
+        $users = $learners + $staff;
+        $activePlatforms = count(array_filter($platforms, fn (array $platform) => $platform['status'] === 'active'));
+        $inactivePlatforms = count($platforms) - $activePlatforms;
+        $academies = count(Academies::all());
+        $courseCount = count($courses);
         $completion = (int) round(array_sum(array_column($platforms, 'completion_rate')) / max(1, count($platforms)));
-        $inactive = count(array_filter($platforms, fn (array $platform) => $platform['status'] !== 'active'));
+        $pendingCourses = array_values(array_filter($courses, fn (array $course) => $course['status'] === 'pending_review'));
+        $pendingUsers = array_values(array_filter(
+            People::directory(),
+            fn (array $person) => in_array($person['status'], ['pending_review', 'draft'], true),
+        ));
+        $revokedCertificates = array_values(array_filter(
+            IssuedCertificates::all(),
+            fn (array $certificate) => $certificate['status'] === 'revoked',
+        ));
+        $inactiveRows = array_values(array_filter($platforms, fn (array $platform) => $platform['status'] !== 'active'));
 
         $glance = array_map(fn (array $platform) => [
+            'slug' => $platform['slug'],
             'name' => $platform['name'],
+            'discipline' => $platform['discipline'],
+            'icon' => self::platformIcon($platform['slug']),
             'status' => $platform['status'],
             'academies' => $platform['academies'],
             'users' => $platform['users'],
             'courses' => $platform['courses'],
+            'href' => route('admin.platforms.edit', $platform['slug']),
         ], $platforms);
 
         return [
             'header' => [
-                'breadcrumb' => [
-                    ['label' => 'Orora School', 'route' => 'admin.dashboard'],
-                    ['label' => 'Dashboard'],
-                ],
+                'breadcrumb' => [],
                 'title' => 'Dashboard',
-                'subtitle' => count($platforms).' platforms, '.number_format($learners)
-                    .' enrolled learners, and everything waiting on an administrator this week.',
+                'subtitle' => 'A real-time overview of the Orora School learning ecosystem.',
+                'updated' => 'Last updated '.now()->toFormattedDateString(),
             ],
 
             'stats' => [
-                ['label' => 'Platforms', 'value' => (string) count($platforms), 'trend' => $inactive.' inactive', 'direction' => null, 'note' => null],
-                ['label' => 'Users', 'value' => number_format($learners + $staff), 'trend' => '+42', 'direction' => 'up', 'note' => 'learners and staff'],
-                ['label' => 'Overall completion', 'value' => $completion.'%', 'trend' => '+3 pts', 'direction' => 'up', 'note' => 'rolling 90 days'],
+                [
+                    'label' => 'Total Platforms',
+                    'value' => (string) count($platforms),
+                    'trend' => null,
+                    'direction' => $inactivePlatforms > 0 ? 'warn' : null,
+                    'note' => $activePlatforms.' active · '.$inactivePlatforms.' inactive',
+                    'icon' => 'layers',
+                ],
+                [
+                    'label' => 'Total Users',
+                    'value' => number_format($users),
+                    'trend' => '+42',
+                    'direction' => 'up',
+                    'note' => 'this period',
+                    'icon' => 'users',
+                ],
+                [
+                    'label' => 'Active Learners',
+                    'value' => number_format($learners),
+                    'trend' => null,
+                    'direction' => null,
+                    'note' => 'Enrolled across the estate',
+                    'icon' => 'user',
+                ],
+                [
+                    'label' => 'Completion Rate',
+                    'value' => $completion.'%',
+                    'trend' => '+3 pts',
+                    'direction' => 'up',
+                    'note' => 'over 90 days',
+                    'icon' => 'chart',
+                ],
+            ],
+
+            'health' => [
+                ['label' => 'Active', 'value' => (string) $activePlatforms],
+                ['label' => 'Inactive', 'value' => (string) $inactivePlatforms, 'tone' => 'warn'],
+                ['label' => 'Academies', 'value' => (string) $academies],
+                ['label' => 'Courses', 'value' => (string) $courseCount],
             ],
 
             'platforms' => [
@@ -56,9 +110,124 @@ class SuperAdminDashboard
                 'rows' => $glance,
             ],
 
-            'activity' => $empty ? [] : array_slice(ActivityLogs::all(), 0, 6),
+            'charts' => [
+                'completion' => [
+                    'title' => 'Course completion',
+                    'subtitle' => 'Overall completion: '.$completion.'%. Rolling 90-day change: +3 pts.',
+                    'labels' => array_column($platforms, 'name'),
+                    'values' => array_column($platforms, 'completion_rate'),
+                    'suffix' => '%',
+                ],
+                'distribution' => [
+                    'title' => 'Platform distribution',
+                    'subtitle' => 'Users on each tenant, including inactive platforms that still hold records.',
+                    'labels' => array_column($platforms, 'name'),
+                    'values' => array_column($platforms, 'users'),
+                ],
+            ],
 
-            'academies' => count(Academies::all()),
+            'attention' => self::attentionItems(
+                $pendingCourses,
+                $inactiveRows,
+                $pendingUsers,
+                $revokedCertificates,
+            ),
+
+            'activity' => $empty ? [] : array_map(fn (array $entry) => array_merge($entry, [
+                'icon' => self::activityIcon($entry['action'] ?? ''),
+            ]), array_slice(ActivityLogs::all(), 0, 6)),
+
+            'actions' => [
+                ['label' => 'Add platform', 'route' => 'admin.platforms.create', 'icon' => 'plus', 'variant' => 'primary'],
+                ['label' => 'Create user', 'route' => 'admin.users.create', 'icon' => 'user', 'variant' => 'secondary'],
+                ['label' => 'Manage roles', 'route' => 'admin.roles', 'icon' => 'shield', 'variant' => 'secondary'],
+                ['label' => 'Manage permissions', 'route' => 'admin.permissions', 'icon' => 'key', 'variant' => 'secondary'],
+                ['label' => 'Review activity', 'route' => 'admin.activity', 'icon' => 'history', 'variant' => 'secondary'],
+                ['label' => 'View analytics', 'route' => 'admin.analytics', 'icon' => 'chart', 'variant' => 'secondary'],
+            ],
+
+            'academies' => $academies,
         ];
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $pendingCourses
+     * @param  list<array<string, mixed>>  $inactivePlatforms
+     * @param  list<array<string, mixed>>  $pendingUsers
+     * @param  list<array<string, mixed>>  $revokedCertificates
+     * @return list<array{title: string, explanation: string, href: string}>
+     */
+    private static function attentionItems(
+        array $pendingCourses,
+        array $inactivePlatforms,
+        array $pendingUsers,
+        array $revokedCertificates,
+    ): array {
+        $items = [];
+
+        if (count($pendingCourses) > 0) {
+            $items[] = [
+                'title' => count($pendingCourses).' '.str('course')->plural(count($pendingCourses)).' awaiting review',
+                'explanation' => 'Submitted catalogues stay off the learner list until a reviewer approves them.',
+                'href' => route('admin.content'),
+            ];
+        }
+
+        if (count($inactivePlatforms) > 0) {
+            $names = implode(', ', array_column($inactivePlatforms, 'name'));
+            $items[] = [
+                'title' => count($inactivePlatforms).' inactive '.str('platform')->plural(count($inactivePlatforms)),
+                'explanation' => $names.' are off the workspace switcher. Historical certificates still resolve.',
+                'href' => route('admin.platforms'),
+            ];
+        }
+
+        if (count($pendingUsers) > 0) {
+            $items[] = [
+                'title' => count($pendingUsers).' '.str('user')->plural(count($pendingUsers)).' waiting to be activated',
+                'explanation' => 'Draft and pending-review accounts cannot sign in until an administrator confirms them.',
+                'href' => route('admin.users'),
+            ];
+        }
+
+        if (count($revokedCertificates) > 0) {
+            $items[] = [
+                'title' => count($revokedCertificates).' revoked '.str('certificate')->plural(count($revokedCertificates)),
+                'explanation' => 'Revoked numbers still resolve on the public lookup with a revoked status.',
+                'href' => route('admin.activity'),
+            ];
+        }
+
+        return $items;
+    }
+
+    private static function platformIcon(string $slug): string
+    {
+        return match ($slug) {
+            'ororafarm' => 'sprout',
+            'gemura' => 'droplet',
+            'buchapro' => 'tag',
+            'feedgrid' => 'layers',
+            default => 'building',
+        };
+    }
+
+    private static function activityIcon(string $action): string
+    {
+        return match ($action) {
+            'course.submitted' => 'file',
+            'course.approved' => 'check',
+            'course.published' => 'book',
+            'course.archived' => 'archive',
+            'course.created' => 'plus',
+            'enrollment.created' => 'users',
+            'certificate.issued' => 'award',
+            'role.assigned', 'role.created' => 'shield',
+            'platform.created', 'platform.deactivated' => 'layers',
+            'user.invited', 'user.archived' => 'user',
+            'live_session.scheduled' => 'video',
+            'settings.updated' => 'cog',
+            default => 'history',
+        };
     }
 }

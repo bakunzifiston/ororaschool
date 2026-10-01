@@ -20,7 +20,7 @@
                           min-width="44rem">
                 @if (count($page['rows']))
                     @foreach ($page['rows'] as $row)
-                        <tr class="border-b border-clay-100 last:border-b-0 hover:bg-papyrus">
+                        <tr class="border-b border-clay-100 last:border-b-0 hover:bg-accent-50/60">
                             <td class="px-3 py-2.5">
                                 <a href="{{ route('workspace.instructors.show', ['platform' => $platformSlug, 'instructor' => $row['id']]) }}"
                                    class="flex items-center gap-2">

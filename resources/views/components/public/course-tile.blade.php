@@ -11,52 +11,65 @@
     $lessons = (int) ($course['lessons'] ?? 0);
     $enrolled = (int) ($course['enrolled'] ?? 0);
     $cover = $course['cover'] ?? null;
+    $title = $course['title'] ?? '';
+    $href = $course['href'] ?? '#';
+    $paid = (bool) ($course['paid'] ?? false);
 @endphp
 
-<article {{ $attributes->merge(['class' => 'public-card public-card-hover flex min-w-0 flex-col overflow-hidden']) }}>
-    <div class="relative aspect-[16/9] overflow-hidden bg-accent-50">
+<a href="{{ $href }}" {{ $attributes->merge(['class' => 'public-card public-card-hover group flex h-full min-w-0 flex-col overflow-hidden']) }}>
+    <span class="relative aspect-[16/10] overflow-hidden bg-accent-50">
         @if ($cover)
             <img src="{{ asset($cover) }}"
-                 alt=""
-                 width="1400" height="788"
-                 class="h-full w-full object-cover">
+                 alt="{{ $title }}"
+                 width="1400" height="875"
+                 loading="lazy"
+                 decoding="async"
+                 class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.04]">
         @else
-            <div class="flex h-full items-center justify-center">
+            <span class="flex h-full items-center justify-center">
                 <x-icon :name="$glyph" class="h-8 w-8 text-accent-400" />
-            </div>
+            </span>
         @endif
-        <span class="absolute left-3 top-3 rounded-sm bg-chalk/95 px-2 py-0.5 text-micro font-medium text-basalt-800">
+        <span class="absolute left-3 top-3 rounded-full bg-chalk/90 px-2.5 py-1 text-micro font-medium text-basalt-800 backdrop-blur-sm">
             {{ $course['platform_name'] ?? '' }}
         </span>
-    </div>
+    </span>
 
-    <div class="flex grow flex-col p-4">
-        <h3 class="font-display text-panel font-semibold leading-snug text-basalt-900">
-            <a href="{{ $course['href'] ?? '#' }}" class="rounded-xs hover:text-accent-700">{{ $course['title'] ?? '' }}</a>
-        </h3>
+    <span class="flex grow flex-col p-5">
+        <span class="font-display text-panel font-semibold leading-snug text-basalt-900 group-hover:text-accent-700">
+            {{ $title }}
+        </span>
 
         @if (($course['summary'] ?? '') !== '')
-            <p class="mt-2 line-clamp-2 text-dense leading-relaxed text-fern-600">{{ $course['summary'] }}</p>
+            <span class="mt-2 line-clamp-2 text-dense leading-relaxed text-fern-600">{{ $course['summary'] }}</span>
         @endif
 
-        <p class="mt-3 text-micro text-fern-500">
-            {{ $course['platform_name'] ?? '' }}
-            <span class="text-clay-300">•</span>
-            <x-public.duration :minutes="$course['duration'] ?? 0" />
-            @if ($lessons > 0)
-                <span class="text-clay-300">•</span>
-                {{ $lessons }} {{ $lessons === 1 ? 'lesson' : 'lessons' }}
-            @endif
-            <span class="text-clay-300">•</span>
-            {{ ($course['paid'] ?? false) ? 'Paid' : 'Free' }}
-        </p>
+        <span class="mt-auto flex flex-col gap-3 pt-4">
+            <span class="flex flex-wrap items-center gap-x-2 gap-y-1 text-micro text-fern-500">
+                <span class="inline-flex items-center gap-1">
+                    <x-icon name="clock" class="h-3.5 w-3.5" />
+                    <x-public.duration :minutes="$course['duration'] ?? 0" />
+                </span>
+                @if ($lessons > 0)
+                    <span class="text-clay-300" aria-hidden="true">·</span>
+                    <span>{{ $lessons }} {{ $lessons === 1 ? 'lesson' : 'lessons' }}</span>
+                @endif
+                <span class="text-clay-300" aria-hidden="true">·</span>
+                <span @class([
+                    'rounded-full px-2 py-0.5 font-medium',
+                    'bg-ok-bg text-ok' => ! $paid,
+                    'bg-st-completed-bg text-st-completed' => $paid,
+                ])>{{ $paid ? 'Paid' : 'Free' }}</span>
+                @if ($enrolled > 0)
+                    <span class="text-clay-300" aria-hidden="true">·</span>
+                    <span>{{ number_format($enrolled) }} enrolled</span>
+                @endif
+            </span>
 
-        @if ($enrolled > 0)
-            <p class="mt-1 text-micro text-fern-500">{{ number_format($enrolled) }} enrolled</p>
-        @endif
-
-        <p class="mt-4">
-            <a href="{{ $course['href'] ?? '#' }}" class="text-dense font-medium text-accent-700 hover:underline">View course</a>
-        </p>
-    </div>
-</article>
+            <span class="inline-flex items-center gap-1 text-dense font-medium text-accent-700">
+                View course
+                <x-icon name="arrow-right" class="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
+            </span>
+        </span>
+    </span>
+</a>
