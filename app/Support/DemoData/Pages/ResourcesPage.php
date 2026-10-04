@@ -29,8 +29,21 @@ class ResourcesPage
             '/workspace/'.$platform.'/resources',
             array_filter(['empty' => $empty ? 1 : null, 'type' => $type !== '' ? $type : null]),
         );
-        $paged['rows'] = array_map(function (array $row): array {
+        $paged['rows'] = array_map(function (array $row) use ($platform): array {
             $row['type_label'] = Resources::typeLabel($row['type']);
+            $row['href'] = route('workspace.resources.show', [
+                'platform' => $platform,
+                'resource' => $row['slug'],
+            ]);
+            $row['edit'] = route('workspace.resources.edit', [
+                'platform' => $platform,
+                'resource' => $row['slug'],
+            ]);
+            $row['delete'] = 'delete-'.$row['slug'];
+            $row['destroy'] = route('workspace.resources.destroy', [
+                'platform' => $platform,
+                'resource' => $row['slug'],
+            ]);
 
             return $row;
         }, $paged['rows']);
@@ -50,19 +63,54 @@ class ResourcesPage
         ];
     }
 
-    public static function form(string $platform): array
+    /**
+     * @return array<string, mixed>|null
+     */
+    public static function form(string $platform, ?string $slug = null): ?array
     {
         $current = Platforms::require($platform);
+        $record = Platform::query()->where('slug', $platform)->first() ?? Platform::firstOrCreateFromSlug($platform);
+        $resource = null;
+        $values = [
+            'title' => '',
+            'type' => '',
+            'attached_kind' => '',
+            'attached_key' => '',
+            'source_url' => '',
+        ];
+
+        if ($slug !== null) {
+            $resource = Resources::find($slug, $platform);
+
+            if ($resource === null) {
+                return null;
+            }
+
+            $resource = Resources::present($resource);
+            $values = [
+                'title' => $resource['title'],
+                'type' => $resource['type'],
+                'attached_kind' => $resource['attached_kind'],
+                'attached_key' => $resource['attached_key'] ?? LearningResource::keyForAttachedTo(
+                    $record,
+                    (string) $resource['attached_kind'],
+                    (string) $resource['attached_to'],
+                ),
+                'source_url' => $resource['source_url'] ?? '',
+            ];
+        }
 
         return [
             'platform' => $current,
+            'resource' => $resource,
+            'values' => $values,
             'header' => WorkspaceHeader::make(
                 $current,
-                'Upload a resource',
+                $slug === null ? 'Upload a resource' : 'Edit resource',
                 'Academy files are open. Course, module and lesson files wait until a learner enrols.',
                 [
                     ['label' => 'Resources', 'route' => 'workspace.resources', 'params' => ['platform' => $platform]],
-                    ['label' => 'Upload a resource'],
+                    ['label' => $slug === null ? 'Upload a resource' : $resource['title']],
                 ],
             ),
             'types' => Resources::formTypes(),
@@ -72,11 +120,51 @@ class ResourcesPage
                 'module' => 'Module',
                 'lesson' => 'Lesson',
             ],
-            'targets' => LearningResource::targetsFor(
-                Platform::query()->where('slug', $platform)->first() ?? Platform::firstOrCreateFromSlug($platform),
-            ),
+            'targets' => LearningResource::targetsFor($record),
             'accepts' => Resources::accepts(),
             'hints' => Resources::fileHints(),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public static function show(string $platform, string $slug): ?array
+    {
+        $current = Platforms::require($platform);
+        $resource = Resources::find($slug, $platform);
+
+        if ($resource === null) {
+            return null;
+        }
+
+        $resource = Resources::withFileRoutes($resource, 'workspace.resources.file', [
+            'platform' => $platform,
+            'resource' => $slug,
+        ]);
+
+        return [
+            'platform' => $current,
+            'header' => WorkspaceHeader::make(
+                $current,
+                $resource['title'],
+                $resource['type_label'].' · '.$resource['attached_to'],
+                [
+                    ['label' => 'Resources', 'route' => 'workspace.resources', 'params' => ['platform' => $platform]],
+                    ['label' => $resource['title']],
+                ],
+            ),
+            'resource' => array_merge($resource, [
+                'edit' => route('workspace.resources.edit', [
+                    'platform' => $platform,
+                    'resource' => $slug,
+                ]),
+                'delete' => 'delete-'.$slug,
+                'destroy' => route('workspace.resources.destroy', [
+                    'platform' => $platform,
+                    'resource' => $slug,
+                ]),
+            ]),
         ];
     }
 }

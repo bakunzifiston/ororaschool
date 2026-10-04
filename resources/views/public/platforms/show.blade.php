@@ -62,17 +62,11 @@
                     </a>
                 </div>
 
-                <ul class="mt-6 divide-y divide-clay-100">
+                <div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
                     @foreach ($page['resources'] as $resource)
-                        <li class="flex flex-wrap items-baseline justify-between gap-3 py-3">
-                            <div>
-                                <p class="font-medium text-basalt-900">{{ $resource['title'] }}</p>
-                                <p class="text-micro text-fern-500">{{ $resource['type_label'] }} · {{ $resource['attached_to'] }}</p>
-                            </div>
-                            <p class="text-micro text-fern-500">{{ $resource['size'] }}</p>
-                        </li>
+                        <x-public.resource-card :resource="$resource" />
                     @endforeach
-                </ul>
+                </div>
             </div>
         @endif
 

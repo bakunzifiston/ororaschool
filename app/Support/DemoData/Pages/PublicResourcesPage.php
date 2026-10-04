@@ -86,4 +86,30 @@ class PublicResourcesPage
             },
         ));
     }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public static function show(string $slug): ?array
+    {
+        $resource = Resources::find($slug);
+
+        if ($resource === null || ! Resources::isPubliclyOpen($resource)) {
+            return null;
+        }
+
+        $resource = Resources::withFileRoutes($resource, 'catalog.resources.file', ['resource' => $slug]);
+
+        return [
+            'header' => PublicHeader::make(
+                $resource['title'],
+                $resource['type_label'].' · '.$resource['platform_name'],
+                [
+                    ['label' => 'Resources', 'route' => 'catalog.resources'],
+                    ['label' => $resource['title']],
+                ],
+            ),
+            'resource' => $resource,
+        ];
+    }
 }

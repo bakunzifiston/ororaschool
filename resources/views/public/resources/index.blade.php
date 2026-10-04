@@ -74,15 +74,7 @@
             @if (count($page['resources']))
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
                     @foreach ($page['resources'] as $resource)
-                        <a href="{{ $resource['href'] }}"
-                           class="public-card public-card-hover group flex h-full min-w-0 flex-col p-5">
-                            <span class="text-micro font-medium text-fern-500">{{ $resource['platform_name'] }}</span>
-                            <span class="mt-1 font-display text-panel font-semibold leading-snug text-basalt-900 group-hover:text-accent-700">
-                                {{ $resource['title'] }}
-                            </span>
-                            <span class="mt-2 text-micro text-fern-500">{{ $resource['type_label'] }} · {{ $resource['attached_to'] }}</span>
-                            <span class="mt-auto pt-4 text-micro text-fern-500">{{ $resource['size'] }}</span>
-                        </a>
+                        <x-public.resource-card :resource="$resource" />
                     @endforeach
                 </div>
 

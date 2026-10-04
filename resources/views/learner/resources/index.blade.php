@@ -22,7 +22,7 @@
                                 ['key' => 'platform', 'label' => 'Academy'],
                                 ['key' => 'attached_to', 'label' => 'Attached to'],
                                 ['key' => 'type', 'label' => 'Type'],
-                                ['key' => 'download', 'label' => ''],
+                                ['key' => 'open', 'label' => ''],
                             ]"
                           :empty-title="$page['emptyTitle']"
                           :empty-message="$page['emptyMessage']"
@@ -35,7 +35,7 @@
                             <td class="px-3 py-2.5 text-dense text-fern-500">{{ $row['attached_to'] }}</td>
                             <td class="px-3 py-2.5 text-micro capitalize text-fern-500">{{ $row['type'] }}</td>
                             <td class="px-3 py-2.5 text-right">
-                                <a href="#{{ $row['slug'] }}" class="text-dense font-medium text-accent-700 hover:underline">Download</a>
+                                <a href="{{ $row['href'] }}" class="text-dense font-medium text-accent-700 hover:underline">Open</a>
                             </td>
                         </tr>
                     @endforeach

@@ -159,6 +159,8 @@ class PublicPagesTest extends TestCase
         $this->get(route('catalog.resources'))
             ->assertOk()
             ->assertSee(route('catalog.resources'), false)
+            ->assertSee(route('catalog.resources.show', ['resource' => 'milk-hygiene-manual']), false)
+            ->assertSee(route('catalog.resources.show', ['resource' => 'colostrum-note']), false)
             ->assertSee('Smallholder milk hygiene manual', false)
             ->assertSee('Colostrum timing note', false)
             ->assertSee('Terrace numbering guide', false)

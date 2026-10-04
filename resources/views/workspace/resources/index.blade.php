@@ -23,6 +23,7 @@
                                 ['key' => 'attached_to', 'label' => 'Attached to'],
                                 ['key' => 'size', 'label' => 'Size', 'align' => 'right'],
                                 ['key' => 'updated', 'label' => 'Updated', 'align' => 'right'],
+                                ['key' => 'actions', 'label' => '', 'align' => 'right'],
                             ]"
                           :pagination="$page['pagination']"
                           :empty-title="$page['emptyTitle']"
@@ -31,11 +32,16 @@
                 @if (count($page['rows']))
                     @foreach ($page['rows'] as $row)
                         <tr class="border-b border-clay-100 last:border-b-0">
-                            <td class="px-4 py-3.5 font-medium text-basalt-900">{{ $row['title'] }}</td>
+                            <td class="px-4 py-3.5 font-medium text-basalt-900">
+                                <a href="{{ $row['href'] }}" class="hover:text-accent-700 hover:underline">{{ $row['title'] }}</a>
+                            </td>
                             <td class="px-4 py-3.5 text-dense text-fern-500">{{ $row['type_label'] }}</td>
                             <td class="px-4 py-3.5 text-dense">{{ $row['attached_to'] }}</td>
                             <td class="figure px-4 py-3.5 text-right text-micro text-fern-500">{{ $row['size'] }}</td>
                             <td class="px-4 py-3.5 text-right text-micro text-fern-500">{{ $row['updated'] }}</td>
+                            <td class="px-4 py-3.5 text-right">
+                                <x-row-actions :view="$row['href']" :edit="$row['edit']" :delete="$row['delete']" />
+                            </td>
                         </tr>
                     @endforeach
                 @endif
@@ -46,4 +52,21 @@
             </x-data-table>
         </x-panel>
     </div>
+
+    @foreach ($page['rows'] as $row)
+        <x-modal :name="$row['delete']" width="md"
+                 :title="'Delete '.$row['title'].'?'"
+                 :subtitle="$row['type_label'].' · '.$row['attached_to']">
+            <p>{{ $row['title'] }} will leave this academy and the public catalogue if it was an open handout.</p>
+
+            <x-slot:actions>
+                <x-button variant="ghost" x-on:click="open = false">Cancel</x-button>
+                <form method="POST" action="{{ $row['destroy'] }}">
+                    @csrf
+                    @method('DELETE')
+                    <x-button type="submit" variant="danger">Delete resource</x-button>
+                </form>
+            </x-slot:actions>
+        </x-modal>
+    @endforeach
 </x-layouts.platform-workspace>

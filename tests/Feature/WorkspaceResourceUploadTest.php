@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Lesson;
 use Database\Seeders\CatalogSeeder;
 use Illuminate\Http\UploadedFile;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class WorkspaceResourceUploadTest extends TestCase
@@ -25,6 +26,7 @@ class WorkspaceResourceUploadTest extends TestCase
             ->assertOk()
             ->assertSee('Choose a type', false)
             ->assertSee('Choose where it sits', false)
+            ->assertSee('YouTube link', false)
             ->assertSee('Milk hygiene', false)
             ->assertSee('Mastitis Detection', false)
             ->assertDontSee('Any type', false);
@@ -120,6 +122,78 @@ class WorkspaceResourceUploadTest extends TestCase
             ])
             ->assertRedirect(route('workspace.resources.create', ['platform' => 'gemura']))
             ->assertSessionHasErrors('type');
+    }
+
+    public function test_a_youtube_link_is_saved_without_a_file(): void
+    {
+        $academy = Academy::query()
+            ->whereHas('platform', fn ($query) => $query->where('slug', 'gemura'))
+            ->where('name', 'Milk hygiene')
+            ->firstOrFail();
+
+        $this->from(route('workspace.resources.create', ['platform' => 'gemura']))
+            ->post(route('workspace.resources.store', ['platform' => 'gemura']), [
+                'title' => 'Paddle scoring walk-through',
+                'type' => 'video',
+                'attached_kind' => 'academy',
+                'attached_key' => (string) $academy->id,
+                'source_url' => 'youtu.be/dQw4w9WgXcQ',
+            ])
+            ->assertRedirect(route('workspace.resources', ['platform' => 'gemura']))
+            ->assertSessionHas('status', 'Resource saved.');
+
+        $this->assertDatabaseHas('learning_resources', [
+            'title' => 'Paddle scoring walk-through',
+            'type' => 'video',
+            'source_url' => 'https://youtu.be/dQw4w9WgXcQ',
+            'size' => 'YouTube',
+        ]);
+
+        $this->get(route('workspace.resources', ['platform' => 'gemura']))
+            ->assertOk()
+            ->assertSee('Paddle scoring walk-through', false)
+            ->assertSee('YouTube', false);
+
+        $this->get(route('workspace.resources.edit', ['platform' => 'gemura', 'resource' => 'paddle-scoring-walk-through']))
+            ->assertOk()
+            ->assertSee('https://youtu.be/dQw4w9WgXcQ', false);
+    }
+
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public static function invalidYoutubeLinks(): array
+    {
+        return [
+            'vimeo' => ['https://vimeo.com/123456789'],
+            'other host' => ['https://example.com/watch?v=dQw4w9WgXcQ'],
+            'lookalike host' => ['https://youtube.com.example/watch?v=dQw4w9WgXcQ'],
+            'http' => ['http://youtu.be/dQw4w9WgXcQ'],
+        ];
+    }
+
+    #[DataProvider('invalidYoutubeLinks')]
+    public function test_a_non_youtube_link_is_rejected(string $url): void
+    {
+        $academy = Academy::query()
+            ->whereHas('platform', fn ($query) => $query->where('slug', 'gemura'))
+            ->where('name', 'Milk hygiene')
+            ->firstOrFail();
+
+        $this->from(route('workspace.resources.create', ['platform' => 'gemura']))
+            ->post(route('workspace.resources.store', ['platform' => 'gemura']), [
+                'title' => 'Rejected clip',
+                'type' => 'video',
+                'attached_kind' => 'academy',
+                'attached_key' => (string) $academy->id,
+                'source_url' => $url,
+            ])
+            ->assertRedirect(route('workspace.resources.create', ['platform' => 'gemura']))
+            ->assertSessionHasErrors(['source_url' => 'Use a YouTube link.']);
+
+        $this->assertDatabaseMissing('learning_resources', [
+            'title' => 'Rejected clip',
+        ]);
     }
 
     public function test_a_video_rejects_a_pdf_file(): void

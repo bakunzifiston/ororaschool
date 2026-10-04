@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 #[Fillable([
@@ -21,6 +22,7 @@ use Illuminate\Support\Str;
     'attached_key',
     'size',
     'path',
+    'source_url',
 ])]
 class LearningResource extends Model
 {
@@ -28,7 +30,7 @@ class LearningResource extends Model
     use HasFactory;
 
     /**
-     * @param  array{title: string, type: string, attached_kind: string, attached_key: string, file?: UploadedFile|null}  $payload
+     * @param  array{title: string, type: string, attached_kind: string, attached_key: string, source_url?: string|null, file?: UploadedFile|null}  $payload
      */
     public static function createOnPlatform(Platform $platform, array $payload): self
     {
@@ -41,10 +43,13 @@ class LearningResource extends Model
         $file = $payload['file'] ?? null;
         $path = null;
         $size = '—';
+        $sourceUrl = self::nullableUrl($payload['source_url'] ?? null);
 
         if ($file instanceof UploadedFile) {
             $path = $file->store('learning-resources');
             $size = self::formatSize((int) $file->getSize());
+        } elseif ($sourceUrl !== null) {
+            $size = 'YouTube';
         }
 
         return self::query()->create([
@@ -57,6 +62,7 @@ class LearningResource extends Model
             'attached_key' => $key,
             'size' => $size,
             'path' => $path,
+            'source_url' => $sourceUrl,
         ]);
     }
 
@@ -150,8 +156,100 @@ class LearningResource extends Model
             'attached_to' => $this->attached_to,
             'attached_kind' => $this->attached_kind,
             'size' => $this->size,
+            'path' => $this->path,
+            'source_url' => $this->source_url,
+            'attached_key' => $this->attached_key,
             'updated' => $this->updated_at?->format('d M Y') ?? now()->format('d M Y'),
         ];
+    }
+
+    /**
+     * @param  array{title: string, type: string, attached_kind: string, attached_key: string, source_url?: string|null, file?: UploadedFile|null}  $payload
+     */
+    public static function saveOnPlatform(Platform $platform, string $slug, array $payload): self
+    {
+        $kind = $payload['attached_kind'];
+        $key = (string) $payload['attached_key'];
+        $target = self::findTarget($platform, $kind, $key);
+
+        abort_unless($target !== null, 422);
+
+        $record = self::query()
+            ->where('platform_id', $platform->id)
+            ->where('slug', $slug)
+            ->first();
+
+        $file = $payload['file'] ?? null;
+        $path = $record?->path;
+        $size = $record?->size ?? '—';
+        $sourceUrl = self::nullableUrl($payload['source_url'] ?? null);
+
+        if ($file instanceof UploadedFile) {
+            if (filled($path)) {
+                Storage::delete($path);
+            }
+
+            $path = $file->store('learning-resources');
+            $size = self::formatSize((int) $file->getSize());
+        } elseif ($sourceUrl !== null && $path === null) {
+            $size = 'YouTube';
+        } elseif ($sourceUrl === null && $path === null) {
+            $size = '—';
+        }
+
+        $attributes = [
+            'title' => $payload['title'],
+            'type' => $payload['type'],
+            'attached_kind' => $kind,
+            'attached_to' => $target['label'],
+            'attached_key' => $key,
+            'size' => $size,
+            'path' => $path,
+            'source_url' => $sourceUrl,
+        ];
+
+        if ($record !== null) {
+            $record->update($attributes);
+
+            return $record->refresh();
+        }
+
+        return self::query()->create([
+            'platform_id' => $platform->id,
+            'slug' => $slug,
+            ...$attributes,
+        ]);
+    }
+
+    public static function removeFromPlatform(Platform $platform, string $slug): void
+    {
+        $record = self::query()
+            ->where('platform_id', $platform->id)
+            ->where('slug', $slug)
+            ->first();
+
+        if ($record !== null) {
+            if (filled($record->path)) {
+                Storage::delete($record->path);
+            }
+
+            $record->delete();
+        }
+
+        RemovedResource::forget($platform->slug, $slug);
+    }
+
+    public static function keyForAttachedTo(Platform $platform, string $kind, string $attachedTo): string
+    {
+        $name = preg_replace('/^(Academy|Course|Module|Lesson)\s·\s/u', '', $attachedTo) ?? $attachedTo;
+
+        foreach (self::targetsFor($platform)[$kind] ?? [] as $id => $label) {
+            if ($id !== '' && (str_starts_with((string) $label, $name) || (string) $label === $name)) {
+                return (string) $id;
+            }
+        }
+
+        return '';
     }
 
     public function platform(): BelongsTo
@@ -200,5 +298,14 @@ class LearningResource extends Model
         }
 
         return max(1, (int) ceil($bytes / 1024)).' KB';
+    }
+
+    private static function nullableUrl(mixed $url): ?string
+    {
+        if (! is_string($url) || $url === '') {
+            return null;
+        }
+
+        return $url;
     }
 }

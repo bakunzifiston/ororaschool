@@ -14,7 +14,17 @@ class StoreLearningResourceRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user() !== null;
+        if ($this->user() === null) {
+            return false;
+        }
+
+        $slug = (string) $this->route('resource');
+
+        if ($slug !== '') {
+            abort_unless(Resources::find($slug, (string) $this->route('platform')) !== null, 404);
+        }
+
+        return true;
     }
 
     /**
@@ -29,6 +39,7 @@ class StoreLearningResourceRequest extends FormRequest
             'type' => ['required', 'string', Rule::in(array_keys(Resources::formTypes()))],
             'attached_kind' => ['required', 'string', Rule::in(['academy', 'course', 'module', 'lesson'])],
             'attached_key' => ['required', 'string'],
+            'source_url' => ['nullable', 'string', 'max:500', 'url'],
             'file' => [
                 'nullable',
                 'file',
@@ -51,7 +62,25 @@ class StoreLearningResourceRequest extends FormRequest
             'attached_kind.required' => 'Choose where this file sits.',
             'attached_key.required' => 'Choose the academy, course, module or lesson.',
             'file.mimes' => 'That file does not match the type you chose.',
+            'source_url.url' => 'Use a YouTube link.',
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $url = trim((string) $this->input('source_url'));
+
+        if ($url === '') {
+            $this->merge(['source_url' => null]);
+
+            return;
+        }
+
+        if (! str_contains($url, '://')) {
+            $url = 'https://'.$url;
+        }
+
+        $this->merge(['source_url' => $url]);
     }
 
     /**
@@ -61,6 +90,12 @@ class StoreLearningResourceRequest extends FormRequest
     {
         return [
             function (Validator $validator): void {
+                $sourceUrl = $this->input('source_url');
+
+                if (filled($sourceUrl) && Resources::youtubeId($sourceUrl) === null) {
+                    $validator->errors()->add('source_url', 'Use a YouTube link.');
+                }
+
                 if ($validator->errors()->hasAny(['attached_kind', 'attached_key'])) {
                     return;
                 }

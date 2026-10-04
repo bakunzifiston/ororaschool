@@ -29,6 +29,7 @@ class LearningResourceFactory extends Factory
             'attached_key' => '1',
             'size' => '120 KB',
             'path' => null,
+            'source_url' => null,
         ];
     }
 }

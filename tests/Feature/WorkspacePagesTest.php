@@ -203,6 +203,11 @@ class WorkspacePagesTest extends TestCase
             ->assertOk()
             ->assertSee('CMT field sheet', false)
             ->assertSee('Lesson · Reading a CMT paddle', false)
+            ->assertSee('View', false)
+            ->assertSee('Edit', false)
+            ->assertSee('Delete', false)
+            ->assertSee(route('workspace.resources.show', ['platform' => 'gemura', 'resource' => 'cmt-field-sheet']), false)
+            ->assertSee(route('workspace.resources.edit', ['platform' => 'gemura', 'resource' => 'cmt-field-sheet']), false)
             ->assertDontSee('Ear-tag application checklist', false);
 
         $this->get(route('workspace.resources', ['platform' => 'gemura', 'type' => 'template']))
@@ -215,6 +220,7 @@ class WorkspacePagesTest extends TestCase
             ->assertSee('Upload a resource', false)
             ->assertSee('Attach to', false)
             ->assertSee('Choose a type', false)
+            ->assertSee('YouTube link', false)
             ->assertSee('Manual', false)
             ->assertDontSee('Any type', false);
     }

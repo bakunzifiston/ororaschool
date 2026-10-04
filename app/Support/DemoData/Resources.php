@@ -3,7 +3,14 @@
 namespace App\Support\DemoData;
 
 use App\Models\LearningResource;
+use App\Models\RemovedResource;
+use App\Support\ResourcePdf;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 
 /**
  * FIXTURE LAYER — DELETE WHEN REAL DATA ARRIVES.
@@ -77,10 +84,9 @@ class Resources
                     return null;
                 }
 
-                return array_merge($resource, [
-                    'type_label' => self::typeLabel($resource['type']),
+                return array_merge(self::present($resource), [
                     'platform_name' => $platform['name'],
-                    'href' => $platform['href'],
+                    'href' => route('catalog.resources.show', ['resource' => $resource['slug']]),
                 ]);
             },
             self::all(),
@@ -92,9 +98,25 @@ class Resources
      */
     public static function all(): array
     {
+        $removed = RemovedResource::keys();
+        $persisted = self::persisted();
+        $taken = array_map(
+            fn (array $resource): string => $resource['platform'].':'.$resource['slug'],
+            $persisted,
+        );
+
+        $fixtures = array_values(array_filter(
+            self::fixtures(),
+            function (array $resource) use ($removed, $taken): bool {
+                $key = $resource['platform'].':'.$resource['slug'];
+
+                return ! in_array($key, $removed, true) && ! in_array($key, $taken, true);
+            },
+        ));
+
         return [
-            ...self::persisted(),
-            ...self::fixtures(),
+            ...$persisted,
+            ...$fixtures,
         ];
     }
 
@@ -165,6 +187,182 @@ class Resources
     }
 
     /**
+     * @return array<string, mixed>|null
+     */
+    public static function find(string $slug, ?string $platform = null): ?array
+    {
+        foreach (self::all() as $resource) {
+            if ($resource['slug'] !== $slug) {
+                continue;
+            }
+
+            if ($platform !== null && $resource['platform'] !== $platform) {
+                continue;
+            }
+
+            return $resource;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  array<string, mixed>  $resource
+     * @return array<string, mixed>
+     */
+    public static function present(array $resource): array
+    {
+        $platform = Platforms::find($resource['platform'] ?? '');
+
+        $youtubeId = self::youtubeId($resource['source_url'] ?? null);
+
+        return array_merge($resource, [
+            'path' => $resource['path'] ?? null,
+            'source_url' => $resource['source_url'] ?? null,
+            'has_file' => filled($resource['path'] ?? null),
+            'type_label' => self::typeLabel((string) ($resource['type'] ?? '')),
+            'platform_name' => $platform['name'] ?? ($resource['platform'] ?? ''),
+            'viewer' => self::viewerKind($resource),
+            'extension' => self::extension($resource),
+            'youtube_id' => $youtubeId,
+            'youtube_embed' => $youtubeId === null ? null : 'https://www.youtube-nocookie.com/embed/'.$youtubeId,
+            'youtube_watch' => $youtubeId === null ? null : 'https://www.youtube.com/watch?v='.$youtubeId,
+        ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $resource
+     */
+    public static function isPubliclyOpen(array $resource): bool
+    {
+        if (self::requiresEnrolment($resource)) {
+            return false;
+        }
+
+        $platform = Platforms::find($resource['platform'] ?? '');
+
+        return $platform !== null && ($platform['status'] ?? '') === 'active';
+    }
+
+    /**
+     * @param  array<string, mixed>  $resource
+     */
+    public static function viewerKind(array $resource): string
+    {
+        if (self::youtubeId($resource['source_url'] ?? null) !== null) {
+            return 'youtube';
+        }
+
+        $extension = self::extension($resource);
+        $type = (string) ($resource['type'] ?? '');
+
+        if ($extension === 'pdf' || $type === 'pdf') {
+            return 'pdf';
+        }
+
+        if (in_array($extension, ['doc', 'docx'], true) || $type === 'document') {
+            return 'document';
+        }
+
+        if (in_array($extension, ['png', 'jpg', 'jpeg', 'webp'], true) || $type === 'infographic') {
+            return 'image';
+        }
+
+        if (in_array($extension, ['mp4', 'webm', 'mov'], true) || $type === 'video') {
+            return 'video';
+        }
+
+        if (in_array($type, ['manual', 'guide', 'template', 'presentation'], true)) {
+            return 'pdf';
+        }
+
+        return 'file';
+    }
+
+    /**
+     * @param  array<string, mixed>  $resource
+     */
+    public static function extension(array $resource): string
+    {
+        $path = (string) ($resource['path'] ?? '');
+
+        if ($path === '') {
+            return '';
+        }
+
+        return strtolower(pathinfo($path, PATHINFO_EXTENSION));
+    }
+
+    /**
+     * @param  array<string, mixed>  $resource
+     */
+    public static function canStream(array $resource): bool
+    {
+        if (filled($resource['path'] ?? null)) {
+            return true;
+        }
+
+        return in_array(self::viewerKind($resource), ['pdf', 'document'], true);
+    }
+
+    /**
+     * @param  array<string, mixed>  $resource
+     * @param  array<string, mixed>  $params
+     * @return array<string, mixed>
+     */
+    public static function withFileRoutes(array $resource, string $route, array $params = []): array
+    {
+        $resource = self::present($resource);
+        $fileUrl = self::canStream($resource) ? route($route, $params) : null;
+
+        return array_merge($resource, [
+            'file_url' => $fileUrl,
+            'download_url' => $fileUrl === null ? null : route($route, [...$params, 'download' => 1]),
+        ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $resource
+     */
+    public static function stream(array $resource, bool $download = false): BinaryFileResponse|Response
+    {
+        $path = (string) ($resource['path'] ?? '');
+
+        if ($path !== '' && Storage::exists($path)) {
+            $extension = self::extension($resource) ?: 'bin';
+            $name = Str::slug((string) $resource['title']).'.'.$extension;
+            $mime = Storage::mimeType($path) ?: 'application/octet-stream';
+            $inline = ! $download && self::viewerKind($resource) === 'pdf';
+
+            $response = response()->file(Storage::path($path), [
+                'Content-Type' => $mime,
+                'X-Content-Type-Options' => 'nosniff',
+            ]);
+
+            $response->headers->set('Content-Disposition', HeaderUtils::makeDisposition(
+                $inline ? HeaderUtils::DISPOSITION_INLINE : HeaderUtils::DISPOSITION_ATTACHMENT,
+                $name,
+            ));
+
+            return $response;
+        }
+
+        abort_unless(self::canStream($resource), 404);
+
+        $presented = self::present($resource);
+        $name = Str::slug((string) $presented['title']).'.pdf';
+
+        return response(ResourcePdf::render($presented), 200, [
+            'Content-Type' => 'application/pdf',
+            'X-Content-Type-Options' => 'nosniff',
+            'Content-Disposition' => HeaderUtils::makeDisposition(
+                $download ? HeaderUtils::DISPOSITION_ATTACHMENT : HeaderUtils::DISPOSITION_INLINE,
+                $name,
+            ),
+        ]);
+    }
+
+    /**
      * @return array<string, string>
      */
     public static function accepts(): array
@@ -194,8 +392,50 @@ class Resources
             'presentation' => 'PDF or PowerPoint slides.',
             'pdf' => 'A PDF that does not fit the other labels.',
             'infographic' => 'PNG, JPG, WebP or PDF.',
-            'video' => 'MP4, WebM or MOV.',
+            'video' => 'MP4, WebM, MOV, or a YouTube link.',
         ];
+    }
+
+    public static function youtubeId(mixed $url): ?string
+    {
+        if (! is_string($url) || $url === '') {
+            return null;
+        }
+
+        $parts = parse_url($url);
+
+        if (($parts['scheme'] ?? '') !== 'https') {
+            return null;
+        }
+
+        $host = strtolower((string) ($parts['host'] ?? ''));
+
+        if (str_starts_with($host, 'www.')) {
+            $host = substr($host, 4);
+        }
+
+        if (str_starts_with($host, 'm.')) {
+            $host = substr($host, 2);
+        }
+
+        if (! in_array($host, ['youtube.com', 'youtu.be', 'youtube-nocookie.com', 'music.youtube.com'], true)) {
+            return null;
+        }
+
+        $path = trim((string) ($parts['path'] ?? ''), '/');
+        $segments = $path === '' ? [] : explode('/', $path);
+        $id = '';
+
+        if ($host === 'youtu.be') {
+            $id = $segments[0] ?? '';
+        } elseif (in_array($segments[0] ?? '', ['embed', 'shorts', 'live', 'v'], true)) {
+            $id = $segments[1] ?? '';
+        } else {
+            parse_str((string) ($parts['query'] ?? ''), $query);
+            $id = is_string($query['v'] ?? null) ? $query['v'] : '';
+        }
+
+        return preg_match('/^[A-Za-z0-9_-]{11}$/', $id) === 1 ? $id : null;
     }
 
     /**

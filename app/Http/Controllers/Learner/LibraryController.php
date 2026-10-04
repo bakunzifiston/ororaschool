@@ -9,9 +9,12 @@ use App\Support\DemoData\Pages\LearnerCertificatesPage;
 use App\Support\DemoData\Pages\LearnerProfilePage;
 use App\Support\DemoData\Pages\LearnerResourcesPage;
 use App\Support\DemoData\Pages\LearnerSessionsPage;
+use App\Support\DemoData\Resources;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class LibraryController extends Controller
 {
@@ -49,6 +52,26 @@ class LibraryController extends Controller
                 empty: $request->boolean('empty'),
             ),
         ]);
+    }
+
+    public function showResource(string $resource): View
+    {
+        $page = LearnerResourcesPage::show($resource);
+
+        abort_unless($page !== null, 404);
+
+        return view('learner.resources.show', ['page' => $page]);
+    }
+
+    public function fileResource(Request $request, string $resource): BinaryFileResponse|Response
+    {
+        abort_unless(LearnerProgress::canOpenResource($resource), 404);
+
+        $row = Resources::find($resource);
+
+        abort_unless($row !== null && Resources::canStream($row), 404);
+
+        return Resources::stream($row, $request->boolean('download'));
     }
 
     public function profile(): View

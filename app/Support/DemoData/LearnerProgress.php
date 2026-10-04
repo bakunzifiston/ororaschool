@@ -351,6 +351,17 @@ class LearnerProgress
         ));
     }
 
+    public static function canOpenResource(string $slug): bool
+    {
+        foreach (self::resources() as $resource) {
+            if ($resource['slug'] === $slug) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Platform-agnostic timeline. Newest first.
      *

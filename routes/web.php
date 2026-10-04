@@ -54,6 +54,10 @@ Route::get('/courses/{course}', [PublicCourseController::class, 'show'])->name('
 Route::get('/platforms', [PublicPlatformController::class, 'index'])->name('catalog.platforms');
 Route::get('/platforms/{platform}', [PublicPlatformController::class, 'show'])->name('catalog.platforms.show');
 Route::get('/resources', [PublicResourceController::class, 'index'])->name('catalog.resources');
+Route::get('/resources/{resource}', [PublicResourceController::class, 'show'])->name('catalog.resources.show')
+    ->where('resource', '[a-z0-9]+(?:-[a-z0-9]+)*');
+Route::get('/resources/{resource}/file', [PublicResourceController::class, 'file'])->name('catalog.resources.file')
+    ->where('resource', '[a-z0-9]+(?:-[a-z0-9]+)*');
 Route::get('/certificates', [CertificateVerificationController::class, 'index'])->name('certificates.lookup');
 Route::get('/certificates/{code}', [CertificateVerificationController::class, 'show'])->name('certificates.verify');
 Route::get('/verify/{code}', function (string $code) {
@@ -153,6 +157,16 @@ Route::middleware(['auth', 'verified', 'role:'.UserRole::SuperAdmin->value.','.U
         Route::get('/workspace/{platform}/resources', [WorkspaceResourceController::class, 'index'])->name('workspace.resources');
         Route::get('/workspace/{platform}/resources/create', [WorkspaceResourceController::class, 'create'])->name('workspace.resources.create');
         Route::post('/workspace/{platform}/resources', [WorkspaceResourceController::class, 'store'])->name('workspace.resources.store');
+        Route::get('/workspace/{platform}/resources/{resource}', [WorkspaceResourceController::class, 'show'])->name('workspace.resources.show')
+            ->where('resource', '[a-z0-9]+(?:-[a-z0-9]+)*');
+        Route::get('/workspace/{platform}/resources/{resource}/edit', [WorkspaceResourceController::class, 'edit'])->name('workspace.resources.edit')
+            ->where('resource', '[a-z0-9]+(?:-[a-z0-9]+)*');
+        Route::post('/workspace/{platform}/resources/{resource}', [WorkspaceResourceController::class, 'update'])->name('workspace.resources.update')
+            ->where('resource', '[a-z0-9]+(?:-[a-z0-9]+)*');
+        Route::delete('/workspace/{platform}/resources/{resource}', [WorkspaceResourceController::class, 'destroy'])->name('workspace.resources.destroy')
+            ->where('resource', '[a-z0-9]+(?:-[a-z0-9]+)*');
+        Route::get('/workspace/{platform}/resources/{resource}/file', [WorkspaceResourceController::class, 'file'])->name('workspace.resources.file')
+            ->where('resource', '[a-z0-9]+(?:-[a-z0-9]+)*');
 
         Route::get('/workspace/{platform}/instructors', [WorkspaceInstructorController::class, 'index'])->name('workspace.instructors');
         Route::get('/workspace/{platform}/instructors/{instructor}', [WorkspaceInstructorController::class, 'show'])->name('workspace.instructors.show')->whereNumber('instructor');
@@ -192,6 +206,10 @@ Route::middleware(['auth', 'verified', 'role:'.UserRole::Learner->value])->group
     Route::get('/learn/live-sessions', [LearnerLibraryController::class, 'sessions'])->name('learner.sessions');
     Route::post('/learn/live-sessions/{session}/join', [LearnerLibraryController::class, 'join'])->name('learner.sessions.join')->whereNumber('session');
     Route::get('/learn/resources', [LearnerLibraryController::class, 'resources'])->name('learner.resources');
+    Route::get('/learn/resources/{resource}', [LearnerLibraryController::class, 'showResource'])->name('learner.resources.show')
+        ->where('resource', '[a-z0-9]+(?:-[a-z0-9]+)*');
+    Route::get('/learn/resources/{resource}/file', [LearnerLibraryController::class, 'fileResource'])->name('learner.resources.file')
+        ->where('resource', '[a-z0-9]+(?:-[a-z0-9]+)*');
     Route::get('/learn/profile', [LearnerLibraryController::class, 'profile'])->name('learner.profile');
     Route::post('/learn/profile', [LearnerLibraryController::class, 'updateProfile'])->name('learner.profile.update');
 });

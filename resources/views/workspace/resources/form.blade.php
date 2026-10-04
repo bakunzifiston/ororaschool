@@ -1,17 +1,25 @@
 <x-layouts.platform-workspace :title="$page['header']['title']" :platform="$platformSlug">
+    @php
+        $editing = filled($page['resource']['slug'] ?? null);
+        $values = $page['values'] ?? ['title' => '', 'type' => '', 'attached_kind' => '', 'attached_key' => '', 'source_url' => ''];
+    @endphp
+
     <x-page-header :breadcrumb="$page['header']['breadcrumb']"
                    :title="$page['header']['title']"
                    :subtitle="$page['header']['subtitle']" />
 
     <form method="POST"
-          action="{{ route('workspace.resources.store', ['platform' => $platformSlug]) }}"
+          action="{{ $editing
+              ? route('workspace.resources.update', ['platform' => $platformSlug, 'resource' => $page['resource']['slug']])
+              : route('workspace.resources.store', ['platform' => $platformSlug]) }}"
           enctype="multipart/form-data"
           class="mt-6 max-w-2xl"
           x-data="{
-              type: @js(old('type', '')),
-              kind: @js(old('attached_kind', '')),
-              target: @js(old('attached_key', '')),
+              type: @js(old('type', $values['type'])),
+              kind: @js(old('attached_kind', $values['attached_kind'])),
+              target: @js(old('attached_key', $values['attached_key'])),
               fileName: '',
+              fileSuffix: @js($editing ? ' Leave blank to keep the current file.' : ' Optional in this build.'),
               accepts: @js($page['accepts']),
               hints: @js($page['hints']),
               targets: @js($page['targets']),
@@ -22,20 +30,22 @@
 
         <x-panel title="File">
             <div class="grid gap-5">
-                <x-field name="title" label="Title" size="sm" placeholder="e.g. CMT field sheet" />
+                <x-field name="title" label="Title" size="sm" placeholder="e.g. CMT field sheet" :value="$values['title']" />
 
                 <x-select name="type" label="Type" size="sm"
                           placeholder="Choose a type"
                           required
                           model="type"
-                          :options="$page['types']" />
+                          :options="$page['types']"
+                          :selected="$values['type']" />
                 <p class="text-micro text-fern-500" x-text="type ? (hints[type] || '') : 'Choose a type. That choice sets the label and the files we accept.'"></p>
 
                 <x-select name="attached_kind" label="Attach to" size="sm"
                           placeholder="Choose where it sits"
                           required
                           model="kind"
-                          :options="$page['kinds']" />
+                          :options="$page['kinds']"
+                          :selected="$values['attached_kind']" />
 
                 <div x-show="kind !== ''" x-cloak>
                     <label for="field-attached_key" class="mb-1.5 block text-dense font-medium text-basalt-800">
@@ -62,6 +72,11 @@
                        ? 'Open on the academy page and the public Resources list. Learners do not need to enrol.'
                        : (kind === '' ? 'Academy files are open. Course, module and lesson files wait until a learner enrols.' : 'Learners only see this after they enrol on that course.')"></p>
 
+                <x-field name="source_url" label="YouTube link" size="sm" type="url"
+                         placeholder="https://youtu.be/…"
+                         hint="Optional. Opens in the reader. You can still attach a file."
+                         :value="$values['source_url']" />
+
                 <div>
                     <p class="mb-1.5 text-dense font-medium text-basalt-800">File</p>
                     <label class="flex cursor-pointer items-center gap-3 rounded-md border border-clay-200 bg-chalk px-4 py-4">
@@ -71,7 +86,7 @@
                         <span class="min-w-0">
                             <span class="block text-dense text-basalt-800" x-text="fileName || 'Choose a file'"></span>
                             <span class="mt-0.5 block text-micro text-fern-500"
-                                  x-text="type ? (hints[type] + ' Optional in this build.') : 'Choose a type first.'"></span>
+                                  x-text="type ? (hints[type] + fileSuffix) : 'Choose a type first.'"></span>
                         </span>
                         <input type="file"
                                name="file"

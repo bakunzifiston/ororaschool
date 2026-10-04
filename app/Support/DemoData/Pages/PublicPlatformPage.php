@@ -66,6 +66,7 @@ class PublicPlatformPage
             'pagination' => $paged['pagination'],
             'resources' => array_map(function (array $resource): array {
                 $resource['type_label'] = Resources::typeLabel($resource['type']);
+                $resource['href'] = route('catalog.resources.show', ['resource' => $resource['slug']]);
 
                 return $resource;
             }, Resources::openOnPlatform($slug)),
