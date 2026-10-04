@@ -3,8 +3,15 @@
                    :title="$page['header']['title']"
                    :subtitle="$page['header']['subtitle']">
         <x-slot:actions>
-            <x-button variant="secondary" :href="route('admin.users.edit', $page['user']['id'])">Edit account</x-button>
-            <x-button icon="plus" x-on:click="$dispatch('open-modal', 'assign-platform')">Assign to platform</x-button>
+            @if ($page['persisted'])
+                <x-button variant="secondary" :href="route('admin.accounts.edit', $page['user']['id'])">Edit</x-button>
+                @if ($page['canDelete'])
+                    <x-button variant="danger" x-on:click="$dispatch('open-modal', 'delete-user')">Delete</x-button>
+                @endif
+            @else
+                <x-button variant="secondary" :href="route('admin.users.edit', $page['user']['id'])">Edit</x-button>
+                <x-button icon="plus" x-on:click="$dispatch('open-modal', 'assign-platform')">Assign to academy</x-button>
+            @endif
         </x-slot:actions>
     </x-page-header>
 
@@ -26,8 +33,8 @@
             </dl>
         </x-panel>
 
-        <x-panel class="lg:col-span-2" title="Platform assignments"
-                 subtitle="One person, a different role on each platform — the user_platform_roles shape."
+        <x-panel class="lg:col-span-2" title="Academy assignments"
+                 subtitle="One person, a different role on each academy — the user_platform_roles shape."
                  :padded="false">
             @if (count($page['assignments']))
                 <ul class="divide-y divide-clay-100">
@@ -37,29 +44,51 @@
                                 <p class="font-medium text-basalt-900">{{ $assignment['platform'] }}</p>
                                 <p class="text-micro text-fern-500">{{ $assignment['discipline'] }}</p>
                             </div>
-                            <x-role-chip :role="$assignment['role']" show-scope />
+                            <x-role-chip :role="$assignment['role']" :show-scope="! ($page['persisted'] ?? false)" />
                         </li>
                     @endforeach
                 </ul>
             @else
                 <x-empty-state icon="layers"
-                               title="Not assigned to any platform yet"
-                               message="Assign {{ $page['user']['name'] }} to a platform with a role. Until then they can sign in but will not see a workspace.">
+                               title="Not assigned to any academy yet"
+                               message="Assign {{ $page['user']['name'] }} to an academy with a role. Until then they can sign in but will not see a workspace.">
                     <x-slot:actions>
-                        <x-button size="sm" x-on:click="$dispatch('open-modal', 'assign-platform')">Assign to platform</x-button>
+                        @if ($page['persisted'])
+                            <x-button size="sm" :href="route('admin.accounts.edit', $page['user']['id'])">Edit</x-button>
+                        @else
+                            <x-button size="sm" x-on:click="$dispatch('open-modal', 'assign-platform')">Assign to academy</x-button>
+                        @endif
                     </x-slot:actions>
                 </x-empty-state>
             @endif
         </x-panel>
     </div>
 
-    <x-modal name="assign-platform" title="Assign to a platform"
+    @if ($page['persisted'] && $page['canDelete'])
+        <x-modal name="delete-user" width="md"
+                 :title="'Delete '.$page['user']['name'].'?'"
+                 :subtitle="$page['user']['email']">
+            <p>{{ $page['user']['name'] }} will no longer be able to sign in. Enrolments on this account are removed with it.</p>
+
+            <x-slot:actions>
+                <x-button variant="ghost" x-on:click="open = false">Cancel</x-button>
+                <form method="POST" action="{{ route('admin.accounts.destroy', $page['user']['id']) }}">
+                    @csrf
+                    @method('DELETE')
+                    <x-button type="submit" variant="danger">Delete user</x-button>
+                </form>
+            </x-slot:actions>
+        </x-modal>
+    @endif
+
+    @unless ($page['persisted'])
+    <x-modal name="assign-platform" title="Assign to an academy"
              :subtitle="$page['user']['name']" width="md">
         <form method="POST" action="{{ route('admin.users.assign', $page['user']['id']) }}" class="grid gap-4">
             @csrf
-            <x-select name="platform" label="Platform" size="sm"
+            <x-select name="platform" label="Academy" size="sm"
                       :options="$page['platforms']" />
-            <x-select name="role" label="Role on that platform" size="sm"
+            <x-select name="role" label="Role on that academy" size="sm"
                       :options="$page['roles']" />
             <p class="text-micro text-fern-500">
                 This writes a user_platform_roles row. Nothing is saved in this build.
@@ -70,4 +99,5 @@
             </div>
         </form>
     </x-modal>
+    @endunless
 </x-layouts.super-admin>

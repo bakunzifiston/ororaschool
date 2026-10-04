@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\DemoData\Platforms as PlatformFixtures;
 use Database\Factories\PlatformFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 #[Fillable([
     'slug',
@@ -69,6 +71,30 @@ class Platform extends Model
     public function certificates(): HasMany
     {
         return $this->hasMany(Certificate::class);
+    }
+
+    public static function firstOrCreateFromSlug(string $slug): self
+    {
+        $fixture = PlatformFixtures::find($slug);
+
+        return static::query()->firstOrCreate(
+            ['slug' => $slug],
+            [
+                'name' => $fixture['name'] ?? Str::headline($slug),
+                'discipline' => $fixture['discipline'] ?? 'Farm management',
+                'tagline' => $fixture['tagline'] ?? '',
+                'description' => $fixture['description'] ?? '',
+                'steward' => $fixture['steward'] ?? 'FarmSchool',
+                'region' => $fixture['region'] ?? 'Rwanda',
+                'learner_count' => $fixture['learners'] ?? 0,
+                'instructor_count' => $fixture['instructors'] ?? 0,
+                'status' => $fixture['status'] ?? 'active',
+                'sort_order' => 10,
+                'joined_at' => now()->subYear(),
+                'completion_rate' => $fixture['completion_rate'] ?? 0,
+                'cover' => $fixture['cover'] ?? null,
+            ],
+        );
     }
 
     #[Scope]

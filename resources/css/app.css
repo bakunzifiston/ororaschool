@@ -6,7 +6,7 @@
 @source '../**/*.js';
 
 /* ===========================================================================
-   Orora School design tokens.
+   FarmSchool design tokens.
 
    Tailwind v4 has no tailwind.config.js — @theme IS the config. Every token
    declared here generates the matching utilities (bg-papyrus, text-fern-500,
@@ -243,6 +243,11 @@
         border-left-width: 1px;
         border-left-color: rgb(17 21 18 / 0.07);
         padding: 1.15rem 1.25rem;
+    }
+
+    [data-experience='super-admin'] .kpi-strip,
+    [data-experience='platform-workspace'] .kpi-strip {
+        box-shadow: none;
     }
 
     [data-experience='super-admin'] .app-filters,

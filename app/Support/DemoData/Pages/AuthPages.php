@@ -18,8 +18,8 @@ class AuthPages
     {
         return [
             'title' => 'Sign in',
-            'subtitle' => 'Orora School is the training and certification arm of the Orora platforms. '
-                .'Use the account your platform coordinator set up for you.',
+            'subtitle' => 'FarmSchool is the training and certification arm of the Orora academies. '
+                .'Use the account your academy coordinator set up for you.',
             'email' => [
                 'label' => 'Email address',
                 'placeholder' => 'name@gemura.rw',
@@ -49,7 +49,7 @@ class AuthPages
             ],
             // Grounded in the actual audience: plenty of field staff and
             // cooperative members have no working inbox of their own.
-            'aside' => 'No email inbox of your own? Ask your platform coordinator or cooperative secretary '
+            'aside' => 'No email inbox of your own? Ask your academy coordinator or cooperative secretary '
                 .'to reset it for you — they can do it from the workspace.',
             'submit' => 'Email me a reset link',
             'back' => 'Back to sign in',
@@ -110,7 +110,7 @@ class AuthPages
                 .'come to this address from now on.',
             'next' => [
                 'Pick up the course closest to finishing on your dashboard.',
-                'Your training record follows you to any Orora platform you join later.',
+                'Your training record follows you to any Orora academy you join later.',
             ],
             'submit' => 'Go to my dashboard',
         ];
@@ -124,18 +124,18 @@ class AuthPages
     public static function register(): array
     {
         return [
-            'title' => 'Get your Orora School account',
-            'subtitle' => 'Most learners already have one through the platform they use day to day. '
+            'title' => 'Get your FarmSchool account',
+            'subtitle' => 'Most learners already have one through the academy they use day to day. '
                 .'Link that account and your training record and certificates follow you.',
             'platforms' => array_map(fn (array $platform) => [
                 'slug' => $platform['slug'],
                 'name' => $platform['name'],
                 'discipline' => $platform['discipline'],
             ], Platforms::active()),
-            'linkNote' => 'Linking takes you to that platform to confirm it is you. Nothing is shared back '
+            'linkNote' => 'Linking takes you to that academy to confirm it is you. Nothing is shared back '
                 .'except your name and the district you work in.',
             'divider' => 'Not on any of those yet?',
-            'directIntro' => 'Create an account directly. You can link a platform later without losing '
+            'directIntro' => 'Create an account directly. You can link an academy later without losing '
                 .'anything you have already finished.',
             'fields' => [
                 'name' => ['label' => 'Full name', 'placeholder' => 'e.g. Placide Bizimana'],

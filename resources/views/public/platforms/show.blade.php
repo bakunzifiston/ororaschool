@@ -12,7 +12,7 @@
 
     <x-public.hero-band :image="$platform['cover'] ?? null" :alt="$platform['name']">
         <x-public.trail on-dark :items="[
-            ['label' => 'Platforms', 'route' => 'catalog.platforms'],
+            ['label' => 'Academies', 'route' => 'catalog.platforms'],
             ['label' => $platform['name']],
         ]" />
 

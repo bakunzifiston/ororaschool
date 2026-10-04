@@ -234,7 +234,7 @@ class PublicCatalog
             ->orderBy('id')
             ->get();
 
-        $platforms = ['' => 'All platforms'];
+        $platforms = ['' => 'All academies'];
         foreach (self::activePlatforms() as $row) {
             $platforms[$row['slug']] = $row['name'];
         }

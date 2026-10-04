@@ -31,7 +31,7 @@ class InstructorsPage
             'header' => WorkspaceHeader::make(
                 $current,
                 'Instructors',
-                'People who teach on '.$current['name'].'. A person can hold a different role on another platform.',
+                'People who teach on '.$current['name'].'. A person can hold a different role on another academy.',
             ),
             'rows' => $rows,
             'emptyTitle' => 'No instructors on '.$current['name'].' yet',

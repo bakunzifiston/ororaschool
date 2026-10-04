@@ -14,7 +14,7 @@ class PublicPlatformPage
     {
         return [
             'header' => PublicHeader::make(
-                'Platforms',
+                'Academies',
                 'Four live academies. Each teaches the work of its own system. Your training record is the same wherever you enrol.',
             ),
             'platforms' => PublicCatalog::activePlatforms(),
@@ -45,7 +45,7 @@ class PublicPlatformPage
                 $platform['name'],
                 $platform['discipline'].' · '.$platform['region'],
                 [
-                    ['label' => 'Platforms', 'route' => 'catalog.platforms'],
+                    ['label' => 'Academies', 'route' => 'catalog.platforms'],
                     ['label' => $platform['name']],
                 ],
             ),

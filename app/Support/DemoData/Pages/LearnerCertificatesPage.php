@@ -24,7 +24,7 @@ class LearnerCertificatesPage
         return [
             'header' => LearnerHeader::make(
                 'Certificates',
-                'Numbers minted against your record, from every platform you have finished on.',
+                'Numbers minted against your record, from every academy you have finished on.',
                 [
                     ['label' => 'Certificates'],
                 ],

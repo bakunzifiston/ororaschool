@@ -14,7 +14,7 @@
                       :selected="$page['filters']['user']" />
         </div>
         <div class="w-48">
-            <x-select name="platform" label="Platform" size="sm"
+            <x-select name="platform" label="Academy" size="sm"
                       :options="$page['filters']['platforms']"
                       :selected="$page['filters']['platform']" />
         </div>

@@ -14,6 +14,7 @@
                                 ['key' => 'district', 'label' => 'District'],
                                 ['key' => 'courses_count', 'label' => 'Courses', 'align' => 'right'],
                                 ['key' => 'courses', 'label' => 'Teaching'],
+                                ['key' => 'actions', 'label' => '', 'align' => 'right'],
                             ]"
                           :empty-title="$page['emptyTitle']"
                           :empty-message="$page['emptyMessage']"
@@ -32,6 +33,9 @@
                             <td class="figure px-3 py-2.5 text-right text-micro">{{ $row['courses_count'] }}</td>
                             <td class="px-3 py-2.5 text-micro text-fern-500">
                                 {{ count($row['courses']) ? implode(' · ', $row['courses']) : '—' }}
+                            </td>
+                            <td class="px-3 py-2.5 text-right">
+                                <x-row-actions :view="route('workspace.instructors.show', ['platform' => $platformSlug, 'instructor' => $row['id']])" />
                             </td>
                         </tr>
                     @endforeach

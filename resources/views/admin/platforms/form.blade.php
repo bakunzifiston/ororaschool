@@ -8,7 +8,7 @@
           class="mt-6 max-w-2xl">
         @csrf
 
-        <x-panel title="Platform record">
+        <x-panel title="Academy record">
             <div class="grid gap-5">
                 <x-field name="name" label="Name" size="sm"
                          :value="$page['platform']['name']"
@@ -31,21 +31,21 @@
                             <p class="mt-0.5 text-micro text-fern-500">PNG or SVG, 512×512. Upload is a placeholder in this build.</p>
                         </div>
                     </div>
-                    <input type="file" name="logo" accept="image/png,image/svg+xml" class="sr-only" aria-label="Platform logo">
+                    <input type="file" name="logo" accept="image/png,image/svg+xml" class="sr-only" aria-label="Academy logo">
                 </div>
 
                 <x-textarea name="description" label="Description"
                             :value="$page['platform']['description'] ?? ''"
                             hint="Shown on the estate list and inside the workspace switcher." />
 
-                <x-toggle name="active" label="Platform is active"
+                <x-toggle name="active" label="Academy is active"
                           :checked="($page['platform']['status'] ?? 'inactive') === 'active'"
-                          hint="Inactive platforms stay in the list so certificates still resolve, but staff cannot open the workspace." />
+                          hint="Inactive academies stay in the list so certificates still resolve, but staff cannot open the workspace." />
             </div>
         </x-panel>
 
         <div class="mt-4 flex flex-wrap gap-2">
-            <x-button type="submit">{{ $page['isEdit'] ? 'Save platform' : 'Create platform' }}</x-button>
+            <x-button type="submit">{{ $page['isEdit'] ? 'Save academy' : 'Create academy' }}</x-button>
             <x-button variant="secondary" :href="route('admin.platforms')">Cancel</x-button>
         </div>
     </form>

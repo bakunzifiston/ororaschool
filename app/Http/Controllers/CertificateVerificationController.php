@@ -36,7 +36,7 @@ class CertificateVerificationController extends Controller
                 'page' => [
                     'header' => PublicHeader::make(
                         'Not a valid certificate',
-                        'This number is not on the Orora School register.',
+                        'This number is not on the FarmSchool register.',
                         [
                             ['label' => 'Certificate verification', 'route' => 'certificates.lookup'],
                             ['label' => 'Not a valid certificate'],
@@ -47,7 +47,7 @@ class CertificateVerificationController extends Controller
                     'status' => 'not_found',
                     'code' => $code,
                     'title' => 'Not a valid certificate',
-                    'subtitle' => 'This number is not on the Orora School register.',
+                    'subtitle' => 'This number is not on the FarmSchool register.',
                     'message' => 'Check the code on the printed certificate. A mistyped digit is the usual reason a lookup fails.',
                 ],
             ]);

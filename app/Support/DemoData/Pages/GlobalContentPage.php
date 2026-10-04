@@ -22,22 +22,22 @@ class GlobalContentPage
         return [
             'header' => [
                 'breadcrumb' => [
-                    ['label' => 'Orora School', 'route' => 'admin.dashboard'],
+                    ['label' => 'FarmSchool', 'route' => 'admin.dashboard'],
                     ['label' => 'Global content'],
                 ],
                 'title' => 'Global content',
-                'subtitle' => 'Academies and courses across the estate. Open a row to work on it inside that platform’s workspace.',
+                'subtitle' => 'Courses across the estate. Open a row to work on it inside that academy’s workspace.',
             ],
             'columns' => [
                 ['key' => 'title', 'label' => 'Title'],
                 ['key' => 'kind', 'label' => 'Kind'],
-                ['key' => 'platform', 'label' => 'Platform'],
+                ['key' => 'platform', 'label' => 'Academy'],
                 ['key' => 'status', 'label' => 'Status', 'type' => 'status'],
             ],
             'rows' => $paged['rows'],
             'pagination' => $paged['pagination'],
-            'emptyTitle' => 'Nothing published on any platform yet',
-            'emptyMessage' => 'Courses and academies are authored in a platform workspace. When the first one is saved, it will appear here as a shortcut into that workspace.',
+            'emptyTitle' => 'Nothing published on any academy yet',
+            'emptyMessage' => 'Courses are authored in an academy workspace. When the first one is saved, it will appear here as a shortcut into that workspace.',
         ];
     }
 

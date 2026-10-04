@@ -31,7 +31,7 @@ class PlatformController extends Controller
     public function store(): RedirectResponse
     {
         return redirect()->route('admin.platforms')
-            ->with('status', 'Platform created as inactive. Nothing was saved in this build.');
+            ->with('status', 'Academy created as inactive. Nothing was saved in this build.');
     }
 
     public function edit(string $platform): View
@@ -48,7 +48,7 @@ class PlatformController extends Controller
         abort_unless(Platforms::find($platform), 404);
 
         return redirect()->route('admin.platforms')
-            ->with('status', 'Platform saved. Nothing was written in this build.');
+            ->with('status', 'Academy saved. Nothing was written in this build.');
     }
 
     public function toggle(string $platform): RedirectResponse

@@ -1,37 +1,57 @@
 @props([
     'title' => '',
     'subtitle' => null,
+    'headline' => null,
+    'trend' => null,
+    'trendNote' => null,
     'labels' => [],
     'values' => [],
     'suffix' => '',
     'orientation' => 'vertical',
+    'max' => null,
 ])
 
 @php
-    $max = max(1, ...(array) $values);
+    $ceiling = $max !== null ? max(1, (int) $max) : max(1, ...(array) $values);
     $horizontal = $orientation === 'horizontal';
 @endphp
 
 <figure {{ $attributes->merge(['class' => 'min-w-0']) }}>
     <figcaption>
         <h3 class="font-display text-panel font-semibold text-basalt-900">{{ $title }}</h3>
+        @if ($headline)
+            <p class="figure mt-2 text-title leading-none text-basalt-900">{{ $headline }}</p>
+            @if ($trend || $trendNote)
+                <p class="mt-1.5 flex flex-wrap items-baseline gap-x-1.5 text-micro">
+                    @if ($trend)
+                        <span class="font-medium text-ok">{{ $trend }}</span>
+                    @endif
+                    @if ($trendNote)
+                        <span class="text-fern-500">{{ $trendNote }}</span>
+                    @endif
+                </p>
+            @endif
+        @endif
         @if ($subtitle)
             <p class="mt-0.5 text-micro text-fern-500">{{ $subtitle }}</p>
         @endif
     </figcaption>
 
     @if ($horizontal)
-        <ul class="mt-4 grid gap-3" role="list">
+        @php
+            $barColors = ['bg-accent-500', 'bg-ok', 'bg-st-approved', 'bg-st-pending', 'bg-st-active', 'bg-st-completed'];
+        @endphp
+        <ul class="mt-4 grid gap-2.5" role="list">
             @foreach ($values as $i => $value)
-                @php $width = (int) round(($value / $max) * 100); @endphp
+                @php $width = (int) round(($value / $ceiling) * 100); @endphp
                 <li class="min-w-0">
                     <div class="flex items-baseline justify-between gap-3">
                         <span class="truncate text-dense text-basalt-800">{{ $labels[$i] ?? '' }}</span>
                         <span class="figure shrink-0 text-micro text-fern-500">{{ number_format((int) $value) }}{{ $suffix }}</span>
                     </div>
-                    <div class="mt-1.5 h-2 overflow-hidden rounded-full bg-clay-100" role="img"
+                    <div class="mt-1.5 h-1.5 overflow-hidden rounded-full bg-clay-100" role="img"
                          aria-label="{{ $labels[$i] ?? '' }}: {{ number_format((int) $value) }}{{ $suffix }}">
-                        <div class="h-full rounded-full bg-accent-500" style="width: {{ max(4, $width) }}%"></div>
+                        <div class="h-full rounded-full {{ $barColors[$i % count($barColors)] }}" style="width: {{ max(4, $width) }}%"></div>
                     </div>
                 </li>
             @endforeach
@@ -39,7 +59,7 @@
     @else
         <div class="mt-4 flex h-36 items-end gap-1.5">
             @foreach ($values as $i => $value)
-                @php $height = (int) round(($value / $max) * 100); @endphp
+                @php $height = (int) round(($value / $ceiling) * 100); @endphp
                 <div class="flex min-w-0 flex-1 flex-col items-stretch justify-end gap-1">
                     <span class="figure self-center text-micro text-fern-500">{{ $value }}{{ $suffix }}</span>
                     <div class="w-full rounded-sm bg-accent-500"

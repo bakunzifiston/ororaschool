@@ -362,7 +362,7 @@ class LearnerProgress
             ['at' => '02 Sep 2026', 'platform' => 'Gemura', 'title' => 'Certificate OS-GEM-2026-1841 issued', 'detail' => 'Cold Chain Discipline at Milk Collection Centres.'],
             ['at' => '28 Aug 2026', 'platform' => 'FeedGrid', 'title' => 'Opened Aflatoxin Control in Maize Bran Storage', 'detail' => 'First lesson only — moisture is the whole story.'],
             ['at' => '14 Aug 2026', 'platform' => 'BuchaPro', 'title' => 'Certificate OS-BCH-2026-0498 issued', 'detail' => 'Animal Identification and Ear-Tag Registration.'],
-            ['at' => '04 May 2024', 'platform' => 'Orora School', 'title' => 'Learning record opened', 'detail' => 'One record. Courses from every platform sit on it.'],
+            ['at' => '04 May 2024', 'platform' => 'FarmSchool', 'title' => 'Learning record opened', 'detail' => 'One record. Courses from every academy sit on it.'],
         ];
     }
 

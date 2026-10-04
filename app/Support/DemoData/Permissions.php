@@ -21,12 +21,12 @@ class Permissions
         return [
             [
                 'area' => 'platforms',
-                'label' => 'Platforms',
+                'label' => 'Academies',
                 'permissions' => [
-                    ['key' => 'platforms.view', 'label' => 'View platforms', 'hint' => 'See the estate list and open a workspace.'],
-                    ['key' => 'platforms.create', 'label' => 'Create platforms', 'hint' => 'Add a new tenant to Orora School.'],
-                    ['key' => 'platforms.update', 'label' => 'Edit platforms', 'hint' => 'Change name, slug, logo and description.'],
-                    ['key' => 'platforms.activate', 'label' => 'Activate or deactivate', 'hint' => 'Take a platform on or off the estate.'],
+                    ['key' => 'platforms.view', 'label' => 'View academies', 'hint' => 'See the estate list and open a workspace.'],
+                    ['key' => 'platforms.create', 'label' => 'Create academies', 'hint' => 'Add a new tenant to FarmSchool.'],
+                    ['key' => 'platforms.update', 'label' => 'Edit academies', 'hint' => 'Change name, slug, logo and description.'],
+                    ['key' => 'platforms.activate', 'label' => 'Activate or deactivate', 'hint' => 'Take an academy on or off the estate.'],
                 ],
             ],
             [
@@ -36,7 +36,7 @@ class Permissions
                     ['key' => 'users.view', 'label' => 'View users', 'hint' => 'Open the directory and a person’s assignments.'],
                     ['key' => 'users.create', 'label' => 'Create users', 'hint' => 'Invite staff and learners onto the estate.'],
                     ['key' => 'users.update', 'label' => 'Edit users', 'hint' => 'Change name, email, district and account status.'],
-                    ['key' => 'users.assign', 'label' => 'Assign to a platform', 'hint' => 'Attach a role on a platform (user_platform_roles).'],
+                    ['key' => 'users.assign', 'label' => 'Assign to an academy', 'hint' => 'Attach a role on an academy (user_platform_roles).'],
                 ],
             ],
             [
@@ -53,7 +53,7 @@ class Permissions
                 'label' => 'Courses',
                 'permissions' => [
                     ['key' => 'courses.view', 'label' => 'View courses', 'hint' => 'Browse the catalogue inside a workspace.'],
-                    ['key' => 'courses.create', 'label' => 'Create courses', 'hint' => 'Open a draft in a platform workspace.'],
+                    ['key' => 'courses.create', 'label' => 'Create courses', 'hint' => 'Open a draft in an academy workspace.'],
                     ['key' => 'courses.update', 'label' => 'Edit courses', 'hint' => 'Change structure, copy and settings.'],
                     ['key' => 'courses.publish', 'label' => 'Publish and archive', 'hint' => 'Move a course through the lifecycle.'],
                     ['key' => 'courses.review', 'label' => 'Submit and review', 'hint' => 'Send for review, or sign off a submission.'],
@@ -98,7 +98,7 @@ class Permissions
                 'area' => 'analytics',
                 'label' => 'Analytics',
                 'permissions' => [
-                    ['key' => 'analytics.view', 'label' => 'View analytics', 'hint' => 'Open estate and platform reports.'],
+                    ['key' => 'analytics.view', 'label' => 'View analytics', 'hint' => 'Open estate and academy reports.'],
                     ['key' => 'activity.view', 'label' => 'View activity logs', 'hint' => 'Read the audit trail.'],
                 ],
             ],

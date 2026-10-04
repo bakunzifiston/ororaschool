@@ -25,14 +25,14 @@
             </x-panel>
         @empty
             <x-panel class="lg:col-span-2" :padded="false">
-                <x-empty-state icon="chart" title="No analytics on this platform yet"
+                <x-empty-state icon="chart" title="No analytics on this academy yet"
                                message="Enrolments, completions and quiz scores fill these charts once learners start." />
             </x-panel>
         @endforelse
     </div>
 
     <div class="mt-6">
-        <x-panel title="Top courses by enrolment" subtitle="This platform only."
+        <x-panel title="Top courses by enrolment" subtitle="This academy only."
                  variant="table" :padded="false">
             <x-data-table :columns="$page['topCourses']['columns']"
                           :rows="$page['topCourses']['rows']"

@@ -11,9 +11,8 @@ use Illuminate\View\View;
 class WorkspaceController extends Controller
 {
     /**
-     * The platform comes from the route, which is the whole of the workspace
-     * switcher's behaviour: pick a platform, land on its dashboard. No access
-     * check — that belongs to the backend phases.
+     * The platform comes from the route. Access is enforced by the
+     * platform.access middleware before this action runs.
      */
     public function dashboard(string $platform): View
     {

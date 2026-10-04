@@ -28,18 +28,18 @@ class ActivityLogsPage
         return [
             'header' => [
                 'breadcrumb' => [
-                    ['label' => 'Orora School', 'route' => 'admin.dashboard'],
+                    ['label' => 'FarmSchool', 'route' => 'admin.dashboard'],
                     ['label' => 'Activity logs'],
                 ],
                 'title' => 'Activity logs',
-                'subtitle' => 'Who did what, on which platform, and when. Nothing here is deleted — deactivating a platform still leaves its trail.',
+                'subtitle' => 'Who did what, on which academy, and when. Nothing here is deleted — deactivating an academy still leaves its trail.',
             ],
             'filters' => [
                 'user' => $user,
                 'platform' => $platform,
                 'action' => $action,
                 'users' => ['' => 'Any person'] + array_combine($actors, $actors),
-                'platforms' => ['' => 'Any platform'] + array_column(Platforms::all(), 'name', 'slug'),
+                'platforms' => ['' => 'Any academy'] + array_column(Platforms::all(), 'name', 'slug'),
                 'actions' => [
                     '' => 'Any action',
                     'course.published' => 'Course published',
@@ -49,8 +49,8 @@ class ActivityLogsPage
                     'course.archived' => 'Course archived',
                     'role.assigned' => 'Role assigned',
                     'role.created' => 'Role created',
-                    'platform.created' => 'Platform created',
-                    'platform.deactivated' => 'Platform deactivated',
+                    'platform.created' => 'Academy created',
+                    'platform.deactivated' => 'Academy deactivated',
                     'enrollment.created' => 'Learners enrolled',
                     'certificate.issued' => 'Certificate issued',
                     'live_session.scheduled' => 'Live session scheduled',
@@ -61,7 +61,7 @@ class ActivityLogsPage
             ],
             'columns' => [
                 ['key' => 'user', 'label' => 'User', 'type' => 'person'],
-                ['key' => 'platform', 'label' => 'Platform'],
+                ['key' => 'platform', 'label' => 'Academy'],
                 ['key' => 'action_label', 'label' => 'Action'],
                 ['key' => 'target', 'label' => 'Description'],
                 ['key' => 'date', 'label' => 'Date', 'align' => 'right'],
@@ -72,8 +72,8 @@ class ActivityLogsPage
                 ? 'No log entries match these filters'
                 : 'The trail is empty',
             'emptyMessage' => $user !== '' || $platform !== '' || $action !== ''
-                ? 'Widen the filters. Publishing a course, assigning a role or creating a platform all write a row here.'
-                : 'The first published course, assigned role or created platform will open the trail.',
+                ? 'Widen the filters. Publishing a course, assigning a role or creating an academy all write a row here.'
+                : 'The first published course, assigned role or created academy will open the trail.',
         ];
     }
 

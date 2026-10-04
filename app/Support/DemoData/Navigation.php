@@ -21,7 +21,7 @@ class Navigation
         return [
             ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'path' => '/admin', 'icon' => 'gauge', 'group' => 'Overview'],
             ['label' => 'Analytics', 'route' => 'admin.analytics', 'path' => '/admin/analytics', 'icon' => 'chart', 'group' => 'Overview'],
-            ['label' => 'Platforms', 'route' => 'admin.platforms', 'path' => '/admin/platforms', 'icon' => 'layers', 'group' => 'Management'],
+            ['label' => 'Academies', 'route' => 'admin.platforms', 'path' => '/admin/platforms', 'icon' => 'layers', 'group' => 'Management'],
             ['label' => 'Users', 'route' => 'admin.users', 'path' => '/admin/users', 'icon' => 'users', 'group' => 'Management'],
             ['label' => 'Roles', 'route' => 'admin.roles', 'path' => '/admin/roles', 'icon' => 'shield', 'group' => 'Management'],
             ['label' => 'Permissions', 'route' => 'admin.permissions', 'path' => '/admin/permissions', 'icon' => 'key', 'roles' => ['super-admin'], 'group' => 'Management'],
@@ -70,7 +70,7 @@ class Navigation
         return [
             ['label' => 'Home', 'route' => 'home', 'path' => '/', 'icon' => 'sprout'],
             ['label' => 'Courses', 'route' => 'catalog.courses', 'path' => '/courses', 'icon' => 'book'],
-            ['label' => 'Platforms', 'route' => 'catalog.platforms', 'path' => '/platforms', 'icon' => 'layers'],
+            ['label' => 'Academies', 'route' => 'catalog.platforms', 'path' => '/platforms', 'icon' => 'layers'],
             ['label' => 'Certificate Verification', 'route' => 'certificates.lookup', 'path' => '/certificates', 'icon' => 'award'],
         ];
     }

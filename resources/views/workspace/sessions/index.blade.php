@@ -16,6 +16,7 @@
                                 ['key' => 'course', 'label' => 'Course'],
                                 ['key' => 'starts_at', 'label' => 'When'],
                                 ['key' => 'status', 'label' => 'Status'],
+                                ['key' => 'actions', 'label' => '', 'align' => 'right'],
                             ]"
                           :pagination="$page['pagination']"
                           :empty-title="$page['emptyTitle']"
@@ -32,6 +33,9 @@
                             <td class="px-3 py-2.5 text-dense">{{ $row['course'] }}</td>
                             <td class="px-3 py-2.5 text-micro text-fern-500">{{ $row['starts'] }}</td>
                             <td class="px-3 py-2.5"><x-status-badge :status="$row['status']" /></td>
+                            <td class="px-3 py-2.5 text-right">
+                                <x-row-actions :edit="route('workspace.sessions.edit', ['platform' => $platformSlug, 'session' => $row['id']])" />
+                            </td>
                         </tr>
                     @endforeach
                 @endif

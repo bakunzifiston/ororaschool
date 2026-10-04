@@ -2,6 +2,8 @@
     'breadcrumb' => [],
     'title' => '',
     'subtitle' => null,
+    'meta' => null,
+    'size' => 'default',
 ])
 
 <header {{ $attributes->merge(['class' => 'page-header border-b border-clay-200 pb-5']) }}>
@@ -39,14 +41,25 @@
 
     <div class="flex flex-wrap items-start justify-between gap-4">
         <div class="min-w-0 max-w-2xl">
-            <h1 class="text-title text-basalt-900">{{ $title }}</h1>
+            <h1 @class([
+                'text-basalt-900',
+                'font-display text-hero' => $size === 'display',
+                'text-title' => $size !== 'display',
+            ])>{{ $title }}</h1>
             @if ($subtitle)
                 <p class="mt-2 text-dense leading-relaxed text-fern-500">{{ $subtitle }}</p>
             @endif
         </div>
 
-        @isset($actions)
-            <div class="flex shrink-0 flex-wrap items-center gap-2">{{ $actions }}</div>
-        @endisset
+        @if ($meta || isset($actions))
+            <div class="flex shrink-0 flex-col items-start gap-2 sm:items-end">
+                @if ($meta)
+                    <p class="text-micro text-fern-500">{{ $meta }}</p>
+                @endif
+                @isset($actions)
+                    <div class="flex shrink-0 flex-wrap items-center gap-2">{{ $actions }}</div>
+                @endisset
+            </div>
+        @endif
     </div>
 </header>

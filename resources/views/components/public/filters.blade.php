@@ -9,7 +9,7 @@
     $selects = [];
 
     if ($showPlatformFilter) {
-        $selects[] = ['name' => 'platform', 'label' => 'Platform', 'options' => $options['platforms'] ?? []];
+        $selects[] = ['name' => 'platform', 'label' => 'Academy', 'options' => $options['platforms'] ?? []];
     }
 
     $selects[] = ['name' => 'academy', 'label' => 'Academy', 'options' => $options['academies'] ?? []];

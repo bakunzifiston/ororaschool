@@ -171,6 +171,54 @@ class AuthPagesTest extends TestCase
             ->assertOk();
     }
 
+    public function test_platform_staff_cannot_open_a_workspace_they_were_not_given(): void
+    {
+        $this->actingAsPlatformStaff()
+            ->get(route('workspace.dashboard', ['platform' => 'ororafarm']))
+            ->assertNotFound();
+    }
+
+    public function test_platform_staff_cannot_create_estate_users(): void
+    {
+        $this->actingAsPlatformStaff()
+            ->post(route('admin.users.store'), [
+                'name' => 'Blocked Staff',
+                'email' => 'blocked.staff@ororaschool.rw',
+                'password' => 'password12',
+                'password_confirmation' => 'password12',
+                'district' => 'Kigali',
+                'role' => UserRole::PlatformStaff->value,
+                'status' => 'active',
+                'platforms' => ['gemura'],
+            ])
+            ->assertForbidden();
+
+        $this->assertDatabaseMissing('users', ['email' => 'blocked.staff@ororaschool.rw']);
+    }
+
+    public function test_platform_staff_cannot_open_or_delete_estate_accounts(): void
+    {
+        $account = User::factory()->platformStaff()->create([
+            'email' => 'protected.account@ororaschool.rw',
+        ]);
+
+        $this->actingAsPlatformStaff();
+
+        $this->get(route('admin.accounts.show', $account))->assertForbidden();
+        $this->get(route('admin.accounts.edit', $account))->assertForbidden();
+        $this->post(route('admin.accounts.update', $account), [
+            'name' => $account->name,
+            'email' => $account->email,
+            'district' => $account->district,
+            'role' => UserRole::PlatformStaff->value,
+            'status' => 'active',
+            'platforms' => ['gemura'],
+        ])->assertForbidden();
+        $this->delete(route('admin.accounts.destroy', $account))->assertForbidden();
+
+        $this->assertModelExists($account);
+    }
+
     public function test_an_unverified_learner_is_sent_to_confirm_their_email(): void
     {
         $user = User::factory()->unverified()->learner()->create();

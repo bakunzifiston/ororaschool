@@ -4,7 +4,7 @@
                    :subtitle="$page['header']['subtitle']" />
 
     <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <x-panel title="On this platform">
+        <x-panel title="On this academy">
             <x-role-chip :role="$page['role']" show-scope />
             <p class="mt-3 text-micro text-fern-500">{{ $page['person']['email'] }}</p>
             <p class="text-micro text-fern-500">Last seen {{ $page['person']['last_seen'] }}</p>

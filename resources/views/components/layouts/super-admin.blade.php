@@ -20,7 +20,7 @@
         <div class="mx-3 flex items-center justify-between gap-2 rounded-lg bg-basalt-800 px-3 py-2.5" role="status">
             <div class="min-w-0">
                 <p class="text-micro text-fern-400">Scope</p>
-                <p class="mt-0.5 truncate text-dense text-white">All platforms</p>
+                <p class="mt-0.5 truncate text-dense text-white">All academies</p>
             </div>
             <span class="figure shrink-0 text-micro text-fern-400">{{ $platformCount }}</span>
         </div>

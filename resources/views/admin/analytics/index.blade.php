@@ -23,7 +23,7 @@
     </div>
 
     <div class="mt-8">
-        <x-panel title="Platform comparison" subtitle="Same figures as the estate list, side by side."
+        <x-panel title="Academy comparison" subtitle="Same figures as the estate list, side by side."
                  variant="table" :padded="false">
             <x-data-table :columns="$page['comparison']['columns']"
                           :rows="$page['comparison']['rows']"

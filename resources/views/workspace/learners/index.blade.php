@@ -15,6 +15,7 @@
                                 ['key' => 'district', 'label' => 'District'],
                                 ['key' => 'enrolled', 'label' => 'Enrolments', 'align' => 'right'],
                                 ['key' => 'progress', 'label' => 'Progress'],
+                                ['key' => 'actions', 'label' => '', 'align' => 'right'],
                             ]"
                           :pagination="$page['pagination']"
                           :empty-title="$page['emptyTitle']"
@@ -34,6 +35,9 @@
                             <td class="px-3 py-2.5 text-dense">{{ $row['district'] }}</td>
                             <td class="figure px-3 py-2.5 text-right text-micro">{{ $row['enrolled'] ?? 0 }}</td>
                             <td class="px-3 py-2.5"><x-progress-bar :value="(int) ($row['progress'] ?? 0)" size="sm" class="max-w-[9rem]" /></td>
+                            <td class="px-3 py-2.5 text-right">
+                                <x-row-actions :view="route('workspace.learners.show', ['platform' => $platformSlug, 'learner' => $row['id']])" />
+                            </td>
                         </tr>
                     @endforeach
                 @endif

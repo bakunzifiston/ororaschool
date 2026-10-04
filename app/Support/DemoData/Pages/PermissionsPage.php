@@ -19,7 +19,7 @@ class PermissionsPage
         return [
             'header' => [
                 'breadcrumb' => [
-                    ['label' => 'Orora School', 'route' => 'admin.dashboard'],
+                    ['label' => 'FarmSchool', 'route' => 'admin.dashboard'],
                     ['label' => 'Permissions'],
                 ],
                 'title' => 'Permissions',

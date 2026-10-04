@@ -21,7 +21,7 @@
         {{-- Which platform this rail is scoped to. The switcher itself lives in
              the top bar, per the approved layout. --}}
         <div class="mx-3 rounded-lg bg-basalt-800 px-3 py-2.5">
-            <p class="text-micro text-fern-400">Platform</p>
+            <p class="text-micro text-fern-400">Academy</p>
             <p class="mt-0.5 truncate text-dense text-white">{{ $shell['platform']['name'] }}</p>
             <p class="truncate text-micro text-fern-400">{{ $shell['platform']['discipline'] }}</p>
         </div>

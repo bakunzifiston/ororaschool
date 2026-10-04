@@ -25,7 +25,7 @@ class RolesPage
         return [
             'header' => [
                 'breadcrumb' => [
-                    ['label' => 'Orora School', 'route' => 'admin.dashboard'],
+                    ['label' => 'FarmSchool', 'route' => 'admin.dashboard'],
                     ['label' => 'Roles'],
                 ],
                 'title' => 'Roles',
@@ -52,7 +52,7 @@ class RolesPage
         return [
             'header' => [
                 'breadcrumb' => [
-                    ['label' => 'Orora School', 'route' => 'admin.dashboard'],
+                    ['label' => 'FarmSchool', 'route' => 'admin.dashboard'],
                     ['label' => 'Roles', 'route' => 'admin.roles'],
                     ['label' => $role['label']],
                 ],
@@ -72,7 +72,7 @@ class RolesPage
         return [
             'header' => [
                 'breadcrumb' => [
-                    ['label' => 'Orora School', 'route' => 'admin.dashboard'],
+                    ['label' => 'FarmSchool', 'route' => 'admin.dashboard'],
                     ['label' => 'Roles', 'route' => 'admin.roles'],
                     ['label' => 'New custom role'],
                 ],
@@ -82,7 +82,7 @@ class RolesPage
             'role' => [
                 'key' => '',
                 'label' => '',
-                'scope' => 'Platform',
+                'scope' => 'Academy',
                 'elevated' => false,
                 'system' => false,
                 'description' => '',

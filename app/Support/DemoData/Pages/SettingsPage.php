@@ -12,16 +12,16 @@ class SettingsPage
         return [
             'header' => [
                 'breadcrumb' => [
-                    ['label' => 'Orora School', 'route' => 'admin.dashboard'],
+                    ['label' => 'FarmSchool', 'route' => 'admin.dashboard'],
                     ['label' => 'Settings'],
                 ],
                 'title' => 'Settings',
-                'subtitle' => 'Estate-wide defaults. Platform workspaces inherit these unless they override them later.',
+                'subtitle' => 'Estate-wide defaults. Academy workspaces inherit these unless they override them later.',
             ],
             'values' => [
                 'certificate_format' => 'OS-{PLATFORM}-{YEAR}-{SEQ:4}',
                 'pagination' => '10',
-                'support_name' => 'Orora School desk',
+                'support_name' => 'FarmSchool desk',
                 'support_email' => 'help@ororaschool.rw',
                 'support_phone' => '+250 788 400 210',
                 'session_timeout' => '60',

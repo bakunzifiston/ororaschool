@@ -36,7 +36,7 @@ const overflow = () => page.evaluate(() =>
 
 const pages = [
     ['/login', 'login', 'Sign in'],
-    ['/register', 'register', 'Get your Orora School account'],
+    ['/register', 'register', 'Get your FarmSchool account'],
     ['/forgot-password', 'forgot-password', 'Reset your password'],
     ['/reset-password/fixture-token-9f2c', 'reset-password', 'Set a new password'],
     ['/verify-email', 'verify-email', 'Confirm your email address'],
@@ -100,7 +100,7 @@ for (const [path, shot, heading] of pages) {
 }
 
 // ---------------------------------------------------------------------------
-// 2. Not a Breeze default: check the treatment that makes it Orora School
+// 2. Not a Breeze default: check the treatment that makes it FarmSchool
 // ---------------------------------------------------------------------------
 await go('/login');
 const treatment = await page.evaluate(() => {

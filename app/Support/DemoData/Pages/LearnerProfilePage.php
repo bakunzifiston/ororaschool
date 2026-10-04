@@ -36,7 +36,7 @@ class LearnerProfilePage
         return [
             'header' => LearnerHeader::make(
                 'Profile',
-                'Your details, and the learning history that follows you across every platform.',
+                'Your details, and the learning history that follows you across every academy.',
                 [
                     ['label' => 'Profile'],
                 ],

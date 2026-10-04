@@ -33,7 +33,7 @@
                             <dd class="mt-1 text-basalt-900">{{ $page['course'] }}</dd>
                         </div>
                         <div>
-                            <dt class="text-micro text-fern-500">Platform</dt>
+                            <dt class="text-micro text-fern-500">Academy</dt>
                             <dd class="mt-1 text-basalt-900">{{ $page['platform'] }}</dd>
                         </div>
                         <div>

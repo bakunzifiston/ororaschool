@@ -50,6 +50,15 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Enrolment::class);
     }
 
+    public function canAccessWorkspace(string $slug): bool
+    {
+        return match ($this->role) {
+            UserRole::SuperAdmin => true,
+            UserRole::PlatformStaff => $this->platforms()->where('platforms.slug', $slug)->exists(),
+            default => false,
+        };
+    }
+
     public function dashboardUrl(): string
     {
         return match ($this->role) {

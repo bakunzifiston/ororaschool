@@ -103,7 +103,7 @@
                 </div>
 
                 <div>
-                    <p class="text-micro font-medium tracking-wide text-chalk">Platforms</p>
+                    <p class="text-micro font-medium tracking-wide text-chalk">Academies</p>
                     <ul class="mt-4 grid gap-2.5">
                         @foreach ($platforms as $platform)
                             <li>
@@ -132,7 +132,7 @@
                             <a href="{{ route('contact') }}" class="text-dense text-clay-200 transition-colors hover:text-chalk">Contact / support</a>
                         </li>
                         <li>
-                            <a href="{{ route('about') }}" class="text-dense text-clay-200 transition-colors hover:text-chalk">About Orora School</a>
+                            <a href="{{ route('about') }}" class="text-dense text-clay-200 transition-colors hover:text-chalk">About {{ config('app.name') }}</a>
                         </li>
                         <li>
                             <a href="{{ route('login') }}" class="text-dense text-clay-200 transition-colors hover:text-chalk">Sign in</a>
@@ -143,7 +143,7 @@
 
             <div class="border-t border-basalt-800">
                 <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-4 sm:px-6 lg:px-10">
-                    <p class="text-micro text-clay-200">© {{ now()->year }} Orora School. All rights reserved.</p>
+                    <p class="text-micro text-clay-200">© {{ now()->year }} {{ config('app.name') }}. All rights reserved.</p>
                     <p class="text-micro text-basalt-600">Demonstration build</p>
                 </div>
             </div>

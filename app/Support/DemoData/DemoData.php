@@ -2,6 +2,9 @@
 
 namespace App\Support\DemoData;
 
+use App\Models\User;
+use App\UserRole;
+
 /**
  * FIXTURE LAYER — DELETE WHEN REAL DATA ARRIVES.
  *
@@ -32,7 +35,7 @@ class DemoData
         return [
             'super-admin' => [
                 'name' => 'Gloriose Mukandayisenga',
-                'title' => 'Platform Administrator',
+                'title' => 'Academy Administrator',
                 'role' => 'super-admin',
                 'email' => 'g.mukandayisenga@ororaschool.rw',
                 'district' => 'Kigali',
@@ -74,11 +77,22 @@ class DemoData
     }
 
     /**
-     * Platforms the fixture user can reach, in the order the switcher shows them.
+     * Platforms the signed-in staff member can reach. Super Admins keep the
+     * fixture list so the workspace chrome stays the same while they can still
+     * open every slug by URL.
      */
     public static function accessiblePlatforms(string $experience = 'platform-workspace'): array
     {
         $allowed = self::currentUser($experience)['platforms'];
+        $user = auth()->user();
+
+        if ($user instanceof User && $user->role === UserRole::PlatformStaff) {
+            $assigned = $user->platforms()->orderBy('sort_order')->pluck('slug')->all();
+
+            if ($assigned !== []) {
+                $allowed = $assigned;
+            }
+        }
 
         return array_values(array_filter(
             Platforms::all(),

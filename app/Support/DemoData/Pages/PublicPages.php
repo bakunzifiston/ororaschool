@@ -13,7 +13,7 @@ class PublicPages
     {
         return [
             'header' => PublicHeader::make(
-                'About Orora School',
+                'About FarmSchool',
                 'The training and certification layer for the Orora ecosystem.',
             ),
             'platforms' => PublicCatalog::activePlatforms(),
@@ -37,7 +37,7 @@ class PublicPages
         return [
             'header' => PublicHeader::make(
                 'Certificate verification',
-                'Enter the number printed on the certificate. No login is required. A valid result shows the learner’s name, the course, the platform and the issue date — nothing else.',
+                'Enter the number printed on the certificate. No login is required. A valid result shows the learner’s name, the course, the academy and the issue date — nothing else.',
             ),
         ];
     }

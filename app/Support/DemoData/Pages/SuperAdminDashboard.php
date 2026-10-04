@@ -24,7 +24,6 @@ class SuperAdminDashboard
         $activePlatforms = count(array_filter($platforms, fn (array $platform) => $platform['status'] === 'active'));
         $inactivePlatforms = count($platforms) - $activePlatforms;
         $academies = count(Academies::all());
-        $courseCount = count($courses);
         $completion = (int) round(array_sum(array_column($platforms, 'completion_rate')) / max(1, count($platforms)));
         $pendingCourses = array_values(array_filter($courses, fn (array $course) => $course['status'] === 'pending_review'));
         $pendingUsers = array_values(array_filter(
@@ -53,18 +52,19 @@ class SuperAdminDashboard
             'header' => [
                 'breadcrumb' => [],
                 'title' => 'Dashboard',
-                'subtitle' => 'A real-time overview of the Orora School learning ecosystem.',
+                'subtitle' => 'Real-time overview of the FarmSchool learning ecosystem.',
                 'updated' => 'Last updated '.now()->toFormattedDateString(),
             ],
 
             'stats' => [
                 [
-                    'label' => 'Total Platforms',
+                    'label' => 'Total Academies',
                     'value' => (string) count($platforms),
                     'trend' => null,
                     'direction' => $inactivePlatforms > 0 ? 'warn' : null,
                     'note' => $activePlatforms.' active · '.$inactivePlatforms.' inactive',
                     'icon' => 'layers',
+                    'tone' => $inactivePlatforms > 0 ? 'pending' : 'accent',
                 ],
                 [
                     'label' => 'Total Users',
@@ -73,6 +73,7 @@ class SuperAdminDashboard
                     'direction' => 'up',
                     'note' => 'this period',
                     'icon' => 'users',
+                    'tone' => 'approved',
                 ],
                 [
                     'label' => 'Active Learners',
@@ -81,6 +82,7 @@ class SuperAdminDashboard
                     'direction' => null,
                     'note' => 'Enrolled across the estate',
                     'icon' => 'user',
+                    'tone' => 'active',
                 ],
                 [
                     'label' => 'Completion Rate',
@@ -89,19 +91,13 @@ class SuperAdminDashboard
                     'direction' => 'up',
                     'note' => 'over 90 days',
                     'icon' => 'chart',
+                    'tone' => 'ok',
                 ],
-            ],
-
-            'health' => [
-                ['label' => 'Active', 'value' => (string) $activePlatforms],
-                ['label' => 'Inactive', 'value' => (string) $inactivePlatforms, 'tone' => 'warn'],
-                ['label' => 'Academies', 'value' => (string) $academies],
-                ['label' => 'Courses', 'value' => (string) $courseCount],
             ],
 
             'platforms' => [
                 'columns' => [
-                    ['key' => 'name', 'label' => 'Platform'],
+                    ['key' => 'name', 'label' => 'Academy'],
                     ['key' => 'status', 'label' => 'Status', 'type' => 'status'],
                     ['key' => 'academies', 'label' => 'Academies', 'align' => 'right', 'numeric' => true],
                     ['key' => 'users', 'label' => 'Users', 'align' => 'right', 'numeric' => true],
@@ -113,14 +109,17 @@ class SuperAdminDashboard
             'charts' => [
                 'completion' => [
                     'title' => 'Course completion',
-                    'subtitle' => 'Overall completion: '.$completion.'%. Rolling 90-day change: +3 pts.',
+                    'headline' => $completion.'%',
+                    'trend' => '+3 pts',
+                    'trend_note' => 'over 90 days',
                     'labels' => array_column($platforms, 'name'),
                     'values' => array_column($platforms, 'completion_rate'),
                     'suffix' => '%',
+                    'max' => 100,
                 ],
                 'distribution' => [
-                    'title' => 'Platform distribution',
-                    'subtitle' => 'Users on each tenant, including inactive platforms that still hold records.',
+                    'title' => 'Academy distribution',
+                    'subtitle' => 'Users on each tenant, including inactive academies that still hold records.',
                     'labels' => array_column($platforms, 'name'),
                     'values' => array_column($platforms, 'users'),
                 ],
@@ -138,7 +137,7 @@ class SuperAdminDashboard
             ]), array_slice(ActivityLogs::all(), 0, 6)),
 
             'actions' => [
-                ['label' => 'Add platform', 'route' => 'admin.platforms.create', 'icon' => 'plus', 'variant' => 'primary'],
+                ['label' => 'Add academy', 'route' => 'admin.platforms.create', 'icon' => 'plus', 'variant' => 'primary'],
                 ['label' => 'Create user', 'route' => 'admin.users.create', 'icon' => 'user', 'variant' => 'secondary'],
                 ['label' => 'Manage roles', 'route' => 'admin.roles', 'icon' => 'shield', 'variant' => 'secondary'],
                 ['label' => 'Manage permissions', 'route' => 'admin.permissions', 'icon' => 'key', 'variant' => 'secondary'],
@@ -176,7 +175,7 @@ class SuperAdminDashboard
         if (count($inactivePlatforms) > 0) {
             $names = implode(', ', array_column($inactivePlatforms, 'name'));
             $items[] = [
-                'title' => count($inactivePlatforms).' inactive '.str('platform')->plural(count($inactivePlatforms)),
+                'title' => count($inactivePlatforms).' inactive '.str('academy')->plural(count($inactivePlatforms)),
                 'explanation' => $names.' are off the workspace switcher. Historical certificates still resolve.',
                 'href' => route('admin.platforms'),
             ];

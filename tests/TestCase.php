@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Models\Platform;
 use App\Models\User;
 use App\UserRole;
 use Database\Seeders\CatalogSeeder;
@@ -49,6 +50,14 @@ abstract class TestCase extends BaseTestCase
             UserRole::PlatformStaff => User::factory()->platformStaff()->create(),
             UserRole::Learner => User::factory()->learner()->create(),
         };
+
+        if ($role === UserRole::PlatformStaff) {
+            $user->platforms()->sync(
+                collect(['gemura', 'buchapro', 'feedgrid'])
+                    ->map(fn (string $slug): int => Platform::firstOrCreateFromSlug($slug)->id)
+                    ->all(),
+            );
+        }
 
         return $this->actingAs($user);
     }

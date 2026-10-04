@@ -1,14 +1,14 @@
-<x-layouts.public title="Platforms" flush>
+<x-layouts.public title="Academies" flush>
     <x-public.section tone="terrace" compact>
         <x-public.trail on-dark :items="[
             ['label' => 'Home', 'route' => 'home'],
-            ['label' => 'Platforms'],
+            ['label' => 'Academies'],
         ]" />
 
         <x-public.page-heading
             on-dark
-            title="Platforms"
-            subtitle="Four live platforms. Each teaches the work of its own system, on one learning record." />
+            title="Academies"
+            subtitle="Four live academies. Each teaches the work of its own system, on one learning record." />
     </x-public.section>
 
     <x-public.section tone="chalk" class="grow">

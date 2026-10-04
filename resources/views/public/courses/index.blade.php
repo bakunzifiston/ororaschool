@@ -8,7 +8,7 @@
         <x-public.page-heading
             on-dark
             title="Explore courses"
-            subtitle="Practical training from across the four live platforms." />
+            subtitle="Practical training from across the four live academies." />
     </x-public.section>
 
     <x-public.section tone="chalk" class="grow">

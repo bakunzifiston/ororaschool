@@ -17,7 +17,7 @@ class LearnerCoursesPage
         return [
             'header' => LearnerHeader::make(
                 'My courses',
-                'Every course you are on, grouped by platform. Same record — not three logins.',
+                'Every course you are on, grouped by academy. Same record — not three logins.',
                 [
                     ['label' => 'My courses'],
                 ],

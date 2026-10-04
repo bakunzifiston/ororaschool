@@ -5,9 +5,9 @@
     platform's current section (dashboard, courses, certificates, …) — anchors,
     so it works without JavaScript and is keyboard-operable for free. Nested
     screens (course edit, quiz builder) drop back to the section index so the
-    other platform is not asked for a record that does not exist there. There
-    is no access check here: the list comes straight from the fixture user's
-    `platforms`.
+    other platform is not asked for a record that does not exist there. The
+    list is the platforms the signed-in staff member may open. Super Admins
+    still see the fixture set; unassigned slugs 404 at the route.
 
     Modelled as a disclosure, not an ARIA menu: these are links, and role="menu"
     would promise arrow-key semantics this does not implement.
@@ -20,7 +20,7 @@
             :aria-expanded="open ? 'true' : 'false'"
             aria-controls="{{ $id }}"
             class="flex h-9 items-center gap-2 rounded-full border border-clay-200 bg-chalk pl-1.5 pr-2.5 text-left transition-colors hover:border-fern-400">
-        <span class="sr-only">Change platform. Currently </span>
+        <span class="sr-only">Change academy. Currently </span>
         <span class="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-500 text-micro font-semibold text-accent-on" aria-hidden="true">
             {{ mb_substr($current['name'] ?? '?', 0, 1) }}
         </span>
@@ -47,7 +47,7 @@
          class="absolute left-0 z-50 mt-1.5 w-72 origin-top overflow-hidden rounded-lg border border-clay-200 bg-chalk shadow-lg">
 
         <p class="border-b border-clay-100 px-3 py-2 text-micro text-fern-500">
-            Platforms you work on
+            Academies you work on
         </p>
 
         <ul>

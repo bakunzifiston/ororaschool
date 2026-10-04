@@ -39,7 +39,7 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Orora School — UI shell routes
+| FarmSchool — UI shell routes
 |--------------------------------------------------------------------------
 | Public (F-Public), Super Admin (F3), Platform Workspace (F4) and Learner (F5)
 | are real pages. Nav items still need a matching named route so a rail link
@@ -97,6 +97,10 @@ Route::middleware(['auth', 'verified', 'role:'.UserRole::SuperAdmin->value])->gr
     Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users');
     Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');
     Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
+    Route::get('/admin/accounts/{user}', [UserController::class, 'showAccount'])->name('admin.accounts.show');
+    Route::get('/admin/accounts/{user}/edit', [UserController::class, 'editAccount'])->name('admin.accounts.edit');
+    Route::post('/admin/accounts/{user}', [UserController::class, 'updateAccount'])->name('admin.accounts.update');
+    Route::delete('/admin/accounts/{user}', [UserController::class, 'destroyAccount'])->name('admin.accounts.destroy');
     Route::get('/admin/users/{user}', [UserController::class, 'show'])->name('admin.users.show')->whereNumber('user');
     Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit')->whereNumber('user');
     Route::post('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update')->whereNumber('user');
@@ -117,7 +121,7 @@ Route::middleware(['auth', 'verified', 'role:'.UserRole::SuperAdmin->value])->gr
 });
 
 // ---- Platform Workspace (Phase F4) -----------------------------------------
-Route::middleware(['auth', 'verified', 'role:'.UserRole::SuperAdmin->value.','.UserRole::PlatformStaff->value])
+Route::middleware(['auth', 'verified', 'role:'.UserRole::SuperAdmin->value.','.UserRole::PlatformStaff->value, 'platform.access'])
     ->whereIn('platform', Platforms::slugs())
     ->group(function () {
         Route::get('/workspace/{platform}', [WorkspaceController::class, 'dashboard'])->name('workspace.dashboard');

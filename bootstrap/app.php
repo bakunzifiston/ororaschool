@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureUserCanAccessPlatform;
 use App\Http\Middleware\EnsureUserHasRole;
 use App\Models\User;
 use Illuminate\Foundation\Application;
@@ -16,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'role' => EnsureUserHasRole::class,
+            'platform.access' => EnsureUserCanAccessPlatform::class,
         ]);
 
         $middleware->redirectGuestsTo(fn () => route('login'));

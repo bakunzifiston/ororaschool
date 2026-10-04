@@ -18,11 +18,11 @@
                     </div>
                     @if ($path['cross_platform'])
                         <span class="shrink-0 rounded-sm border border-basalt-800 bg-basalt-800 px-2 py-0.5 text-micro font-medium text-clay-100">
-                            {{ $path['platform_count'] }} platforms
+                            {{ $path['platform_count'] }} academies
                         </span>
                     @else
                         <span class="shrink-0 rounded-sm border border-clay-200 bg-papyrus px-2 py-0.5 text-micro text-fern-500">
-                            1 platform
+                            1 academy
                         </span>
                     @endif
                 </div>

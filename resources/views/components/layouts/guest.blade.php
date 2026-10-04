@@ -24,8 +24,8 @@
         {{ $slot }}
 
         <p class="mt-8 border-t border-clay-200 pt-4 text-micro leading-relaxed text-fern-500">
-            Orora School serves {{ $platforms->join(', ', ' and ') }}.
-            Your training record follows you across every platform you work on.
+            {{ config('app.name') }} serves {{ $platforms->join(', ', ' and ') }}.
+            Your training record follows you across every academy you work on.
         </p>
     </div>
 </x-layouts.shell>

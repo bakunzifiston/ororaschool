@@ -57,7 +57,7 @@
                 </span>
             @endif
             <span class="inline-flex items-center gap-1 text-dense font-medium text-accent-700">
-                Explore platform
+                Explore academy
                 <x-icon name="arrow-right" class="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
             </span>
         </span>

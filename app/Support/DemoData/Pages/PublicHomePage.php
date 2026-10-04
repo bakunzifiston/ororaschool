@@ -30,7 +30,7 @@ class PublicHomePage
                 ],
                 [
                     'value' => (string) $stats['platforms'],
-                    'label' => 'Connected platforms',
+                    'label' => 'Connected academies',
                 ],
                 [
                     'value' => '1',

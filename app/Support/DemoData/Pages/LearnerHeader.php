@@ -14,7 +14,7 @@ class LearnerHeader
     public static function make(string $title, string $subtitle, array $trail = []): array
     {
         $breadcrumb = [
-            ['label' => 'Orora School', 'route' => 'learner.dashboard'],
+            ['label' => 'FarmSchool', 'route' => 'learner.dashboard'],
         ];
 
         foreach ($trail as $crumb) {

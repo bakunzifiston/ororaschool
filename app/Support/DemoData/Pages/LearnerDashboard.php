@@ -33,7 +33,7 @@ class LearnerDashboard
             'header' => LearnerHeader::make(
                 'Welcome back, '.$user['name'],
                 $platforms === []
-                    ? 'One learning record across every platform you train on. Nothing here is a separate account.'
+                    ? 'One learning record across every academy you train on. Nothing here is a separate account.'
                     : 'One learning record — '.implode(', ', $platforms).' together. Nothing here is a separate account.',
             ),
             'continue' => $continue,

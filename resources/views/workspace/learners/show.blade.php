@@ -5,7 +5,7 @@
 
     <div class="mt-6">
         <x-panel title="Progress on {{ $page['platform']['name'] }}"
-                 subtitle="Enrolments on this platform only — other platforms are hidden."
+                 subtitle="Enrolments on this academy only — other academies are hidden."
                  :padded="false">
             @if (count($page['enrolments']))
                 <ul class="divide-y divide-clay-100">
@@ -24,7 +24,7 @@
                 </ul>
             @else
                 <x-empty-state icon="book"
-                               title="Not enrolled on this platform yet"
+                               title="Not enrolled on this academy yet"
                                message="Put {{ $page['person']['name'] }} on a {{ $page['platform']['name'] }} course and their progress will appear here." />
             @endif
         </x-panel>

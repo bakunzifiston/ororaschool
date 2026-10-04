@@ -23,11 +23,11 @@ class AnalyticsPage
         return [
             'header' => [
                 'breadcrumb' => [
-                    ['label' => 'Orora School', 'route' => 'admin.dashboard'],
+                    ['label' => 'FarmSchool', 'route' => 'admin.dashboard'],
                     ['label' => 'Analytics'],
                 ],
                 'title' => 'Analytics',
-                'subtitle' => 'Six months across every platform. Open a workspace for the same numbers scoped to one tenant.',
+                'subtitle' => 'Six months across every academy. Open a workspace for the same numbers scoped to one tenant.',
             ],
             'stats' => [
                 ['label' => 'Users now', 'value' => '11,842', 'trend' => '+364', 'direction' => 'up', 'note' => 'since April'],
@@ -64,7 +64,7 @@ class AnalyticsPage
             ],
             'comparison' => [
                 'columns' => [
-                    ['key' => 'name', 'label' => 'Platform'],
+                    ['key' => 'name', 'label' => 'Academy'],
                     ['key' => 'learners', 'label' => 'Learners', 'align' => 'right', 'numeric' => true],
                     ['key' => 'courses', 'label' => 'Courses', 'align' => 'right', 'numeric' => true],
                     ['key' => 'completion_rate', 'label' => 'Completion', 'align' => 'right', 'numeric' => true],

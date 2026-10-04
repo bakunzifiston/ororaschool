@@ -18,7 +18,7 @@
         </form>
 
         <div class="lg:col-span-3">
-            <x-panel title="Learning history" subtitle="One timeline. Every platform you have learned on." :padded="false">
+            <x-panel title="Learning history" subtitle="One timeline. Every academy you have learned on." :padded="false">
                 <ol class="divide-y divide-clay-100">
                     @foreach ($page['history'] as $entry)
                         <li class="px-4 py-3">
@@ -31,7 +31,7 @@
             </x-panel>
 
             <p class="mt-3 text-micro text-fern-500">
-                Platforms on this record:
+                Academies on this record:
                 {{ collect($page['platforms'])->pluck('name')->join(', ', ' and ') }}.
             </p>
         </div>

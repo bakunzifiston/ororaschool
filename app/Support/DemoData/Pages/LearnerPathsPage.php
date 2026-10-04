@@ -16,7 +16,7 @@ class LearnerPathsPage
         return [
             'header' => LearnerHeader::make(
                 'Learning paths',
-                'An ordered sequence of courses. Some stay on one platform; others stitch two or three together.',
+                'An ordered sequence of courses. Some stay on one academy; others stitch two or three together.',
                 [
                     ['label' => 'Learning paths'],
                 ],
@@ -39,7 +39,7 @@ class LearnerPathsPage
             'header' => LearnerHeader::make(
                 $path['title'],
                 $path['cross_platform']
-                    ? $path['platform_count'].' platforms on one path'
+                    ? $path['platform_count'].' academies on one path'
                     : 'All on '.$path['platforms'][0],
                 [
                     ['label' => 'Learning paths', 'route' => 'learner.paths'],

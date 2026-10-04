@@ -1,12 +1,12 @@
-<x-layouts.public title="About Orora School" flush>
+<x-layouts.public title="About FarmSchool" flush>
     <x-public.section tone="accent" compact>
         <x-public.trail :items="[
             ['label' => 'Home', 'route' => 'home'],
-            ['label' => 'About Orora School'],
+            ['label' => 'About FarmSchool'],
         ]" />
 
         <x-public.page-heading
-            title="About Orora School"
+            title="About FarmSchool"
             :subtitle="$page['header']['subtitle'] ?? 'The training and certification layer for the Orora ecosystem.'" />
     </x-public.section>
 
@@ -20,7 +20,7 @@
                 </p>
                 <p class="mt-4 text-read leading-relaxed text-fern-600">
                     The architecture decision you can see on this site: one person has one learning record.
-                    Platforms are labels on courses, not separate accounts. A certificate minted on Gemura
+                    Academies are labels on courses, not separate accounts. A certificate minted on Gemura
                     is still yours when you later train on BuchaPro.
                 </p>
                 <p class="mt-4 text-read leading-relaxed text-fern-600">

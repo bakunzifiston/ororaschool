@@ -26,7 +26,7 @@ class LearnerSessionsPage
         return [
             'header' => LearnerHeader::make(
                 'Live sessions',
-                'Clinics on courses you are enrolled in, whichever platform they sit on.',
+                'Clinics on courses you are enrolled in, whichever academy they sit on.',
                 [
                     ['label' => 'Live sessions'],
                 ],

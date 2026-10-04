@@ -1,10 +1,10 @@
-<x-layouts.super-admin title="Platforms">
+<x-layouts.super-admin title="Academies">
     <x-page-header :breadcrumb="$page['header']['breadcrumb']"
                    :title="$page['header']['title']"
                    :subtitle="$page['header']['subtitle']">
         <x-slot:actions>
             <x-button variant="ghost" size="sm" :href="route('admin.platforms', ['empty' => 1])">Preview empty</x-button>
-            <x-button icon="plus" :href="route('admin.platforms.create')">Add a platform</x-button>
+            <x-button icon="plus" :href="route('admin.platforms.create')">Add an academy</x-button>
         </x-slot:actions>
     </x-page-header>
 
@@ -60,7 +60,7 @@
                 <form method="POST" action="{{ route('admin.platforms.toggle', $row['slug']) }}">
                     @csrf
                     <x-button type="submit" :variant="$row['status'] === 'active' ? 'danger' : 'primary'">
-                        {{ $row['status'] === 'active' ? 'Deactivate platform' : 'Activate platform' }}
+                        {{ $row['status'] === 'active' ? 'Deactivate academy' : 'Activate academy' }}
                     </x-button>
                 </form>
             </x-slot:actions>

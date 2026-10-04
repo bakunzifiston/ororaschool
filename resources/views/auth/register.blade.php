@@ -42,7 +42,7 @@
         {{--
             SECONDARY PATH — self-registration.
 
-            Whether Orora School allows learners to create their own account is
+            Whether FarmSchool allows learners to create their own account is
             not settled. If it does not, delete this form, the `register.store`
             route and its controller method: the linking list above stands on its
             own and the page still answers "how do I get access?".

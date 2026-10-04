@@ -32,6 +32,7 @@
                                 ['key' => 'difficulty', 'label' => 'Difficulty'],
                                 ['key' => 'status', 'label' => 'Status'],
                                 ['key' => 'enrolled', 'label' => 'Enrolled', 'align' => 'right'],
+                                ['key' => 'actions', 'label' => '', 'align' => 'right'],
                             ]"
                           :pagination="$page['pagination']"
                           :empty-title="$page['emptyTitle']"
@@ -63,6 +64,11 @@
                             <td class="px-3 py-2.5 text-micro">{{ $row['difficulty'] }}</td>
                             <td class="px-3 py-2.5"><x-status-badge :status="$row['status']" /></td>
                             <td class="figure px-3 py-2.5 text-right text-micro text-fern-500">{{ number_format($row['enrolled']) }}</td>
+                            <td class="px-3 py-2.5 text-right">
+                                <x-row-actions
+                                    :view="route('workspace.courses.show', ['platform' => $platformSlug, 'course' => $row['slug']])"
+                                    :edit="route('workspace.courses.edit', ['platform' => $platformSlug, 'course' => $row['slug']])" />
+                            </td>
                         </tr>
                     @endforeach
                 @endif

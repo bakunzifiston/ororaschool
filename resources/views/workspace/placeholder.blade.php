@@ -1,6 +1,6 @@
 <x-layouts.platform-workspace :title="$label" :platform="$platformSlug">
     <x-page-header :breadcrumb="$breadcrumb" :title="$label"
-                   subtitle="Scoped to {{ $platform['name'] }}. Switch platforms in the top bar and this destination follows you." />
+                   subtitle="Scoped to {{ $platform['name'] }}. Switch academies in the top bar and this destination follows you." />
 
     <div class="mt-6">
         <x-panel variant="quiet" :padded="false">

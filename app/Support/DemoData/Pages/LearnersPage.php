@@ -23,7 +23,7 @@ class LearnersPage
             'header' => WorkspaceHeader::make(
                 $current,
                 'Learners',
-                $current['name'].' roster — enrolment counts and progress on this platform only.',
+                $current['name'].' roster — enrolment counts and progress on this academy only.',
             ),
             'rows' => $paged['rows'],
             'pagination' => $paged['pagination'],

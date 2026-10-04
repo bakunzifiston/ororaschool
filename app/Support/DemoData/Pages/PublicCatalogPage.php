@@ -24,10 +24,10 @@ class PublicCatalogPage
         return [
             'header' => PublicHeader::make(
                 'Explore courses',
-                'Every published course across the four live platforms.',
+                'Every published course across the four live academies.',
             ),
             'title' => 'Explore courses',
-            'subtitle' => 'Every published course across the four live platforms.',
+            'subtitle' => 'Every published course across the four live academies.',
             'filters' => array_merge([
                 'platform' => '',
                 'academy' => '',
@@ -42,7 +42,7 @@ class PublicCatalogPage
             'courses' => $paged['rows'],
             'pagination' => $paged['pagination'],
             'emptyTitle' => 'Nothing matches those filters',
-            'emptyMessage' => 'Clear a filter or search for a different word. The catalogue only lists published courses on live platforms.',
+            'emptyMessage' => 'Clear a filter or search for a different word. The catalogue only lists published courses on live academies.',
         ];
     }
 

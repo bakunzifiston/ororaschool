@@ -18,22 +18,24 @@ class CatalogSeeder extends Seeder
     public function run(): void
     {
         foreach (Platforms::all() as $index => $row) {
-            Platform::query()->create([
-                'slug' => $row['slug'],
-                'name' => $row['name'],
-                'discipline' => $row['discipline'],
-                'tagline' => $row['tagline'],
-                'description' => $row['description'],
-                'steward' => $row['steward'],
-                'region' => $row['region'],
-                'learner_count' => $row['learners'],
-                'instructor_count' => $row['instructors'],
-                'status' => $row['status'],
-                'sort_order' => $index + 1,
-                'joined_at' => Carbon::parse($row['joined']),
-                'completion_rate' => $row['completion_rate'],
-                'cover' => $row['cover'] ?? null,
-            ]);
+            Platform::query()->updateOrCreate(
+                ['slug' => $row['slug']],
+                [
+                    'name' => $row['name'],
+                    'discipline' => $row['discipline'],
+                    'tagline' => $row['tagline'],
+                    'description' => $row['description'],
+                    'steward' => $row['steward'],
+                    'region' => $row['region'],
+                    'learner_count' => $row['learners'],
+                    'instructor_count' => $row['instructors'],
+                    'status' => $row['status'],
+                    'sort_order' => $index + 1,
+                    'joined_at' => Carbon::parse($row['joined']),
+                    'completion_rate' => $row['completion_rate'],
+                    'cover' => $row['cover'] ?? null,
+                ],
+            );
         }
 
         foreach (Academies::all() as $row) {

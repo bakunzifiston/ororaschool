@@ -21,7 +21,7 @@ class ComponentProof
         return [
             'header' => [
                 'breadcrumb' => [
-                    ['label' => 'Orora School', 'route' => 'admin.dashboard'],
+                    ['label' => 'FarmSchool', 'route' => 'admin.dashboard'],
                     ['label' => 'Settings', 'route' => 'admin.settings'],
                     ['label' => 'Component proof'],
                 ],
@@ -40,7 +40,7 @@ class ComponentProof
                     ],
                 ],
                 'b' => [
-                    'caption' => 'Set B — single platform, no trend, long labels',
+                    'caption' => 'Set B — single academy, no trend, long labels',
                     'items' => [
                         ['label' => 'Milk collection centres covered', 'value' => '37', 'trend' => null, 'direction' => null, 'note' => 'Musanze and Burera'],
                         ['label' => 'Average completion', 'value' => '74%', 'trend' => '+4 pts', 'direction' => 'up', 'note' => null],
@@ -102,9 +102,9 @@ class ComponentProof
                 'a' => [
                     'caption' => 'Set A — six columns, person and status cells, single page',
                     'columns' => [
-                        ['key' => 'name', 'label' => 'Platform'],
+                        ['key' => 'name', 'label' => 'Academy'],
                         ['key' => 'discipline', 'label' => 'Discipline'],
-                        ['key' => 'steward', 'label' => 'Platform owner', 'type' => 'person'],
+                        ['key' => 'steward', 'label' => 'Academy owner', 'type' => 'person'],
                         ['key' => 'learners', 'label' => 'Learners', 'align' => 'right', 'numeric' => true],
                         ['key' => 'status', 'label' => 'Status', 'type' => 'status'],
                     ],

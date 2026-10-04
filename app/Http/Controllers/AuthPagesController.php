@@ -49,9 +49,9 @@ class AuthPagesController extends Controller
         $platform = Platforms::find((string) $request->input('platform'));
 
         return back()->with('status', $platform
-            ? 'Linking with '.$platform['name'].' would hand you over to that platform to confirm '
+            ? 'Linking with '.$platform['name'].' would hand you over to that academy to confirm '
                 .'it is you. The integration itself arrives with the backend phases.'
-            : 'Choose a platform to link.');
+            : 'Choose an academy to link.');
     }
 
     public function storeRegistration(RegisterRequest $request): RedirectResponse
@@ -78,7 +78,7 @@ class AuthPagesController extends Controller
     {
         Password::sendResetLink($request->only('email'));
 
-        return back()->with('status', 'If that address has an Orora School account, a reset link is on its '
+        return back()->with('status', 'If that address has a FarmSchool account, a reset link is on its '
             .'way. It works for 60 minutes.');
     }
 

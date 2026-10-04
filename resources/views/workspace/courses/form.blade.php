@@ -55,7 +55,7 @@
                                 <span>{{ $name }}</span>
                             </label>
                         @empty
-                            <p class="text-micro text-fern-500">No instructors on this platform yet.</p>
+                            <p class="text-micro text-fern-500">No instructors on this academy yet.</p>
                         @endforelse
                     </div>
                     <p class="mt-1.5 text-micro leading-relaxed text-fern-500">Tick everyone who teaches this course. The first ticked name is the lead on the catalogue card.</p>
@@ -82,7 +82,7 @@
 
                 <x-toggle name="enrollment_required" label="Enrolment required"
                           :checked="(bool) ($page['course']['enrollment_required'] ?? true)"
-                          hint="When off, any signed-in learner on this platform can open it." />
+                          hint="When off, any signed-in learner on this academy can open it." />
             </div>
         </x-panel>
 

@@ -5,7 +5,7 @@
 
     $experienceLabels = [
         'super-admin' => 'Super Admin',
-        'platform-workspace' => 'Platform Workspace',
+        'platform-workspace' => 'Academy Workspace',
         'learner' => 'Learner',
     ];
 @endphp
@@ -193,7 +193,7 @@
                 </x-panel>
 
                 <x-panel>
-                    <x-page-header :breadcrumb="[['label' => 'Orora School', 'route' => 'learner.dashboard'], ['label' => 'My certificates']]"
+                    <x-page-header :breadcrumb="[['label' => 'FarmSchool', 'route' => 'learner.dashboard'], ['label' => 'My certificates']]"
                                    title="My certificates"
                                    class="border-b-0 pb-0" />
                 </x-panel>

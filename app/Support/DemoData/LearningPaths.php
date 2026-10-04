@@ -44,7 +44,7 @@ class LearningPaths
             [
                 'slug' => 'kraal-to-ration',
                 'title' => 'From kraal to ration',
-                'summary' => 'Identify the animal, keep the milk clean, then keep the feed from going mouldy. Three platforms, one record.',
+                'summary' => 'Identify the animal, keep the milk clean, then keep the feed from going mouldy. Three academies, one record.',
                 'courses' => ['animal-identification-eartags', 'mastitis-milk-hygiene', 'aflatoxin-control-maize-bran'],
             ],
         ];

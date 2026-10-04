@@ -282,9 +282,9 @@ class LearnerPagesTest extends TestCase
         $this->get(route('learner.paths'))
             ->assertOk()
             ->assertSee('Milk hygiene for collection-centre work', false)
-            ->assertSee('1 platform', false)
+            ->assertSee('1 academy', false)
             ->assertSee('From kraal to ration', false)
-            ->assertSee('3 platforms', false);
+            ->assertSee('3 academies', false);
 
         $this->get(route('learner.paths.show', ['path' => 'kraal-to-ration']))
             ->assertOk()

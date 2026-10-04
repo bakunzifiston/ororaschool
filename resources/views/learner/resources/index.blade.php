@@ -19,7 +19,7 @@
         <x-panel variant="table" :padded="false">
             <x-data-table :columns="[
                                 ['key' => 'title', 'label' => 'Resource'],
-                                ['key' => 'platform', 'label' => 'Platform'],
+                                ['key' => 'platform', 'label' => 'Academy'],
                                 ['key' => 'attached_to', 'label' => 'Attached to'],
                                 ['key' => 'type', 'label' => 'Type'],
                                 ['key' => 'download', 'label' => ''],
