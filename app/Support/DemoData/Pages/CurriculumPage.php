@@ -39,7 +39,7 @@ class CurriculumPage
 
     public static function modules(string $platform, ?string $courseSlug = null, bool $empty = false): ?array
     {
-        $current = Platforms::find($platform) ?? Platforms::find('gemura');
+        $current = Platforms::require($platform);
         $courses = Courses::forPlatform($platform);
         $course = $courseSlug
             ? Courses::findForPlatform($courseSlug, $platform)
@@ -71,7 +71,7 @@ class CurriculumPage
 
     public static function lessons(string $platform, bool $empty = false, int $page = 1): array
     {
-        $current = Platforms::find($platform) ?? Platforms::find('gemura');
+        $current = Platforms::require($platform);
         $rows = $empty ? [] : Curriculum::lessonsOn($platform);
         $paged = Paging::paginate($rows, $page, 10, '/workspace/'.$platform.'/lessons', array_filter(['empty' => $empty ? 1 : null]));
 

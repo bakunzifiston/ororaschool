@@ -5,6 +5,8 @@
     'status' => null,
     'href' => null,
     'variant' => null,
+    'view' => null,
+    'edit' => null,
 ])
 
 @php
@@ -84,4 +86,10 @@
             @endif
         </div>
     </div>
+
+    @if ($view || $edit)
+        <div class="border-t border-clay-100 px-4 py-2.5">
+            <x-row-actions :view="$view" :edit="$edit" class="justify-start" />
+        </div>
+    @endif
 </article>

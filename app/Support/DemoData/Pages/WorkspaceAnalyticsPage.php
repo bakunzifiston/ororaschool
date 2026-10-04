@@ -15,7 +15,7 @@ class WorkspaceAnalyticsPage
 {
     public static function data(string $platform, bool $empty = false): array
     {
-        $current = Platforms::find($platform) ?? Platforms::find('gemura');
+        $current = Platforms::require($platform);
         $courses = $empty ? [] : Courses::forPlatform($platform);
         $enrollments = array_sum(array_column($courses, 'enrolled'));
         $labels = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];

@@ -9,41 +9,55 @@
     </x-page-header>
 
     <div class="mt-8">
-        @if (! count($page['roles']))
-            <x-panel :padded="false">
-                <x-empty-state icon="shield"
-                               :title="$page['emptyTitle']"
-                               :message="$page['emptyMessage']">
-                    <x-slot:actions>
-                        <x-button :href="route('admin.roles.create')">New custom role</x-button>
-                    </x-slot:actions>
-                </x-empty-state>
-            </x-panel>
-        @else
-            <div class="grid grid-cols-1 gap-3">
-                @foreach ($page['roles'] as $role)
-                    <a href="{{ route('admin.roles.edit', $role['key']) }}"
-                       class="app-card flex flex-wrap items-start justify-between gap-4 rounded-md border border-clay-200 bg-chalk px-5 py-4 transition-colors hover:border-clay-300">
-                        <div class="min-w-0 grow">
-                            <div class="flex flex-wrap items-center gap-2">
-                                <x-role-chip :role="$role['key']" />
+        <x-panel variant="table" :padded="false">
+            <x-data-table :columns="$page['columns']"
+                          :pagination="$page['pagination']"
+                          :empty-title="$page['emptyTitle']"
+                          :empty-message="$page['emptyMessage']"
+                          min-width="48rem">
+                @if (count($page['roles']))
+                    @foreach ($page['roles'] as $role)
+                        <tr class="border-b border-clay-100 last:border-b-0 hover:bg-accent-50/60">
+                            <td class="px-4 py-3">
+                                <a href="{{ route('admin.roles.show', $role['key']) }}"
+                                   class="font-medium text-basalt-900 hover:text-accent-600">{{ $role['label'] }}</a>
+                            </td>
+                            <td class="px-3 py-2.5 text-dense text-fern-500">
                                 @if ($role['system'])
-                                    <span class="inline-flex items-center gap-1 rounded-sm border border-clay-200 bg-papyrus px-1.5 py-0.5 text-micro text-fern-500">
-                                        <x-icon name="lock" class="h-3 w-3" />
-                                        System-protected
-                                    </span>
+                                    System-protected
                                 @else
-                                    <span class="text-micro text-fern-500">Custom</span>
+                                    Custom
                                 @endif
-                            </div>
-                            <p class="mt-2 max-w-2xl text-dense leading-relaxed text-fern-500">{{ $role['description'] }}</p>
-                        </div>
-                        <p class="figure shrink-0 text-micro text-fern-500">{{ number_format($role['holders']) }} holders</p>
-                    </a>
-                @endforeach
-            </div>
-
-            <x-pagination :pagination="$page['pagination']" class="mt-3 rounded-md border border-clay-200 bg-chalk" />
-        @endif
+                            </td>
+                            <td class="px-3 py-2.5 text-dense">{{ $role['scope'] }}</td>
+                            <td class="figure px-3 py-2.5 text-right text-micro text-fern-500">{{ number_format($role['holders']) }}</td>
+                            <td class="px-3 py-2.5 text-right">
+                                <x-row-actions
+                                    :view="route('admin.roles.show', $role['key'])"
+                                    :edit="route('admin.roles.edit', $role['key'])"
+                                    :delete="'delete-'.$role['key']" />
+                            </td>
+                        </tr>
+                    @endforeach
+                @endif
+            </x-data-table>
+        </x-panel>
     </div>
+
+    @foreach ($page['roles'] as $role)
+        <x-modal name="delete-{{ $role['key'] }}" width="md"
+                 :title="'Delete '.$role['label'].'?'"
+                 :subtitle="$role['scope']">
+            <p>{{ $role['label'] }} will leave the roles list. People who already hold it keep their assignments.</p>
+
+            <x-slot:actions>
+                <x-button variant="ghost" x-on:click="open = false">Cancel</x-button>
+                <form method="POST" action="{{ route('admin.roles.destroy', $role['key']) }}">
+                    @csrf
+                    @method('DELETE')
+                    <x-button type="submit" variant="danger">Delete role</x-button>
+                </form>
+            </x-slot:actions>
+        </x-modal>
+    @endforeach
 </x-layouts.super-admin>

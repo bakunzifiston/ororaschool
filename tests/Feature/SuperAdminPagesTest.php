@@ -2,10 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Models\Platform;
 use App\Models\User;
 use App\Support\DemoData\People;
 use App\Support\DemoData\Platforms;
 use App\UserRole;
+use Database\Seeders\CatalogSeeder;
 use Tests\TestCase;
 
 class SuperAdminPagesTest extends TestCase
@@ -32,7 +34,11 @@ class SuperAdminPagesTest extends TestCase
             ->assertSee('Course completion', false)
             ->assertSee('Quick actions', false)
             ->assertSee('Dashboard', false)
-            ->assertSee('Add academy', false);
+            ->assertSee('Add academy', false)
+            ->assertSee('View', false)
+            ->assertSee('Edit', false)
+            ->assertSee(route('workspace.dashboard', ['platform' => 'gemura']), false)
+            ->assertSee(route('admin.platforms.edit', 'gemura'), false);
     }
 
     public function test_dashboard_activity_empty_state_renders_when_the_fixture_is_empty(): void
@@ -57,6 +63,13 @@ class SuperAdminPagesTest extends TestCase
         $this->get(route('admin.platforms'))
             ->assertOk()
             ->assertSee('OroraFarm', false)
+            ->assertSee('View', false)
+            ->assertSee('Edit', false)
+            ->assertSee('Delete', false)
+            ->assertSee('Delete OroraFarm?', false)
+            ->assertSee(route('workspace.dashboard', ['platform' => 'ororafarm']), false)
+            ->assertSee(route('admin.platforms.edit', 'ororafarm'), false)
+            ->assertSee(route('admin.platforms.destroy', 'ororafarm'), false)
             ->assertSee('Page', false)
             ->assertSee('of', false)
             ->assertSee('Next', false);
@@ -69,6 +82,87 @@ class SuperAdminPagesTest extends TestCase
             ->assertOk()
             ->assertSee('Edit Gemura', false)
             ->assertSee('Academy is active', false);
+
+        $this->get(route('admin.platforms.create'))
+            ->assertOk()
+            ->assertSee('Add an academy', false)
+            ->assertSee('Academy admin', false)
+            ->assertSee('name="admin_email"', false);
+    }
+
+    public function test_super_admin_creates_an_academy_and_its_admin(): void
+    {
+        $this->from(route('admin.platforms.create'))
+            ->post(route('admin.platforms.store'), [
+                'name' => 'Kivu Tea',
+                'slug' => 'kivu-tea',
+                'description' => 'Tea husbandry for the Western Province.',
+                'active' => '1',
+                'admin_name' => 'Diane Uwamahoro',
+                'admin_email' => 'diane.uwamahoro@ororaschool.rw',
+                'admin_password' => 'password12',
+                'admin_password_confirmation' => 'password12',
+                'admin_district' => 'Nyabihu',
+            ])
+            ->assertRedirect(route('admin.platforms'))
+            ->assertSessionHas('status');
+
+        $platform = Platform::query()->where('slug', 'kivu-tea')->first();
+        $admin = User::query()->where('email', 'diane.uwamahoro@ororaschool.rw')->first();
+
+        $this->assertNotNull($platform);
+        $this->assertSame('Kivu Tea', $platform->name);
+        $this->assertSame('active', $platform->status);
+        $this->assertNotNull($admin);
+        $this->assertSame(UserRole::PlatformStaff, $admin->role);
+        $this->assertSame(['kivu-tea'], $admin->platforms()->pluck('slug')->all());
+        $this->assertTrue($admin->canAccessWorkspace('kivu-tea'));
+        $this->assertFalse($admin->canAccessWorkspace('gemura'));
+
+        $this->get(route('admin.platforms', ['page' => 2]))
+            ->assertOk()
+            ->assertSee('Kivu Tea', false);
+
+        $this->get(route('workspace.dashboard', ['platform' => 'kivu-tea']))
+            ->assertOk()
+            ->assertSee('Kivu Tea', false)
+            ->assertDontSee('Mastitis Detection', false);
+
+        $this->actingAs($admin);
+
+        $this->get(route('workspace.dashboard', ['platform' => 'kivu-tea']))
+            ->assertOk()
+            ->assertSee('Kivu Tea', false)
+            ->assertDontSee('Mastitis Detection', false);
+
+        $this->get(route('workspace.courses', ['platform' => 'kivu-tea']))
+            ->assertOk()
+            ->assertDontSee('Mastitis Detection', false);
+
+        $this->get(route('workspace.dashboard', ['platform' => 'gemura']))
+            ->assertNotFound();
+
+        $this->get(route('admin.dashboard'))
+            ->assertForbidden();
+    }
+
+    public function test_saving_an_academy_writes_the_record(): void
+    {
+        $this->from(route('admin.platforms.edit', 'ishyiga'))
+            ->post(route('admin.platforms.update', 'ishyiga'), [
+                'name' => 'Ishyiga',
+                'description' => 'Hive records for the Western Province.',
+                'active' => '1',
+            ])
+            ->assertRedirect(route('admin.platforms'))
+            ->assertSessionHas('status');
+
+        $this->assertDatabaseHas('platforms', [
+            'slug' => 'ishyiga',
+            'name' => 'Ishyiga',
+            'description' => 'Hive records for the Western Province.',
+            'status' => 'active',
+        ]);
     }
 
     public function test_platforms_list_uses_the_empty_state_when_the_fixture_is_empty(): void
@@ -85,7 +179,79 @@ class SuperAdminPagesTest extends TestCase
         $this->from(route('admin.platforms'))
             ->post(route('admin.platforms.toggle', 'ubworozi'))
             ->assertRedirect(route('admin.platforms'))
-            ->assertSessionHas('status');
+            ->assertSessionHas('status', 'Ubworozi activated.');
+
+        $this->assertDatabaseHas('platforms', [
+            'slug' => 'ubworozi',
+            'status' => 'active',
+        ]);
+
+        $this->get(route('admin.platforms'))
+            ->assertOk()
+            ->assertSee('Deactivate Ubworozi?', false);
+    }
+
+    public function test_deactivating_an_academy_hides_it_from_the_public_catalogue(): void
+    {
+        $this->seed(CatalogSeeder::class);
+
+        $this->from(route('admin.platforms'))
+            ->post(route('admin.platforms.toggle', 'gemura'))
+            ->assertRedirect(route('admin.platforms'))
+            ->assertSessionHas('status', 'Gemura deactivated.');
+
+        $this->assertDatabaseHas('platforms', [
+            'slug' => 'gemura',
+            'status' => 'inactive',
+        ]);
+
+        $this->get(route('admin.platforms'))
+            ->assertOk()
+            ->assertSee('Activate Gemura?', false);
+
+        $this->get(route('catalog.platforms'))
+            ->assertOk()
+            ->assertDontSee('Gemura', false);
+
+        $this->get(route('catalog.platforms.show', ['platform' => 'gemura']))
+            ->assertNotFound();
+    }
+
+    public function test_deleting_an_academy_hides_it_and_leaves_certificates_resolvable(): void
+    {
+        $this->seed(CatalogSeeder::class);
+
+        $this->from(route('admin.platforms'))
+            ->delete(route('admin.platforms.destroy', 'gemura'))
+            ->assertRedirect(route('admin.platforms'))
+            ->assertSessionHas('status', 'Gemura was removed.');
+
+        $this->assertDatabaseHas('platforms', [
+            'slug' => 'gemura',
+            'status' => 'deleted',
+        ]);
+
+        $this->get(route('admin.platforms'))
+            ->assertOk()
+            ->assertDontSee('Delete Gemura?', false)
+            ->assertDontSee(route('admin.platforms.destroy', 'gemura'), false);
+
+        $this->get(route('admin.platforms.edit', 'gemura'))->assertNotFound();
+        $this->post(route('admin.platforms.toggle', 'gemura'))->assertNotFound();
+        $this->delete(route('admin.platforms.destroy', 'gemura'))->assertNotFound();
+        $this->get(route('workspace.dashboard', ['platform' => 'gemura']))->assertNotFound();
+
+        $this->get(route('catalog.platforms'))
+            ->assertOk()
+            ->assertDontSee('Gemura', false);
+
+        $this->get(route('catalog.platforms.show', ['platform' => 'gemura']))
+            ->assertNotFound();
+
+        $this->get(route('certificates.verify', ['code' => 'OS-GEM-2026-1847']))
+            ->assertOk()
+            ->assertSee('Certificate verified', false)
+            ->assertSee('Gemura', false);
     }
 
     public function test_users_list_filters_by_platform_and_paginates(): void
@@ -286,18 +452,76 @@ class SuperAdminPagesTest extends TestCase
             ->assertOk()
             ->assertSee('System-protected', false)
             ->assertSee('Super Admin', false)
+            ->assertSee('View', false)
+            ->assertSee('Edit', false)
+            ->assertSee(route('admin.roles.show', 'super-admin'), false)
+            ->assertSee(route('admin.roles.edit', 'super-admin'), false)
+            ->assertSee('Delete', false)
+            ->assertSee('Delete Super Admin?', false)
             ->assertSee('Next', false);
 
         $this->get(route('admin.roles', ['page' => 2]))
             ->assertOk()
             ->assertSee('Certificate Officer', false)
-            ->assertSee('Custom', false);
+            ->assertSee('Custom', false)
+            ->assertSee('Delete', false)
+            ->assertSee('Delete Certificate Officer?', false);
 
         $this->get(route('admin.roles.edit', 'content-manager'))
             ->assertOk()
             ->assertSee('courses.publish', false)
             ->assertSee('platforms.*', false)
             ->assertSee('System-protected — permissions are fixed', false);
+    }
+
+    public function test_role_view_shows_granted_permissions(): void
+    {
+        $this->get(route('admin.roles.show', 'content-manager'))
+            ->assertOk()
+            ->assertSee('Content Manager', false)
+            ->assertSee('Granted permissions', false)
+            ->assertSee('courses.publish', false)
+            ->assertDontSee('platforms.view', false);
+    }
+
+    public function test_deleting_a_custom_role_hides_it(): void
+    {
+        $this->from(route('admin.roles', ['page' => 2]))
+            ->delete(route('admin.roles.destroy', 'reviewer'))
+            ->assertRedirect(route('admin.roles'))
+            ->assertSessionHas('status', 'Reviewer was removed.');
+
+        $this->assertDatabaseHas('removed_roles', [
+            'key' => 'reviewer',
+        ]);
+
+        $this->get(route('admin.roles', ['page' => 2]))
+            ->assertOk()
+            ->assertDontSee('Delete Reviewer?', false)
+            ->assertDontSee(route('admin.roles.destroy', 'reviewer'), false);
+
+        $this->get(route('admin.roles.show', 'reviewer'))->assertNotFound();
+        $this->get(route('admin.roles.edit', 'reviewer'))->assertNotFound();
+        $this->delete(route('admin.roles.destroy', 'reviewer'))->assertNotFound();
+    }
+
+    public function test_deleting_a_system_role_hides_it(): void
+    {
+        $this->from(route('admin.roles'))
+            ->delete(route('admin.roles.destroy', 'instructor'))
+            ->assertRedirect(route('admin.roles'))
+            ->assertSessionHas('status', 'Instructor was removed.');
+
+        $this->assertDatabaseHas('removed_roles', [
+            'key' => 'instructor',
+        ]);
+
+        $this->get(route('admin.roles'))
+            ->assertOk()
+            ->assertDontSee('Delete Instructor?', false);
+
+        $this->get(route('admin.roles.show', 'instructor'))->assertNotFound();
+        $this->get(route('admin.roles.edit', 'instructor'))->assertNotFound();
     }
 
     public function test_roles_list_uses_the_empty_state_when_the_fixture_is_empty(): void
@@ -329,7 +553,10 @@ class SuperAdminPagesTest extends TestCase
         $this->get(route('admin.content'))
             ->assertOk()
             ->assertSee('Mastitis Detection', false)
-            ->assertSee(route('workspace.courses', ['platform' => 'gemura']), false)
+            ->assertSee(route('workspace.courses.show', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']), false)
+            ->assertSee(route('workspace.courses.edit', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']), false)
+            ->assertSee('View', false)
+            ->assertSee('Edit', false)
             ->assertSee('Next', false);
 
         $this->get(route('admin.content', ['empty' => 1]))
@@ -385,8 +612,12 @@ class SuperAdminPagesTest extends TestCase
     public function test_unknown_platform_and_user_are_not_found(): void
     {
         $this->get(route('admin.platforms.edit', 'missing'))->assertNotFound();
+        $this->post(route('admin.platforms.toggle', 'missing'))->assertNotFound();
+        $this->delete(route('admin.platforms.destroy', 'missing'))->assertNotFound();
         $this->get(route('admin.users.show', 9999))->assertNotFound();
+        $this->get(route('admin.roles.show', 'not-a-role'))->assertNotFound();
         $this->get(route('admin.roles.edit', 'not-a-role'))->assertNotFound();
+        $this->delete(route('admin.roles.destroy', 'not-a-role'))->assertNotFound();
     }
 
     public function test_every_current_platform_still_has_a_workspace(): void

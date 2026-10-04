@@ -71,6 +71,7 @@ class Navigation
             ['label' => 'Home', 'route' => 'home', 'path' => '/', 'icon' => 'sprout'],
             ['label' => 'Courses', 'route' => 'catalog.courses', 'path' => '/courses', 'icon' => 'book'],
             ['label' => 'Academies', 'route' => 'catalog.platforms', 'path' => '/platforms', 'icon' => 'layers'],
+            ['label' => 'Resources', 'route' => 'catalog.resources', 'path' => '/resources', 'icon' => 'file'],
             ['label' => 'Certificate Verification', 'route' => 'certificates.lookup', 'path' => '/certificates', 'icon' => 'award'],
         ];
     }

@@ -17,28 +17,56 @@
 
     <section class="mt-10" aria-labelledby="recent-courses-heading">
         <div class="flex flex-wrap items-end justify-between gap-4">
-            <h2 id="recent-courses-heading" class="font-display text-section text-basalt-900">Recent courses</h2>
+            <div class="min-w-0 max-w-2xl">
+                <h2 id="recent-courses-heading" class="font-display text-section text-basalt-900">Recent courses</h2>
+                <p class="mt-1 text-dense text-fern-500">Latest catalogue work on this academy.</p>
+            </div>
             <x-button variant="ghost" size="sm" :href="route('workspace.courses', ['platform' => $platformSlug])" icon-after="arrow-right">
                 Catalogue
             </x-button>
         </div>
 
-        <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            @forelse ($page['recent'] as $course)
-                <x-course-card :course="$course"
-                               :platform-label="$page['platform']['name'] . ' · ' . $course['level']"
-                               :href="route('workspace.courses.show', ['platform' => $platformSlug, 'course' => $course['slug']])" />
-            @empty
-                <div class="sm:col-span-2 lg:col-span-3">
-                    <x-empty-state icon="book" title="No courses in this workspace yet"
-                                   message="Open a draft. It stays off the learner catalogue until it is published.">
-                        <x-slot:actions>
-                            <x-button icon="plus" :href="route('workspace.courses.create', ['platform' => $platformSlug])">New course</x-button>
-                        </x-slot:actions>
-                    </x-empty-state>
-                </div>
-            @endforelse
-        </div>
+        @if (count($page['recent']))
+            <div class="mt-5 min-w-0 overflow-x-auto">
+                <table class="w-full border-collapse text-dense" style="min-width: 40rem">
+                    <thead>
+                        <tr class="border-b border-clay-200">
+                            <th scope="col" class="py-3 pr-4 text-left text-micro font-medium text-fern-500">Course</th>
+                            <th scope="col" class="px-4 py-3 text-left text-micro font-medium text-fern-500">Status</th>
+                            <th scope="col" class="px-4 py-3 text-left text-micro font-medium text-fern-500">Instructor</th>
+                            <th scope="col" class="px-4 py-3 text-right text-micro font-medium text-fern-500">Enrolled</th>
+                            <th scope="col" class="py-3 pl-4 text-right text-micro font-medium text-fern-500"><span class="sr-only">Open</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($page['recent'] as $course)
+                            <tr class="border-b border-clay-100 last:border-b-0">
+                                <td class="py-3.5 pr-4">
+                                    <a href="{{ route('workspace.courses.show', ['platform' => $platformSlug, 'course' => $course['slug']]) }}"
+                                       class="font-medium text-basalt-900 hover:text-accent-600">{{ $course['title'] }}</a>
+                                    <p class="text-micro text-fern-500">{{ $course['level'] }} · {{ $course['lessons'] }} lessons</p>
+                                </td>
+                                <td class="px-4 py-3.5"><x-status-badge :status="$course['status']" /></td>
+                                <td class="px-4 py-3.5 text-dense">{{ $course['instructor'] }}</td>
+                                <td class="figure px-4 py-3.5 text-right text-micro text-fern-500">{{ number_format($course['enrolled']) }}</td>
+                                <td class="py-3.5 pl-4 text-right">
+                                    <x-row-actions
+                                        :view="route('workspace.courses.show', ['platform' => $platformSlug, 'course' => $course['slug']])"
+                                        :edit="route('workspace.courses.edit', ['platform' => $platformSlug, 'course' => $course['slug']])" />
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @else
+            <x-empty-state class="mt-5" icon="book" title="No courses in this workspace yet"
+                           message="Open a draft. It stays off the learner catalogue until it is published.">
+                <x-slot:actions>
+                    <x-button icon="plus" :href="route('workspace.courses.create', ['platform' => $platformSlug])">New course</x-button>
+                </x-slot:actions>
+            </x-empty-state>
+        @endif
     </section>
 
     <div class="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-5">
@@ -78,9 +106,12 @@
             @if (count($page['sessions']))
                 <ul class="mt-4 divide-y divide-clay-100 border-y border-clay-200">
                     @foreach ($page['sessions'] as $session)
-                        <li class="py-3.5">
-                            <p class="text-dense font-medium text-basalt-900">{{ $session['title'] }}</p>
-                            <p class="mt-0.5 text-micro text-fern-500">{{ $session['instructor'] }} · {{ $session['starts'] }}</p>
+                        <li class="flex items-start justify-between gap-3 py-3.5">
+                            <div class="min-w-0">
+                                <p class="text-dense font-medium text-basalt-900">{{ $session['title'] }}</p>
+                                <p class="mt-0.5 text-micro text-fern-500">{{ $session['instructor'] }} · {{ $session['starts'] }}</p>
+                            </div>
+                            <x-row-actions :edit="route('workspace.sessions.edit', ['platform' => $platformSlug, 'session' => $session['id']])" class="shrink-0" />
                         </li>
                     @endforeach
                 </ul>

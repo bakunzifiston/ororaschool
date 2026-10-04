@@ -63,7 +63,26 @@ class DemoData
 
     public static function currentUser(string $experience = 'super-admin'): array
     {
-        return self::personas()[$experience] ?? self::personas()['super-admin'];
+        $persona = self::personas()[$experience] ?? self::personas()['super-admin'];
+        $user = auth()->user();
+
+        if (! $user instanceof User) {
+            return $persona;
+        }
+
+        $persona['name'] = $user->name;
+        $persona['email'] = $user->email;
+        $persona['district'] = $user->district ?: $persona['district'];
+
+        if ($user->role === UserRole::SuperAdmin) {
+            $persona['role'] = 'super-admin';
+            $persona['title'] = 'Academy Administrator';
+        } elseif ($user->role === UserRole::PlatformStaff) {
+            $persona['role'] = 'platform-admin';
+            $persona['title'] = 'Academy Admin';
+        }
+
+        return $persona;
     }
 
     /**
@@ -73,7 +92,11 @@ class DemoData
      */
     public static function currentPlatform(?string $slug = null): array
     {
-        return Platforms::find($slug ?? 'gemura') ?? Platforms::find('gemura');
+        if ($slug === null || $slug === '') {
+            return Platforms::find('gemura') ?? Platforms::visible()[0];
+        }
+
+        return Platforms::require($slug);
     }
 
     /**
@@ -86,6 +109,10 @@ class DemoData
         $allowed = self::currentUser($experience)['platforms'];
         $user = auth()->user();
 
+        if ($user instanceof User && $user->role === UserRole::SuperAdmin) {
+            return Platforms::visible();
+        }
+
         if ($user instanceof User && $user->role === UserRole::PlatformStaff) {
             $assigned = $user->platforms()->orderBy('sort_order')->pluck('slug')->all();
 
@@ -95,8 +122,18 @@ class DemoData
         }
 
         return array_values(array_filter(
-            Platforms::all(),
-            fn (array $platform) => in_array($platform['slug'], $allowed, true),
+            Platforms::visible(),
+            function (array $platform) use ($allowed, $user): bool {
+                if (! in_array($platform['slug'], $allowed, true)) {
+                    return false;
+                }
+
+                if ($user instanceof User && $user->role === UserRole::PlatformStaff) {
+                    return $platform['status'] === 'active';
+                }
+
+                return true;
+            },
         ));
     }
 

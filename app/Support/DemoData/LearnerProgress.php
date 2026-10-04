@@ -328,12 +328,14 @@ class LearnerProgress
         return array_values(array_filter(
             Resources::all(),
             function (array $resource) use ($platforms, $needles) {
-                if (! in_array($resource['platform'], $platforms, true)) {
-                    return false;
+                if (! Resources::requiresEnrolment($resource)) {
+                    $platform = Platforms::find($resource['platform']);
+
+                    return $platform !== null && ($platform['status'] ?? '') === 'active';
                 }
 
-                if ($resource['attached_kind'] === 'academy') {
-                    return true;
+                if (! in_array($resource['platform'], $platforms, true)) {
+                    return false;
                 }
 
                 $haystack = strtolower($resource['attached_to']);

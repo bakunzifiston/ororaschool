@@ -30,7 +30,7 @@ class LearnerResourcesPage
         return [
             'header' => LearnerHeader::make(
                 'Resources',
-                'Handouts from the courses you are on. Download is a placeholder in this build.',
+                'Academy handouts are open. Course files wait until you enrol. Download is a placeholder in this build.',
                 [
                     ['label' => 'Resources'],
                 ],
@@ -38,7 +38,7 @@ class LearnerResourcesPage
             'filters' => ['type' => $type, 'types' => Resources::types()],
             'rows' => $rows,
             'emptyTitle' => 'No resources on your courses yet',
-            'emptyMessage' => 'Field sheets and manuals appear here once they are attached to a course you are enrolled in.',
+            'emptyMessage' => 'Academy handouts appear without enrolment. Course, module and lesson files wait until they are attached to a course you are on.',
         ];
     }
 }

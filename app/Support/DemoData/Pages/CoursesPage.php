@@ -40,7 +40,7 @@ class CoursesPage
 
     public static function index(string $platform, bool $empty = false, int $page = 1, string $status = '', string $academy = ''): array
     {
-        $current = Platforms::find($platform) ?? Platforms::find('gemura');
+        $current = Platforms::require($platform);
         $rows = $empty ? [] : self::filtered($platform, $status, $academy);
         $academies = ['' => 'Any academy'] + array_unique(array_filter(array_column(Courses::forPlatform($platform), 'academy', 'academy_slug')));
         $query = array_filter([

@@ -14,7 +14,7 @@ class LearnersPage
 {
     public static function index(string $platform, bool $empty = false, int $page = 1): array
     {
-        $current = Platforms::find($platform) ?? Platforms::find('gemura');
+        $current = Platforms::require($platform);
         $rows = $empty ? [] : People::learnersOn($platform);
         $paged = Paging::paginate($rows, $page, 10, '/workspace/'.$platform.'/learners', array_filter(['empty' => $empty ? 1 : null]));
 

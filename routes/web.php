@@ -21,6 +21,7 @@ use App\Http\Controllers\Public\CourseController as PublicCourseController;
 use App\Http\Controllers\Public\HomeController as PublicHomeController;
 use App\Http\Controllers\Public\PageController as PublicPageController;
 use App\Http\Controllers\Public\PlatformController as PublicPlatformController;
+use App\Http\Controllers\Public\ResourceController as PublicResourceController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\Workspace\AnalyticsController as WorkspaceAnalyticsController;
 use App\Http\Controllers\Workspace\CategoryController as WorkspaceCategoryController;
@@ -33,7 +34,6 @@ use App\Http\Controllers\Workspace\QuizController as WorkspaceQuizController;
 use App\Http\Controllers\Workspace\ResourceController as WorkspaceResourceController;
 use App\Http\Controllers\Workspace\RosterController as WorkspaceRosterController;
 use App\Http\Controllers\WorkspaceController;
-use App\Support\DemoData\Platforms;
 use App\UserRole;
 use Illuminate\Support\Facades\Route;
 
@@ -53,6 +53,7 @@ Route::get('/courses', [PublicCourseController::class, 'index'])->name('catalog.
 Route::get('/courses/{course}', [PublicCourseController::class, 'show'])->name('catalog.courses.show');
 Route::get('/platforms', [PublicPlatformController::class, 'index'])->name('catalog.platforms');
 Route::get('/platforms/{platform}', [PublicPlatformController::class, 'show'])->name('catalog.platforms.show');
+Route::get('/resources', [PublicResourceController::class, 'index'])->name('catalog.resources');
 Route::get('/certificates', [CertificateVerificationController::class, 'index'])->name('certificates.lookup');
 Route::get('/certificates/{code}', [CertificateVerificationController::class, 'show'])->name('certificates.verify');
 Route::get('/verify/{code}', function (string $code) {
@@ -93,6 +94,7 @@ Route::middleware(['auth', 'verified', 'role:'.UserRole::SuperAdmin->value])->gr
     Route::get('/admin/platforms/{platform}/edit', [PlatformController::class, 'edit'])->name('admin.platforms.edit');
     Route::post('/admin/platforms/{platform}', [PlatformController::class, 'update'])->name('admin.platforms.update');
     Route::post('/admin/platforms/{platform}/toggle', [PlatformController::class, 'toggle'])->name('admin.platforms.toggle');
+    Route::delete('/admin/platforms/{platform}', [PlatformController::class, 'destroy'])->name('admin.platforms.destroy');
 
     Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users');
     Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');
@@ -109,8 +111,10 @@ Route::middleware(['auth', 'verified', 'role:'.UserRole::SuperAdmin->value])->gr
     Route::get('/admin/roles', [RoleController::class, 'index'])->name('admin.roles');
     Route::get('/admin/roles/create', [RoleController::class, 'create'])->name('admin.roles.create');
     Route::post('/admin/roles', [RoleController::class, 'store'])->name('admin.roles.store');
+    Route::get('/admin/roles/{role}', [RoleController::class, 'show'])->name('admin.roles.show');
     Route::get('/admin/roles/{role}/edit', [RoleController::class, 'edit'])->name('admin.roles.edit');
     Route::post('/admin/roles/{role}', [RoleController::class, 'update'])->name('admin.roles.update');
+    Route::delete('/admin/roles/{role}', [RoleController::class, 'destroy'])->name('admin.roles.destroy');
 
     Route::get('/admin/permissions', [PermissionController::class, 'index'])->name('admin.permissions');
     Route::get('/admin/content', [ContentController::class, 'index'])->name('admin.content');
@@ -122,7 +126,7 @@ Route::middleware(['auth', 'verified', 'role:'.UserRole::SuperAdmin->value])->gr
 
 // ---- Platform Workspace (Phase F4) -----------------------------------------
 Route::middleware(['auth', 'verified', 'role:'.UserRole::SuperAdmin->value.','.UserRole::PlatformStaff->value, 'platform.access'])
-    ->whereIn('platform', Platforms::slugs())
+    ->where(['platform' => '[a-z0-9]+(?:-[a-z0-9]+)*'])
     ->group(function () {
         Route::get('/workspace/{platform}', [WorkspaceController::class, 'dashboard'])->name('workspace.dashboard');
 

@@ -2,6 +2,8 @@
 
 namespace App\Support\DemoData\Pages;
 
+use App\Models\LearningResource;
+use App\Models\Platform;
 use App\Support\DemoData\Paging;
 use App\Support\DemoData\Platforms;
 use App\Support\DemoData\Resources;
@@ -13,7 +15,7 @@ class ResourcesPage
 {
     public static function index(string $platform, bool $empty = false, int $page = 1, string $type = ''): array
     {
-        $current = Platforms::find($platform) ?? Platforms::find('gemura');
+        $current = Platforms::require($platform);
         $rows = $empty ? [] : Resources::forPlatform($platform);
 
         if ($type !== '') {
@@ -27,13 +29,18 @@ class ResourcesPage
             '/workspace/'.$platform.'/resources',
             array_filter(['empty' => $empty ? 1 : null, 'type' => $type !== '' ? $type : null]),
         );
+        $paged['rows'] = array_map(function (array $row): array {
+            $row['type_label'] = Resources::typeLabel($row['type']);
+
+            return $row;
+        }, $paged['rows']);
 
         return [
             'platform' => $current,
             'header' => WorkspaceHeader::make(
                 $current,
                 'Resources',
-                'Handouts for '.$current['name'].'. Each row says whether it hangs off a course, module, lesson or academy.',
+                'Handouts, templates and clips used on '.$current['name'].'.',
             ),
             'filters' => ['type' => $type, 'types' => Resources::types()],
             'rows' => $paged['rows'],
@@ -45,21 +52,31 @@ class ResourcesPage
 
     public static function form(string $platform): array
     {
-        $current = Platforms::find($platform) ?? Platforms::find('gemura');
+        $current = Platforms::require($platform);
 
         return [
             'platform' => $current,
             'header' => WorkspaceHeader::make(
                 $current,
                 'Upload a resource',
-                'Files stay on '.$current['name'].'. Upload is a placeholder in this build.',
+                'Academy files are open. Course, module and lesson files wait until a learner enrols.',
                 [
                     ['label' => 'Resources', 'route' => 'workspace.resources', 'params' => ['platform' => $platform]],
                     ['label' => 'Upload a resource'],
                 ],
             ),
-            'types' => Resources::types(),
-            'kinds' => ['course' => 'Course', 'module' => 'Module', 'lesson' => 'Lesson', 'academy' => 'Academy'],
+            'types' => Resources::formTypes(),
+            'kinds' => [
+                'academy' => 'Academy',
+                'course' => 'Course',
+                'module' => 'Module',
+                'lesson' => 'Lesson',
+            ],
+            'targets' => LearningResource::targetsFor(
+                Platform::query()->where('slug', $platform)->first() ?? Platform::firstOrCreateFromSlug($platform),
+            ),
+            'accepts' => Resources::accepts(),
+            'hints' => Resources::fileHints(),
         ];
     }
 }

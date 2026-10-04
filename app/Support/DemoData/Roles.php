@@ -2,6 +2,8 @@
 
 namespace App\Support\DemoData;
 
+use App\Models\RemovedRole;
+
 /**
  * FIXTURE LAYER — DELETE WHEN REAL DATA ARRIVES.
  *
@@ -94,6 +96,7 @@ class Roles
     {
         $key = match ($key) {
             'platform-owner' => 'platform-admin',
+            'platform-staff' => 'platform-admin',
             'curriculum-lead' => 'content-manager',
             default => $key,
         };
@@ -107,13 +110,26 @@ class Roles
         return ['key' => $key, 'label' => ucfirst(str_replace('-', ' ', $key)), 'scope' => 'Unknown', 'elevated' => false, 'system' => false, 'description' => '', 'holders' => 0];
     }
 
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public static function visible(): array
+    {
+        $removed = RemovedRole::keys();
+
+        return array_values(array_filter(
+            self::all(),
+            fn (array $role) => ! in_array($role['key'], $removed, true),
+        ));
+    }
+
     public static function system(): array
     {
-        return array_values(array_filter(self::all(), fn (array $role) => $role['system']));
+        return array_values(array_filter(self::visible(), fn (array $role) => $role['system']));
     }
 
     public static function custom(): array
     {
-        return array_values(array_filter(self::all(), fn (array $role) => ! $role['system']));
+        return array_values(array_filter(self::visible(), fn (array $role) => ! $role['system']));
     }
 }

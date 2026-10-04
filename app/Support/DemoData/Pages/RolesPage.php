@@ -13,7 +13,7 @@ class RolesPage
 {
     public static function index(bool $empty = false, int $page = 1): array
     {
-        $roles = $empty ? [] : Roles::all();
+        $roles = $empty ? [] : Roles::visible();
         $paged = Paging::paginate(
             $roles,
             $page,
@@ -29,7 +29,14 @@ class RolesPage
                     ['label' => 'Roles'],
                 ],
                 'title' => 'Roles',
-                'subtitle' => 'Five system roles are protected. Custom roles are data: a name and a set of permission keys.',
+                'subtitle' => 'Who can do what on FarmSchool. System roles stay locked; custom roles can be edited.',
+            ],
+            'columns' => [
+                ['key' => 'label', 'label' => 'Role'],
+                ['key' => 'type', 'label' => 'Type'],
+                ['key' => 'scope', 'label' => 'Scope'],
+                ['key' => 'holders', 'label' => 'Holders', 'align' => 'right', 'numeric' => true],
+                ['key' => 'actions', 'label' => ''],
             ],
             'roles' => $paged['rows'],
             'pagination' => $paged['pagination'],
@@ -40,14 +47,42 @@ class RolesPage
 
     public static function edit(string $key): ?array
     {
+        return self::detail($key, grantedOnly: false);
+    }
+
+    public static function show(string $key): ?array
+    {
+        return self::detail($key, grantedOnly: true);
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private static function detail(string $key, bool $grantedOnly): ?array
+    {
         $role = Roles::find($key);
-        $known = array_column(Roles::all(), 'key');
+        $known = array_column(Roles::visible(), 'key');
 
         if (! in_array($role['key'], $known, true)) {
             return null;
         }
 
         $held = Permissions::forRole($role['key']);
+        $catalog = Permissions::catalog();
+
+        if ($grantedOnly) {
+            $catalog = array_values(array_filter(
+                array_map(function (array $group) use ($held): array {
+                    $group['permissions'] = array_values(array_filter(
+                        $group['permissions'],
+                        fn (array $permission) => in_array($permission['key'], $held, true),
+                    ));
+
+                    return $group;
+                }, $catalog),
+                fn (array $group) => $group['permissions'] !== [],
+            ));
+        }
 
         return [
             'header' => [
@@ -60,7 +95,7 @@ class RolesPage
                 'subtitle' => $role['description'],
             ],
             'role' => $role,
-            'catalog' => Permissions::catalog(),
+            'catalog' => $catalog,
             'held' => $held,
             'heldCount' => count($held),
             'totalCount' => count(Permissions::keys()),

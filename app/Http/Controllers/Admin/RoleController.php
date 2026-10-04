@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\RemovedRole;
 use App\Support\DemoData\Pages\RolesPage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,6 +34,14 @@ class RoleController extends Controller
             ->with('status', 'Custom role created. Nothing was saved in this build.');
     }
 
+    public function show(string $role): View
+    {
+        $page = RolesPage::show($role);
+        abort_unless($page, 404);
+
+        return view('admin.roles.show', ['page' => $page]);
+    }
+
     public function edit(string $role): View
     {
         $page = RolesPage::edit($role);
@@ -47,5 +56,16 @@ class RoleController extends Controller
 
         return redirect()->route('admin.roles.edit', $role)
             ->with('status', 'Permissions saved on this role. Nothing was written in this build.');
+    }
+
+    public function destroy(string $role): RedirectResponse
+    {
+        $page = RolesPage::edit($role);
+        abort_unless($page, 404);
+
+        RemovedRole::forget($role);
+
+        return redirect()->route('admin.roles')
+            ->with('status', $page['role']['label'].' was removed.');
     }
 }

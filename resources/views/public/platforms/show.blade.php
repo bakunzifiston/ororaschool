@@ -8,9 +8,11 @@
             'feedgrid' => 'layers',
         ];
         $glyph = $glyphs[$platform['slug'] ?? ''] ?? 'book';
+        $courseCount = (int) ($platform['public_courses'] ?? 0);
+        $foci = array_values(array_filter(array_column($platform['public_academies'] ?? [], 'name')));
     @endphp
 
-    <x-public.hero-band :image="$platform['cover'] ?? null" :alt="$platform['name']">
+    <x-public.hero-band compact :image="$platform['cover'] ?? null" :alt="$platform['name']">
         <x-public.trail on-dark :items="[
             ['label' => 'Academies', 'route' => 'catalog.platforms'],
             ['label' => $platform['name']],
@@ -21,52 +23,88 @@
             {{ $platform['discipline'] }}
         </p>
         <h1 class="mt-4 marketing-title text-chalk">{{ $platform['name'] }}</h1>
-        @if (($platform['region'] ?? '') !== '')
-            <p class="mt-2 text-dense text-clay-200">{{ $platform['region'] }}</p>
-        @endif
-        <p class="mt-4 max-w-2xl text-read leading-relaxed text-clay-200">{{ $platform['description'] }}</p>
-
-        @if (count($platform['public_academies']))
-            <ul class="mt-6 flex flex-wrap gap-2">
-                @foreach ($platform['public_academies'] as $academy)
-                    <li class="rounded-full bg-chalk/15 px-3 py-1.5 text-dense text-chalk">
-                        {{ $academy['name'] }}
-                    </li>
-                @endforeach
-            </ul>
-        @endif
+        <p class="mt-3 max-w-xl text-read leading-relaxed text-clay-200">
+            {{ $platform['tagline'] ?: $platform['description'] }}
+        </p>
     </x-public.hero-band>
 
     <x-public.section tone="chalk" class="grow">
-        <x-public.section-heading
-            title="Published courses"
-            :subtitle="'Published '.$platform['name'].' courses from the same catalogue.'" />
+        <dl class="grid gap-6 border-b border-clay-200 pb-8 sm:grid-cols-3 sm:gap-8">
+            @if (($platform['region'] ?? '') !== '')
+                <div>
+                    <dt class="text-micro text-fern-500">Region</dt>
+                    <dd class="mt-1 text-dense text-basalt-900">{{ $platform['region'] }}</dd>
+                </div>
+            @endif
+            <div>
+                <dt class="text-micro text-fern-500">Published courses</dt>
+                <dd class="mt-1 text-dense text-basalt-900">
+                    {{ $courseCount }} {{ $courseCount === 1 ? 'course' : 'courses' }}
+                </dd>
+            </div>
+            @if (count($foci))
+                <div>
+                    <dt class="text-micro text-fern-500">Focus</dt>
+                    <dd class="mt-1 text-dense text-basalt-900">{{ implode(', ', $foci) }}</dd>
+                </div>
+            @endif
+        </dl>
 
-        <div class="mt-8">
-            <x-public.filters :filters="$page['filters']"
-                              :options="$page['options']"
-                              :show-platform-filter="$page['showPlatformFilter']"
-                              :form-action="$page['formAction']" />
-        </div>
-
-        <div class="mt-10">
-            @if (count($page['courses']))
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                    @foreach ($page['courses'] as $course)
-                        <x-public.course-tile :course="$course" />
-                    @endforeach
+        @if (count($page['resources'] ?? []))
+            <div class="mt-10 border-b border-clay-200 pb-10">
+                <div class="flex flex-wrap items-end justify-between gap-4">
+                    <x-public.section-heading
+                        title="Resources"
+                        subtitle="Open academy handouts. Course, module and lesson files stay with enrolment." />
+                    <a href="{{ route('catalog.resources', ['platform' => $platform['slug']]) }}"
+                       class="text-dense font-medium text-accent-700 hover:underline">
+                        All resources
+                    </a>
                 </div>
 
-                @if (($page['pagination']['pages'] ?? 1) > 1)
-                    <x-pagination :pagination="$page['pagination']" class="mt-10 px-0" />
+                <ul class="mt-6 divide-y divide-clay-100">
+                    @foreach ($page['resources'] as $resource)
+                        <li class="flex flex-wrap items-baseline justify-between gap-3 py-3">
+                            <div>
+                                <p class="font-medium text-basalt-900">{{ $resource['title'] }}</p>
+                                <p class="text-micro text-fern-500">{{ $resource['type_label'] }} · {{ $resource['attached_to'] }}</p>
+                            </div>
+                            <p class="text-micro text-fern-500">{{ $resource['size'] }}</p>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <div class="mt-10">
+            <x-public.section-heading title="Courses" />
+
+            <div class="mt-8">
+                <x-public.filters :filters="$page['filters']"
+                                  :options="$page['options']"
+                                  :show-platform-filter="$page['showPlatformFilter']"
+                                  :form-action="$page['formAction']" />
+            </div>
+
+            <div class="mt-10">
+                @if (count($page['courses']))
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                        @foreach ($page['courses'] as $course)
+                            <x-public.course-tile :course="$course" />
+                        @endforeach
+                    </div>
+
+                    @if (($page['pagination']['pages'] ?? 1) > 1)
+                        <x-pagination :pagination="$page['pagination']" class="mt-10 px-0" />
+                    @endif
+                @else
+                    <x-empty-state icon="search" :title="$page['emptyTitle']" :message="$page['emptyMessage']">
+                        <x-slot:actions>
+                            <x-button variant="secondary" :href="$page['formAction']">Clear filters</x-button>
+                        </x-slot:actions>
+                    </x-empty-state>
                 @endif
-            @else
-                <x-empty-state icon="search" :title="$page['emptyTitle']" :message="$page['emptyMessage']">
-                    <x-slot:actions>
-                        <x-button variant="secondary" :href="$page['formAction']">Clear filters</x-button>
-                    </x-slot:actions>
-                </x-empty-state>
-            @endif
+            </div>
         </div>
     </x-public.section>
 </x-layouts.public>

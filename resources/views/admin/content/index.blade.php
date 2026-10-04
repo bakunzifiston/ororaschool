@@ -16,18 +16,16 @@
                           min-width="48rem">
                 @if (count($page['rows']))
                     @foreach ($page['rows'] as $row)
-                        @php
-                            $href = $row['kind'] === 'Course'
-                                ? route('workspace.courses', ['platform' => $row['platform_slug']])
-                                : route('workspace.categories', ['platform' => $row['platform_slug']]);
-                        @endphp
                         <tr class="border-b border-clay-100 last:border-b-0 hover:bg-accent-50/60">
                             <td class="px-3 py-2.5">
-                                <a href="{{ $href }}" class="font-medium text-basalt-900 hover:text-accent-600">{{ $row['title'] }}</a>
+                                <a href="{{ $row['view'] }}" class="font-medium text-basalt-900 hover:text-accent-600">{{ $row['title'] }}</a>
                             </td>
                             <td class="px-3 py-2.5 text-micro text-fern-500">{{ $row['kind'] }}</td>
                             <td class="px-3 py-2.5 text-dense">{{ $row['platform'] }}</td>
                             <td class="px-3 py-2.5"><x-status-badge :status="$row['status']" /></td>
+                            <td class="px-3 py-2.5 text-right">
+                                <x-row-actions :view="$row['view']" :edit="$row['edit'] ?? null" />
+                            </td>
                         </tr>
                     @endforeach
                 @endif

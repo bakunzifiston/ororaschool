@@ -13,7 +13,7 @@ class QuizzesPage
 {
     public static function index(string $platform, bool $empty = false, int $page = 1, string $course = ''): array
     {
-        $current = Platforms::find($platform) ?? Platforms::find('gemura');
+        $current = Platforms::require($platform);
         $rows = $empty ? [] : Quizzes::forPlatform($platform);
 
         if ($course !== '') {

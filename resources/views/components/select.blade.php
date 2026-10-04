@@ -9,6 +9,7 @@
     'required' => false,
     'size' => 'lg',
     'autosubmit' => false,
+    'model' => null,
 ])
 
 @php
@@ -29,6 +30,7 @@
             @if ($required) required @endif
             @if ($hint) aria-describedby="{{ $id }}-hint" @endif
             @if ($autosubmit) onchange="this.form.submit()" @endif
+            @if ($model) x-model="{{ $model }}" @endif
             class="{{ $size === 'sm' ? 'h-9 text-dense' : 'h-11 text-body' }} w-full rounded-md border bg-chalk px-2.5 text-basalt-800 {{ $error ? 'border-danger' : 'border-clay-300' }}">
         @if ($placeholder)
             <option value="">{{ $placeholder }}</option>

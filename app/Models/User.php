@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\DemoData\Platforms;
 use App\UserRole;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -52,21 +53,41 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function canAccessWorkspace(string $slug): bool
     {
-        return match ($this->role) {
-            UserRole::SuperAdmin => true,
-            UserRole::PlatformStaff => $this->platforms()->where('platforms.slug', $slug)->exists(),
-            default => false,
-        };
+        if ($this->role === UserRole::SuperAdmin) {
+            $platform = Platforms::find($slug);
+
+            return $platform !== null && ($platform['status'] ?? '') !== 'deleted';
+        }
+
+        if ($this->role === UserRole::PlatformStaff) {
+            return $this->platforms()
+                ->where('platforms.slug', $slug)
+                ->where('platforms.status', 'active')
+                ->exists();
+        }
+
+        return false;
     }
 
     public function dashboardUrl(): string
     {
         return match ($this->role) {
             UserRole::SuperAdmin => route('admin.dashboard'),
-            UserRole::PlatformStaff => route('workspace.dashboard', [
-                'platform' => $this->platforms()->orderBy('sort_order')->value('slug') ?? 'gemura',
-            ]),
+            UserRole::PlatformStaff => $this->assignedWorkspaceUrl(),
             default => route('learner.dashboard'),
         };
+    }
+
+    private function assignedWorkspaceUrl(): string
+    {
+        $slug = $this->platforms()
+            ->where('platforms.status', 'active')
+            ->orderBy('sort_order')
+            ->value('slug')
+            ?? $this->platforms()->orderBy('sort_order')->value('slug');
+
+        return $slug
+            ? route('workspace.dashboard', ['platform' => $slug])
+            : route('home');
     }
 }

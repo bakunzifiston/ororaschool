@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Platform;
 use App\Support\DemoData\People;
 use Database\Seeders\CatalogSeeder;
 use Tests\TestCase;
@@ -28,6 +29,11 @@ class WorkspacePagesTest extends TestCase
             ->assertSee('Completion rate', false)
             ->assertSee('74%', false)
             ->assertSee('Mastitis Detection', false)
+            ->assertSee('View', false)
+            ->assertSee('Edit', false)
+            ->assertSee(route('workspace.courses.show', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']), false)
+            ->assertSee(route('workspace.courses.edit', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']), false)
+            ->assertSee(route('workspace.sessions.edit', ['platform' => 'gemura', 'session' => 1]), false)
             ->assertSee('Reading CMT paddles together', false)
             ->assertDontSee('Aflatoxin Control', false)
             ->assertDontSee('Ear-Tag Registration', false);
@@ -169,6 +175,8 @@ class WorkspacePagesTest extends TestCase
             ->assertOk()
             ->assertSee('CMT paddle reading', false)
             ->assertSee('Lactometer at evening intake', false)
+            ->assertSee('View', false)
+            ->assertSee(route('workspace.quizzes.show', ['platform' => 'gemura', 'quiz' => 'cmt-paddle-reading']), false)
             ->assertDontSee('Ear-tag placement', false);
 
         $this->get(route('workspace.quizzes.show', ['platform' => 'gemura', 'quiz' => 'cmt-paddle-reading']))
@@ -205,7 +213,10 @@ class WorkspacePagesTest extends TestCase
         $this->get(route('workspace.resources.create', ['platform' => 'gemura']))
             ->assertOk()
             ->assertSee('Upload a resource', false)
-            ->assertSee('Attach to', false);
+            ->assertSee('Attach to', false)
+            ->assertSee('Choose a type', false)
+            ->assertSee('Manual', false)
+            ->assertDontSee('Any type', false);
     }
 
     public function test_instructors_and_learners_lists_are_scoped_to_the_platform(): void
@@ -329,6 +340,14 @@ class WorkspacePagesTest extends TestCase
             ->assertSee('Ear-Tag Registration', false)
             ->assertSee('51%', false)
             ->assertDontSee('Mastitis Detection', false);
+    }
+
+    public function test_staff_cannot_open_a_deactivated_academy_workspace(): void
+    {
+        Platform::query()->where('slug', 'gemura')->update(['status' => 'inactive']);
+
+        $this->get(route('workspace.dashboard', ['platform' => 'gemura']))
+            ->assertNotFound();
     }
 
     public function test_empty_fixture_preview_hides_platform_rows(): void

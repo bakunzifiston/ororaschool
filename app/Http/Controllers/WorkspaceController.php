@@ -25,7 +25,7 @@ class WorkspaceController extends Controller
     public function placeholder(Request $request, string $platform): View
     {
         $label = Navigation::labelForRoute($request->route()->getName());
-        $current = Platforms::find($platform);
+        $current = Platforms::require($platform);
 
         return view('workspace.placeholder', [
             'platformSlug' => $platform,

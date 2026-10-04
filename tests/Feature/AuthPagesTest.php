@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Platform;
 use App\Models\User;
 use App\Support\DemoData\Platforms;
 use App\UserRole;
@@ -93,6 +94,23 @@ class AuthPagesTest extends TestCase
             'email' => $user->email,
             'password' => 'password12',
         ])->assertRedirect(route('admin.dashboard'));
+
+        $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_platform_staff_are_sent_to_their_assigned_workspace(): void
+    {
+        $user = User::factory()->platformStaff()->create([
+            'password' => 'password12',
+        ]);
+        $user->platforms()->sync([
+            Platform::firstOrCreateFromSlug('buchapro')->id,
+        ]);
+
+        $this->post(route('login.attempt'), [
+            'email' => $user->email,
+            'password' => 'password12',
+        ])->assertRedirect(route('workspace.dashboard', ['platform' => 'buchapro']));
 
         $this->assertAuthenticatedAs($user);
     }
@@ -217,6 +235,30 @@ class AuthPagesTest extends TestCase
         $this->delete(route('admin.accounts.destroy', $account))->assertForbidden();
 
         $this->assertModelExists($account);
+    }
+
+    public function test_platform_staff_cannot_delete_an_academy(): void
+    {
+        $this->actingAsPlatformStaff()
+            ->delete(route('admin.platforms.destroy', 'gemura'))
+            ->assertForbidden();
+
+        $this->assertDatabaseMissing('platforms', [
+            'slug' => 'gemura',
+            'status' => 'deleted',
+        ]);
+    }
+
+    public function test_platform_staff_cannot_view_or_delete_a_role(): void
+    {
+        $this->actingAsPlatformStaff();
+
+        $this->get(route('admin.roles.show', 'reviewer'))->assertForbidden();
+        $this->delete(route('admin.roles.destroy', 'reviewer'))->assertForbidden();
+
+        $this->assertDatabaseMissing('removed_roles', [
+            'key' => 'reviewer',
+        ]);
     }
 
     public function test_an_unverified_learner_is_sent_to_confirm_their_email(): void

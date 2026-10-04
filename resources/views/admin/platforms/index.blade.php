@@ -20,7 +20,7 @@
                     @foreach ($page['rows'] as $row)
                         <tr class="border-b border-clay-100 last:border-b-0 hover:bg-accent-50/60">
                             <td class="px-4 py-3">
-                                <a href="{{ route('admin.platforms.edit', $row['slug']) }}"
+                                <a href="{{ route('workspace.dashboard', ['platform' => $row['slug']]) }}"
                                    class="font-medium text-basalt-900 hover:text-accent-600">{{ $row['name'] }}</a>
                                 <p class="text-micro text-fern-500">{{ $row['discipline'] }}</p>
                             </td>
@@ -29,8 +29,11 @@
                             <td class="figure px-3 py-2.5 text-right text-micro text-fern-500">{{ number_format($row['users']) }}</td>
                             <td class="px-3 py-2.5 text-dense text-fern-500">{{ $row['created'] }}</td>
                             <td class="px-3 py-2.5 text-right">
-                                <div class="flex justify-end gap-2">
-                                    <x-button variant="ghost" size="sm" :href="route('admin.platforms.edit', $row['slug'])">Edit</x-button>
+                                <div class="flex flex-wrap items-center justify-end gap-2">
+                                    <x-row-actions
+                                        :view="route('workspace.dashboard', ['platform' => $row['slug']])"
+                                        :edit="route('admin.platforms.edit', $row['slug'])"
+                                        :delete="'delete-'.$row['slug']" />
                                     <x-button variant="{{ $row['status'] === 'active' ? 'danger' : 'secondary' }}" size="sm"
                                               x-on:click="$dispatch('open-modal', 'toggle-{{ $row['slug'] }}')">
                                         {{ $row['status'] === 'active' ? 'Deactivate' : 'Activate' }}
@@ -62,6 +65,21 @@
                     <x-button type="submit" :variant="$row['status'] === 'active' ? 'danger' : 'primary'">
                         {{ $row['status'] === 'active' ? 'Deactivate academy' : 'Activate academy' }}
                     </x-button>
+                </form>
+            </x-slot:actions>
+        </x-modal>
+
+        <x-modal name="delete-{{ $row['slug'] }}" width="md"
+                 :title="'Delete '.$row['name'].'?'"
+                 :subtitle="$row['discipline']">
+            <p>{{ $row['name'] }} will leave the Super Admin list and the public catalogue. Certificates already issued still resolve.</p>
+
+            <x-slot:actions>
+                <x-button variant="ghost" x-on:click="open = false">Cancel</x-button>
+                <form method="POST" action="{{ route('admin.platforms.destroy', $row['slug']) }}">
+                    @csrf
+                    @method('DELETE')
+                    <x-button type="submit" variant="danger">Delete academy</x-button>
                 </form>
             </x-slot:actions>
         </x-modal>

@@ -97,6 +97,61 @@ class Platform extends Model
         );
     }
 
+    public function toggleActive(): void
+    {
+        $this->status = $this->status === 'active' ? 'inactive' : 'active';
+        $this->save();
+    }
+
+    public function removeFromEstate(): void
+    {
+        $this->status = 'deleted';
+        $this->save();
+    }
+
+    /**
+     * @param  array{name: string, slug: string, description?: string|null, active?: bool}  $attributes
+     */
+    public static function createOnEstate(array $attributes): self
+    {
+        return static::query()->create([
+            'slug' => $attributes['slug'],
+            'name' => $attributes['name'],
+            'discipline' => $attributes['discipline'] ?? 'Farm management',
+            'tagline' => $attributes['tagline'] ?? '',
+            'description' => $attributes['description'] ?? '',
+            'steward' => $attributes['steward'] ?? 'FarmSchool',
+            'region' => $attributes['region'] ?? 'Rwanda',
+            'learner_count' => 0,
+            'instructor_count' => 0,
+            'status' => ($attributes['active'] ?? false) ? 'active' : 'inactive',
+            'sort_order' => ((int) static::query()->max('sort_order')) + 1,
+            'joined_at' => now(),
+            'completion_rate' => 0,
+            'cover' => null,
+        ]);
+    }
+
+    /**
+     * @param  array{name: string, description?: string|null, active?: bool}  $attributes
+     */
+    public function updateOnEstate(array $attributes): void
+    {
+        $this->fill([
+            'name' => $attributes['name'],
+            'description' => $attributes['description'] ?? $this->description,
+            'status' => $this->isRemoved()
+                ? 'deleted'
+                : (($attributes['active'] ?? false) ? 'active' : 'inactive'),
+        ]);
+        $this->save();
+    }
+
+    public function isRemoved(): bool
+    {
+        return $this->status === 'deleted';
+    }
+
     #[Scope]
     protected function active(Builder $query): Builder
     {

@@ -134,16 +134,59 @@ class PublicPagesTest extends TestCase
             ->assertSee('Milk hygiene', false)
             ->assertSee('Mastitis Detection', false)
             ->assertSee('Cold Chain Discipline', false)
+            ->assertSee('Smallholder milk hygiene manual', false)
+            ->assertSee('Colostrum timing note', false)
+            ->assertDontSee('CMT field sheet', false)
             ->assertDontSee('Farm Record Keeping', false)
             ->assertDontSee('Aflatoxin Control', false)
             ->assertDontSee('Silage from Maize', false)
             ->assertDontSee('Layer Vaccination', false);
+
+        $this->get(route('catalog.platforms.show', ['platform' => 'ororafarm']))
+            ->assertOk()
+            ->assertSee('Terrace numbering guide', false)
+            ->assertDontSee('Plot book template', false);
 
         $this->get(route('catalog.platforms.show', ['platform' => 'ubworozi']))
             ->assertNotFound();
 
         $this->get(route('catalog.platforms.show', ['platform' => 'ishyiga']))
             ->assertNotFound();
+    }
+
+    public function test_resources_page_lists_open_academy_handouts_only(): void
+    {
+        $this->get(route('catalog.resources'))
+            ->assertOk()
+            ->assertSee(route('catalog.resources'), false)
+            ->assertSee('Smallholder milk hygiene manual', false)
+            ->assertSee('Colostrum timing note', false)
+            ->assertSee('Terrace numbering guide', false)
+            ->assertSee('National animal identification manual', false)
+            ->assertSee('Aflatoxin control manual', false)
+            ->assertDontSee('CMT field sheet', false)
+            ->assertDontSee('Plot book template', false);
+
+        $this->get(route('catalog.resources', ['platform' => 'gemura']))
+            ->assertOk()
+            ->assertSee('Smallholder milk hygiene manual', false)
+            ->assertDontSee('Terrace numbering guide', false);
+
+        $this->get(route('catalog.resources', ['type' => 'manual']))
+            ->assertOk()
+            ->assertSee('Smallholder milk hygiene manual', false)
+            ->assertDontSee('Terrace numbering guide', false)
+            ->assertDontSee('Colostrum timing note', false);
+
+        $this->get(route('catalog.resources', ['q' => 'colostrum']))
+            ->assertOk()
+            ->assertSee('Colostrum timing note', false)
+            ->assertDontSee('Smallholder milk hygiene manual', false);
+
+        $this->get(route('catalog.resources', ['empty' => 1]))
+            ->assertOk()
+            ->assertSee('No resources match those filters', false)
+            ->assertDontSee('Smallholder milk hygiene manual', false);
     }
 
     public function test_course_landing_shows_a_title_only_syllabus_and_a_sign_in_cta(): void

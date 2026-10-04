@@ -27,6 +27,7 @@
                                 ['key' => 'lesson', 'label' => 'Lesson'],
                                 ['key' => 'questions', 'label' => 'Questions', 'align' => 'right'],
                                 ['key' => 'pass', 'label' => 'Pass', 'align' => 'right'],
+                                ['key' => 'actions', 'label' => '', 'align' => 'right'],
                             ]"
                           :pagination="$page['pagination']"
                           :empty-title="$page['emptyTitle']"
@@ -43,6 +44,9 @@
                             <td class="px-3 py-2.5 text-dense text-fern-500">{{ $row['lesson'] }}</td>
                             <td class="figure px-3 py-2.5 text-right text-micro">{{ $row['questions'] }}</td>
                             <td class="figure px-3 py-2.5 text-right text-micro">{{ $row['pass'] }}%</td>
+                            <td class="px-3 py-2.5 text-right">
+                                <x-row-actions :view="route('workspace.quizzes.show', ['platform' => $platformSlug, 'quiz' => $row['slug']])" />
+                            </td>
                         </tr>
                     @endforeach
                 @endif

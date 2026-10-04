@@ -318,7 +318,10 @@ class LearnerPagesTest extends TestCase
         $this->get(route('learner.resources'))
             ->assertOk()
             ->assertSee('CMT field sheet', false)
-            ->assertSee('Download', false);
+            ->assertSee('Smallholder milk hygiene manual', false)
+            ->assertSee('Terrace numbering guide', false)
+            ->assertSee('Download', false)
+            ->assertDontSee('Plot book template', false);
 
         $this->get(route('learner.profile'))
             ->assertOk()

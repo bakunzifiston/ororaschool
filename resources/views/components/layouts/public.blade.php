@@ -120,6 +120,9 @@
                             <a href="{{ route('catalog.courses') }}" class="text-dense text-clay-200 transition-colors hover:text-chalk">Courses</a>
                         </li>
                         <li>
+                            <a href="{{ route('catalog.resources') }}" class="text-dense text-clay-200 transition-colors hover:text-chalk">Resources</a>
+                        </li>
+                        <li>
                             <a href="{{ route('certificates.lookup') }}" class="text-dense text-clay-200 transition-colors hover:text-chalk">Certificate verification</a>
                         </li>
                     </ul>

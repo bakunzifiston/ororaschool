@@ -2,7 +2,9 @@
 
 namespace App\Support\DemoData\Pages;
 
+use App\Models\Platform;
 use App\Support\DemoData\Paging;
+use App\Support\DemoData\People;
 use App\Support\DemoData\Platforms;
 
 /**
@@ -15,7 +17,7 @@ class PlatformsPage
 {
     public static function index(bool $empty = false, int $page = 1): array
     {
-        $rows = $empty ? [] : Platforms::all();
+        $rows = $empty ? [] : Platforms::visible();
         $paged = Paging::paginate(
             $rows,
             $page,
@@ -50,7 +52,7 @@ class PlatformsPage
 
     public static function form(?string $slug = null): array
     {
-        $platform = $slug ? Platforms::find($slug) : null;
+        $platform = $slug ? Platforms::findWithPersistedStatus($slug) : null;
         $isEdit = (bool) $platform;
 
         return [
@@ -73,6 +75,10 @@ class PlatformsPage
                 'discipline' => '',
             ],
             'isEdit' => $isEdit,
+            'districts' => People::districts(),
+            'admins' => $slug
+                ? Platform::query()->where('slug', $slug)->first()?->users()->orderBy('name')->get(['name', 'email'])->all() ?? []
+                : [],
         ];
     }
 }

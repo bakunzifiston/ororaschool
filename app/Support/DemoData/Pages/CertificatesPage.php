@@ -13,7 +13,7 @@ class CertificatesPage
 {
     public static function index(string $platform, bool $empty = false, int $page = 1, string $status = ''): array
     {
-        $current = Platforms::find($platform) ?? Platforms::find('gemura');
+        $current = Platforms::require($platform);
         $rows = $empty ? [] : IssuedCertificates::forPlatform($platform);
 
         if ($status !== '') {

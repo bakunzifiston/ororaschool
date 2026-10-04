@@ -37,7 +37,7 @@
                     @foreach ($page['platforms']['rows'] as $row)
                         <tr class="border-b border-clay-100 last:border-b-0">
                             <td class="py-3.5 pr-4">
-                                <a href="{{ $row['href'] }}" class="flex min-w-0 items-center gap-3 rounded-sm">
+                                <a href="{{ $row['view'] }}" class="flex min-w-0 items-center gap-3 rounded-sm">
                                     <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-50 text-accent-600" aria-hidden="true">
                                         <x-icon :name="$row['icon']" class="h-4 w-4" />
                                     </span>
@@ -52,7 +52,7 @@
                             <td class="figure px-4 py-3.5 text-right text-micro text-fern-500">{{ number_format($row['users']) }}</td>
                             <td class="figure px-4 py-3.5 text-right text-micro text-fern-500">{{ $row['courses'] }}</td>
                             <td class="py-3.5 pl-4 text-right">
-                                <a href="{{ $row['href'] }}" class="text-dense font-medium text-accent-700 hover:underline">Edit</a>
+                                <x-row-actions :view="$row['view']" :edit="$row['edit']" />
                             </td>
                         </tr>
                     @endforeach

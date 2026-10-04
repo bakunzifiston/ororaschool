@@ -16,6 +16,7 @@
                                 ['key' => 'module', 'label' => 'Module'],
                                 ['key' => 'type', 'label' => 'Type'],
                                 ['key' => 'duration', 'label' => 'Mins', 'align' => 'right'],
+                                ['key' => 'actions', 'label' => '', 'align' => 'right'],
                             ]"
                           :pagination="$page['pagination']"
                           :empty-title="$page['emptyTitle']"
@@ -32,6 +33,9 @@
                             <td class="px-3 py-2.5 text-dense text-fern-500">{{ $row['module'] }}</td>
                             <td class="px-3 py-2.5"><x-content-type :type="$row['type']" /></td>
                             <td class="figure px-3 py-2.5 text-right text-micro text-fern-500">{{ $row['duration'] }}</td>
+                            <td class="px-3 py-2.5 text-right">
+                                <x-row-actions :view="route('workspace.modules', ['platform' => $platformSlug, 'course' => $row['course_slug']])" />
+                            </td>
                         </tr>
                     @endforeach
                 @endif

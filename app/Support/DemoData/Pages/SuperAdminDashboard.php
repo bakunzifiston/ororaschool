@@ -16,7 +16,7 @@ class SuperAdminDashboard
 {
     public static function data(bool $empty = false): array
     {
-        $platforms = Platforms::all();
+        $platforms = Platforms::visible();
         $courses = Courses::all();
         $learners = array_sum(array_column($platforms, 'learners'));
         $staff = count(People::staff());
@@ -45,7 +45,8 @@ class SuperAdminDashboard
             'academies' => $platform['academies'],
             'users' => $platform['users'],
             'courses' => $platform['courses'],
-            'href' => route('admin.platforms.edit', $platform['slug']),
+            'view' => route('workspace.dashboard', ['platform' => $platform['slug']]),
+            'edit' => route('admin.platforms.edit', $platform['slug']),
         ], $platforms);
 
         return [

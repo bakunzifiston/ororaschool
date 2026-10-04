@@ -8,13 +8,12 @@
         'feedgrid' => 'layers',
     ];
     $glyph = $glyphs[$platform['slug'] ?? ''] ?? 'book';
-    $copy = $detail
-        ? ($platform['description'] ?? $platform['tagline'] ?? '')
-        : ($platform['tagline'] ?? $platform['description'] ?? '');
+    $copy = $platform['tagline'] ?? $platform['description'] ?? '';
     $count = $platform['public_courses'] ?? null;
     $cover = $platform['cover'] ?? null;
     $name = $platform['name'] ?? '';
     $discipline = $platform['discipline'] ?? '';
+    $region = $platform['region'] ?? '';
 @endphp
 
 <a href="{{ $platform['href'] ?? '#' }}"
@@ -29,9 +28,7 @@
                  class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.04]">
         @else
             <span class="flex h-full items-center justify-center">
-                <span class="public-card-icon inline-flex h-11 w-11 items-center justify-center rounded-full bg-chalk text-accent-500 transition-transform duration-150">
-                    <x-icon :name="$glyph" class="h-5 w-5" />
-                </span>
+                <x-icon :name="$glyph" class="h-8 w-8 text-accent-400" />
             </span>
         @endif
         @if ($discipline !== '')
@@ -51,11 +48,20 @@
         @endif
 
         <span class="mt-auto flex flex-col gap-3 pt-4">
-            @if ($detail && is_int($count))
-                <span class="text-micro text-fern-500">
-                    {{ $count }} {{ $count === 1 ? 'published course' : 'published courses' }}
+            @if ($detail && ($region !== '' || is_int($count)))
+                <span class="flex flex-wrap items-center gap-x-2 gap-y-1 text-micro text-fern-500">
+                    @if ($region !== '')
+                        <span>{{ $region }}</span>
+                    @endif
+                    @if ($region !== '' && is_int($count))
+                        <span class="text-clay-300" aria-hidden="true">·</span>
+                    @endif
+                    @if (is_int($count))
+                        <span>{{ $count }} {{ $count === 1 ? 'published course' : 'published courses' }}</span>
+                    @endif
                 </span>
             @endif
+
             <span class="inline-flex items-center gap-1 text-dense font-medium text-accent-700">
                 Explore academy
                 <x-icon name="arrow-right" class="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />

@@ -30,7 +30,7 @@
             <span class="figure font-medium text-basalt-800">{{ $page['heldCount'] }}</span>
             of
             <span class="figure font-medium text-basalt-800">{{ $page['totalCount'] }}</span>
-            keys granted. Permissions are data on the role, not a hardcoded switch.
+            permissions granted.
         </p>
 
         <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
@@ -43,7 +43,7 @@
                 @endphp
 
                 <section class="min-w-0 rounded-md border border-clay-200 bg-chalk">
-                    <header class="flex items-baseline justify-between gap-3 border-b-2 border-basalt-800 bg-papyrus px-4 py-2.5">
+                    <header class="flex items-baseline justify-between gap-3 border-b border-clay-200 px-4 py-2.5">
                         <div>
                             <h2 class="font-display text-panel font-semibold text-basalt-900">{{ $group['label'] }}</h2>
                             <p class="figure text-micro text-fern-500">{{ $group['area'] }}.*</p>
@@ -58,18 +58,18 @@
                                 $checked = in_array($permission['key'], $page['held'], true);
                                 $locked = $page['role']['system'] ?? false;
                             @endphp
-                            <li class="flex items-start gap-3 px-4 py-2.5">
+                            <li class="flex items-center gap-3 px-4 py-2">
                                 <input type="checkbox"
                                        id="{{ $id }}"
                                        name="permissions[]"
                                        value="{{ $permission['key'] }}"
                                        @checked($checked)
                                        @disabled($locked)
-                                       class="mt-1 h-4 w-4 shrink-0 rounded-xs border-clay-300 accent-[var(--color-accent-500)]">
-                                <label for="{{ $id }}" class="min-w-0 grow {{ $locked ? 'cursor-default' : 'cursor-pointer' }}">
-                                    <span class="block text-dense font-medium text-basalt-800">{{ $permission['label'] }}</span>
-                                    <span class="mt-0.5 block font-mono text-micro text-fern-500">{{ $permission['key'] }}</span>
-                                    <span class="mt-0.5 block text-micro leading-relaxed text-fern-500">{{ $permission['hint'] }}</span>
+                                       class="h-4 w-4 shrink-0 rounded-xs border-clay-300 accent-[var(--color-accent-500)]">
+                                <label for="{{ $id }}"
+                                       class="flex min-w-0 grow items-baseline justify-between gap-3 {{ $locked ? 'cursor-default' : 'cursor-pointer' }}">
+                                    <span class="text-dense font-medium text-basalt-800">{{ $permission['label'] }}</span>
+                                    <span class="shrink-0 font-mono text-micro text-fern-500">{{ $permission['key'] }}</span>
                                 </label>
                             </li>
                         @endforeach

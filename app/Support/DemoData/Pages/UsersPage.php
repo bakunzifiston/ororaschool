@@ -120,7 +120,7 @@ class UsersPage
                 'name' => $platform['name'],
                 'discipline' => $platform['discipline'],
                 'status' => $platform['status'],
-            ], Platforms::all()),
+            ], Platforms::visible()),
         ];
     }
 
@@ -159,7 +159,7 @@ class UsersPage
             'persisted' => false,
             'canDelete' => false,
             'platforms' => array_column(Platforms::all(), 'name', 'slug'),
-            'roles' => array_column(Roles::all(), 'label', 'key'),
+            'roles' => array_column(Roles::visible(), 'label', 'key'),
         ];
     }
 
@@ -201,7 +201,7 @@ class UsersPage
             'persisted' => true,
             'canDelete' => auth()->id() !== $user->id,
             'platforms' => array_column(Platforms::all(), 'name', 'slug'),
-            'roles' => array_column(Roles::all(), 'label', 'key'),
+            'roles' => array_column(Roles::visible(), 'label', 'key'),
         ];
     }
 
@@ -240,7 +240,7 @@ class UsersPage
                 'name' => $platform['name'],
                 'discipline' => $platform['discipline'],
                 'status' => $platform['status'],
-            ], Platforms::all()),
+            ], Platforms::visible()),
         ];
     }
 

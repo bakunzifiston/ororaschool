@@ -2,6 +2,9 @@
 
 namespace App\Support\DemoData;
 
+use App\Models\LearningResource;
+use Illuminate\Support\Facades\Schema;
+
 /**
  * FIXTURE LAYER — DELETE WHEN REAL DATA ARRIVES.
  *
@@ -24,7 +27,81 @@ class Resources
     /**
      * @return list<array<string, mixed>>
      */
+    public static function fixturesForPlatform(string $platform): array
+    {
+        return array_values(array_filter(
+            self::fixtures(),
+            fn (array $resource) => $resource['platform'] === $platform,
+        ));
+    }
+
+    /**
+     * Academy handouts are public. Course, module and lesson files wait for enrolment.
+     *
+     * @param  array<string, mixed>  $resource
+     */
+    public static function requiresEnrolment(array $resource): bool
+    {
+        return ($resource['attached_kind'] ?? '') !== 'academy';
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public static function openOnPlatform(string $slug): array
+    {
+        return array_values(array_filter(
+            self::forPlatform($slug),
+            fn (array $resource): bool => ! self::requiresEnrolment($resource),
+        ));
+    }
+
+    /**
+     * Open academy handouts on live academies, ready for the public catalogue.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public static function open(): array
+    {
+        $platforms = [];
+
+        foreach (PublicCatalog::activePlatforms() as $platform) {
+            $platforms[$platform['slug']] = $platform;
+        }
+
+        return array_values(array_filter(array_map(
+            function (array $resource) use ($platforms): ?array {
+                $platform = $platforms[$resource['platform']] ?? null;
+
+                if ($platform === null || self::requiresEnrolment($resource)) {
+                    return null;
+                }
+
+                return array_merge($resource, [
+                    'type_label' => self::typeLabel($resource['type']),
+                    'platform_name' => $platform['name'],
+                    'href' => $platform['href'],
+                ]);
+            },
+            self::all(),
+        )));
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
     public static function all(): array
+    {
+        return [
+            ...self::persisted(),
+            ...self::fixtures(),
+        ];
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public static function fixtures(): array
     {
         return [
             ['slug' => 'cmt-field-sheet', 'platform' => 'gemura', 'title' => 'CMT field sheet', 'type' => 'template', 'attached_to' => 'Lesson · Reading a CMT paddle', 'attached_kind' => 'lesson', 'size' => '180 KB', 'updated' => '30 Aug 2026'],
@@ -61,14 +138,94 @@ class Resources
     {
         return [
             '' => 'Any type',
-            'pdf' => 'PDF',
+            ...self::formTypes(),
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function formTypes(): array
+    {
+        return [
             'manual' => 'Manual',
             'guide' => 'Guide',
             'template' => 'Template',
-            'video' => 'Video',
-            'presentation' => 'Presentation',
             'document' => 'Document',
             'infographic' => 'Infographic',
+            'presentation' => 'Presentation',
+            'pdf' => 'PDF',
+            'video' => 'Video',
         ];
+    }
+
+    public static function typeLabel(string $type): string
+    {
+        return self::types()[$type] ?? $type;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function accepts(): array
+    {
+        return [
+            'manual' => '.pdf,.doc,.docx',
+            'guide' => '.pdf,.doc,.docx',
+            'template' => '.pdf,.doc,.docx',
+            'document' => '.pdf,.doc,.docx',
+            'presentation' => '.pdf,.ppt,.pptx',
+            'pdf' => '.pdf',
+            'infographic' => '.png,.jpg,.jpeg,.webp,.pdf',
+            'video' => '.mp4,.webm,.mov',
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function fileHints(): array
+    {
+        return [
+            'manual' => 'PDF or Word. This is labelled a manual, even if the file is a PDF.',
+            'guide' => 'PDF or Word. This is labelled a guide, even if the file is a PDF.',
+            'template' => 'PDF or Word. A filled-in sheet or blank form.',
+            'document' => 'PDF or Word. A short note or circular.',
+            'presentation' => 'PDF or PowerPoint slides.',
+            'pdf' => 'A PDF that does not fit the other labels.',
+            'infographic' => 'PNG, JPG, WebP or PDF.',
+            'video' => 'MP4, WebM or MOV.',
+        ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function mimesFor(string $type): array
+    {
+        return match ($type) {
+            'video' => ['mp4', 'webm', 'mov'],
+            'infographic' => ['png', 'jpg', 'jpeg', 'webp', 'pdf'],
+            'presentation' => ['pdf', 'ppt', 'pptx'],
+            'pdf' => ['pdf'],
+            default => ['pdf', 'doc', 'docx'],
+        };
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private static function persisted(): array
+    {
+        if (! Schema::hasTable('learning_resources')) {
+            return [];
+        }
+
+        return LearningResource::query()
+            ->with('platform')
+            ->latest()
+            ->get()
+            ->map(fn (LearningResource $resource): array => $resource->toFixtureArray())
+            ->all();
     }
 }

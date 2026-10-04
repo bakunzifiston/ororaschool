@@ -33,6 +33,7 @@ class GlobalContentPage
                 ['key' => 'kind', 'label' => 'Kind'],
                 ['key' => 'platform', 'label' => 'Academy'],
                 ['key' => 'status', 'label' => 'Status', 'type' => 'status'],
+                ['key' => 'actions', 'label' => '', 'align' => 'right'],
             ],
             'rows' => $paged['rows'],
             'pagination' => $paged['pagination'],
@@ -56,7 +57,8 @@ class GlobalContentPage
                 'platform' => $platforms[$course['platform']] ?? $course['platform'],
                 'platform_slug' => $course['platform'],
                 'status' => $course['status'],
-                'href' => '/workspace/'.$course['platform'].'/courses',
+                'view' => route('workspace.courses.show', ['platform' => $course['platform'], 'course' => $course['slug']]),
+                'edit' => route('workspace.courses.edit', ['platform' => $course['platform'], 'course' => $course['slug']]),
             ];
         }
 
@@ -67,7 +69,8 @@ class GlobalContentPage
                 'platform' => $platforms[$academy['platform']] ?? $academy['platform'],
                 'platform_slug' => $academy['platform'],
                 'status' => $academy['status'],
-                'href' => '/workspace/'.$academy['platform'].'/categories',
+                'view' => route('workspace.categories', ['platform' => $academy['platform']]),
+                'edit' => null,
             ];
         }
 

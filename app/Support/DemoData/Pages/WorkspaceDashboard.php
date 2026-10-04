@@ -16,7 +16,7 @@ class WorkspaceDashboard
 {
     public static function for(string $slug): array
     {
-        $platform = Platforms::find($slug) ?? Platforms::find('gemura');
+        $platform = Platforms::require($slug);
         $courses = Courses::forPlatform($platform['slug']);
         $published = array_values(array_filter($courses, fn ($c) => $c['status'] === 'published'));
         $pipeline = array_values(array_filter($courses, fn ($c) => in_array($c['status'], ['draft', 'pending_review', 'approved'], true)));

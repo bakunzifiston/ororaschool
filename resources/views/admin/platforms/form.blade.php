@@ -44,6 +44,41 @@
             </div>
         </x-panel>
 
+        <x-panel class="mt-4" title="Academy admin">
+            <p class="text-dense text-fern-500">This person is assigned only to this academy. They sign in to its workspace and cannot open Super Admin or another academy unless you add one later.</p>
+
+            @if (($page['admins'] ?? []) !== [])
+                <ul class="mt-4 space-y-1 text-dense text-basalt-800">
+                    @foreach ($page['admins'] as $admin)
+                        <li>{{ $admin->name }} <span class="text-fern-500">{{ $admin->email }}</span></li>
+                    @endforeach
+                </ul>
+            @endif
+
+            <div class="mt-5 grid gap-5">
+                <x-field name="admin_name" label="Name" size="sm"
+                         :value="old('admin_name')"
+                         placeholder="e.g. Diane Uwamahoro" />
+
+                <x-field name="admin_email" type="email" label="Email" size="sm"
+                         :value="old('admin_email')"
+                         autocomplete="off"
+                         placeholder="e.g. diane.uwamahoro@ororaschool.rw" />
+
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <x-field name="admin_password" type="password" label="Password" size="sm"
+                             autocomplete="new-password" revealable />
+                    <x-field name="admin_password_confirmation" type="password" label="Confirm password" size="sm"
+                             autocomplete="new-password" revealable />
+                </div>
+
+                <x-select name="admin_district" label="District" size="sm"
+                          :options="$page['districts']"
+                          :selected="old('admin_district')"
+                          placeholder="Choose a district" />
+            </div>
+        </x-panel>
+
         <div class="mt-4 flex flex-wrap gap-2">
             <x-button type="submit">{{ $page['isEdit'] ? 'Save academy' : 'Create academy' }}</x-button>
             <x-button variant="secondary" :href="route('admin.platforms')">Cancel</x-button>

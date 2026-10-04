@@ -2,6 +2,8 @@
 
 namespace App\Support\DemoData;
 
+use App\Models\Platform;
+
 /**
  * FIXTURE LAYER — DELETE WHEN REAL DATA ARRIVES.
  *
@@ -131,9 +133,37 @@ class Platforms
         ];
     }
 
+    /**
+     * Fixture rows with status overwritten when a persisted academy exists.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public static function withPersistedStatus(): array
+    {
+        $records = Platform::query()->get()->keyBy('slug');
+
+        $rows = array_map(function (array $platform) use ($records): array {
+            $record = $records->get($platform['slug']);
+
+            return $record instanceof Platform
+                ? self::overlayRecord($platform, $record)
+                : $platform;
+        }, self::all());
+
+        foreach ($records as $slug => $record) {
+            if (self::fixtureExists($slug)) {
+                continue;
+            }
+
+            $rows[] = self::presentRecord($record);
+        }
+
+        return $rows;
+    }
+
     public static function find(string $slug): ?array
     {
-        foreach (self::all() as $platform) {
+        foreach (self::withPersistedStatus() as $platform) {
             if ($platform['slug'] === $slug) {
                 return $platform;
             }
@@ -142,20 +172,116 @@ class Platforms
         return null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    public static function require(string $slug): array
+    {
+        $platform = self::find($slug);
+
+        abort_unless($platform !== null && ($platform['status'] ?? '') !== 'deleted', 404);
+
+        return $platform;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public static function findWithPersistedStatus(string $slug): ?array
+    {
+        return self::find($slug);
+    }
+
     public static function slugs(): array
     {
-        return array_column(self::all(), 'slug');
+        $persisted = Platform::query()
+            ->where('status', '!=', 'deleted')
+            ->pluck('slug')
+            ->all();
+
+        return array_values(array_unique([
+            ...array_column(self::all(), 'slug'),
+            ...$persisted,
+        ]));
     }
 
     /**
      * Live tenants only — guest linking and the workspace switcher should not
      * offer a deactivated academy.
      */
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public static function visible(): array
+    {
+        return array_values(array_filter(
+            self::withPersistedStatus(),
+            fn (array $platform) => $platform['status'] !== 'deleted',
+        ));
+    }
+
     public static function active(): array
     {
         return array_values(array_filter(
-            self::all(),
+            self::visible(),
             fn (array $platform) => $platform['status'] === 'active',
         ));
+    }
+
+    private static function fixtureExists(string $slug): bool
+    {
+        foreach (self::all() as $platform) {
+            if ($platform['slug'] === $slug) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param  array<string, mixed>  $platform
+     * @return array<string, mixed>
+     */
+    private static function overlayRecord(array $platform, Platform $record): array
+    {
+        $platform['status'] = $record->status;
+        $platform['name'] = $record->name;
+        $platform['description'] = $record->description;
+        $platform['discipline'] = $record->discipline;
+        $platform['tagline'] = $record->tagline;
+        $platform['steward'] = $record->steward;
+        $platform['region'] = $record->region;
+
+        return $platform;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function presentRecord(Platform $record): array
+    {
+        $courses = Courses::forPlatform($record->slug);
+
+        return [
+            'slug' => $record->slug,
+            'name' => $record->name,
+            'discipline' => $record->discipline,
+            'tagline' => $record->tagline,
+            'steward' => $record->steward,
+            'region' => $record->region,
+            'learners' => $record->learner_count,
+            'instructors' => $record->instructor_count,
+            'status' => $record->status,
+            'joined' => $record->joined_at?->format('d M Y') ?? '',
+            'created' => $record->created_at?->format('d M Y') ?? now()->format('d M Y'),
+            'description' => $record->description,
+            'completion_rate' => $record->completion_rate,
+            'cover' => $record->cover,
+            'courses' => count($courses),
+            'published' => count(array_filter($courses, fn (array $course): bool => $course['status'] === 'published')),
+            'academies' => Academies::countFor($record->slug),
+            'users' => $record->users()->count() + $record->learner_count + $record->instructor_count,
+        ];
     }
 }

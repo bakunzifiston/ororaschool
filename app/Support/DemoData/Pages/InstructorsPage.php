@@ -13,7 +13,7 @@ class InstructorsPage
 {
     public static function index(string $platform, bool $empty = false): array
     {
-        $current = Platforms::find($platform) ?? Platforms::find('gemura');
+        $current = Platforms::require($platform);
         $rows = $empty ? [] : array_map(function (array $person) use ($platform) {
             $taught = array_values(array_filter(
                 Courses::forPlatform($platform),

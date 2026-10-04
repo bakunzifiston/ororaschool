@@ -12,7 +12,7 @@ class CategoriesPage
 {
     public static function index(string $platform, bool $empty = false): array
     {
-        $current = Platforms::find($platform) ?? Platforms::find('gemura');
+        $current = Platforms::require($platform);
         $tree = $empty ? [] : Categories::tree($platform);
 
         return [
