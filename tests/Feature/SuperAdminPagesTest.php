@@ -38,6 +38,8 @@ class SuperAdminPagesTest extends TestCase
             ->assertSee('Quick actions', false)
             ->assertSee('Dashboard', false)
             ->assertSee('Add academy', false)
+            ->assertDontSee('Analytics', false)
+            ->assertDontSee('View analytics', false)
             ->assertSee('View', false)
             ->assertSee('Edit', false)
             ->assertSee(route('workspace.dashboard', ['platform' => 'gemura']), false)
@@ -565,18 +567,6 @@ class SuperAdminPagesTest extends TestCase
         $this->get(route('admin.content', ['empty' => 1]))
             ->assertOk()
             ->assertSee('Nothing published on any academy yet', false);
-    }
-
-    public function test_analytics_renders_charts_and_the_platform_comparison(): void
-    {
-        $this->get(route('admin.analytics'))
-            ->assertOk()
-            ->assertSee('Users over time', false)
-            ->assertSee('Enrolments over time', false)
-            ->assertSee('Completion rate trend', false)
-            ->assertSee('Certificates issued', false)
-            ->assertSee('Academy comparison', false)
-            ->assertSee('Gemura', false);
     }
 
     public function test_activity_logs_filter_and_empty_state(): void

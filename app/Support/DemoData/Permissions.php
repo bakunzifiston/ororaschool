@@ -95,10 +95,9 @@ class Permissions
                 ],
             ],
             [
-                'area' => 'analytics',
-                'label' => 'Analytics',
+                'area' => 'activity',
+                'label' => 'Activity logs',
                 'permissions' => [
-                    ['key' => 'analytics.view', 'label' => 'View analytics', 'hint' => 'Open estate and academy reports.'],
                     ['key' => 'activity.view', 'label' => 'View activity logs', 'hint' => 'Read the audit trail.'],
                 ],
             ],
@@ -148,7 +147,6 @@ class Permissions
                 'courses.view', 'courses.create', 'courses.update', 'courses.publish', 'courses.review',
                 'modules.manage', 'lessons.manage', 'quizzes.manage', 'resources.manage',
                 'enrollments.view', 'certificates.view', 'live_sessions.view', 'live_sessions.manage',
-                'analytics.view',
             ],
             'instructor' => [
                 'courses.view', 'courses.update',

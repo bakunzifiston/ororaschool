@@ -32,7 +32,7 @@ class Roles
                 'scope' => 'Academy',
                 'elevated' => true,
                 'system' => true,
-                'description' => 'Owns one academy: staff, catalogue, certificates and analytics.',
+                'description' => 'Owns one academy: staff, catalogue and certificates.',
                 'holders' => 4,
             ],
             [

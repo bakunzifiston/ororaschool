@@ -95,7 +95,7 @@ class SuperAdminDashboard
                     'direction' => 'up',
                     'note' => 'over 90 days',
                     'icon' => 'bars',
-                    'href' => route('admin.analytics'),
+                    'href' => route('admin.platforms'),
                     'tint' => 'amber',
                 ],
             ],
@@ -149,7 +149,6 @@ class SuperAdminDashboard
                 ['label' => 'Manage roles', 'route' => 'admin.roles', 'icon' => 'shield', 'variant' => 'secondary'],
                 ['label' => 'Manage permissions', 'route' => 'admin.permissions', 'icon' => 'key', 'variant' => 'secondary'],
                 ['label' => 'Review activity', 'route' => 'admin.activity', 'icon' => 'history', 'variant' => 'secondary'],
-                ['label' => 'View analytics', 'route' => 'admin.analytics', 'icon' => 'chart', 'variant' => 'secondary'],
             ],
 
             'academies' => $academies,

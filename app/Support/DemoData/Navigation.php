@@ -20,7 +20,6 @@ class Navigation
     {
         return [
             ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'path' => '/admin', 'icon' => 'gauge', 'group' => 'Overview'],
-            ['label' => 'Analytics', 'route' => 'admin.analytics', 'path' => '/admin/analytics', 'icon' => 'chart', 'group' => 'Overview'],
             ['label' => 'Academies', 'route' => 'admin.platforms', 'path' => '/admin/platforms', 'icon' => 'layers', 'group' => 'Management'],
             ['label' => 'Users', 'route' => 'admin.users', 'path' => '/admin/users', 'icon' => 'users', 'group' => 'Management'],
             ['label' => 'Roles', 'route' => 'admin.roles', 'path' => '/admin/roles', 'icon' => 'shield', 'group' => 'Management'],
@@ -46,7 +45,6 @@ class Navigation
             ['label' => 'Learners', 'route' => 'workspace.learners', 'path' => '/workspace/{platform}/learners', 'icon' => 'users'],
             ['label' => 'Certificates', 'route' => 'workspace.certificates', 'path' => '/workspace/{platform}/certificates', 'icon' => 'award'],
             ['label' => 'Live sessions', 'route' => 'workspace.sessions', 'path' => '/workspace/{platform}/live-sessions', 'icon' => 'video'],
-            ['label' => 'Analytics', 'route' => 'workspace.analytics', 'path' => '/workspace/{platform}/analytics', 'icon' => 'chart'],
         ];
     }
 

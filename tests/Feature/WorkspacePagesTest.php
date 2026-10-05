@@ -37,6 +37,7 @@ class WorkspacePagesTest extends TestCase
             ->assertSee(route('workspace.courses.edit', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']), false)
             ->assertSee(route('workspace.sessions.edit', ['platform' => 'gemura', 'session' => 1]), false)
             ->assertSee('Reading CMT paddles together', false)
+            ->assertDontSee('Analytics', false)
             ->assertDontSee('Aflatoxin Control', false)
             ->assertDontSee('Ear-Tag Registration', false);
 
@@ -539,7 +540,7 @@ class WorkspacePagesTest extends TestCase
             ->assertSee('Not a valid certificate', false);
     }
 
-    public function test_live_sessions_and_analytics_change_with_the_platform(): void
+    public function test_live_sessions_change_with_the_platform(): void
     {
         $this->get(route('workspace.sessions', ['platform' => 'gemura']))
             ->assertOk()
@@ -558,22 +559,6 @@ class WorkspacePagesTest extends TestCase
 
         $this->get(route('workspace.sessions.edit', ['platform' => 'buchapro', 'session' => 3]))
             ->assertNotFound();
-
-        $this->get(route('workspace.analytics', ['platform' => 'gemura']))
-            ->assertOk()
-            ->assertSee('Enrolments over time', false)
-            ->assertSee('Completion rate', false)
-            ->assertSee('Quiz score distribution', false)
-            ->assertSee('Top courses by enrolment', false)
-            ->assertSee('Mastitis Detection', false)
-            ->assertSee('74%', false)
-            ->assertDontSee('Ear-Tag Registration', false);
-
-        $this->get(route('workspace.analytics', ['platform' => 'buchapro']))
-            ->assertOk()
-            ->assertSee('Ear-Tag Registration', false)
-            ->assertSee('51%', false)
-            ->assertDontSee('Mastitis Detection', false);
     }
 
     public function test_staff_cannot_open_a_deactivated_academy_workspace(): void

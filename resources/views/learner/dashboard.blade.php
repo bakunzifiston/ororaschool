@@ -8,9 +8,8 @@
     </section>
 
     @if (array_sum($page['charts']['mix']['values']) > 0)
-        <section class="mt-10" aria-labelledby="learner-analytics-heading">
-            <h2 id="learner-analytics-heading" class="font-display text-section text-basalt-900">Analytics</h2>
-            <div class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <section class="mt-10" aria-label="Course charts">
+            <div class="mt-0 grid grid-cols-1 gap-4 lg:grid-cols-2">
                 <x-panel>
                     <x-pie-chart :title="$page['charts']['mix']['title']"
                                  :subtitle="$page['charts']['mix']['subtitle']"

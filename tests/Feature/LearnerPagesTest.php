@@ -37,6 +37,7 @@ class LearnerPagesTest extends TestCase
             ->assertSee('certificates earned', false)
             ->assertSee('Audio: a clean milking sequence', false)
             ->assertDontSee('three separate accounts', false)
+            ->assertDontSee('Analytics', false)
             ->assertDontSee('OroraFarm', false);
     }
 

@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Admin\ActivityLogController;
-use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\ContentController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\PlatformController;
@@ -23,7 +22,6 @@ use App\Http\Controllers\Public\PageController as PublicPageController;
 use App\Http\Controllers\Public\PlatformController as PublicPlatformController;
 use App\Http\Controllers\Public\ResourceController as PublicResourceController;
 use App\Http\Controllers\SuperAdminController;
-use App\Http\Controllers\Workspace\AnalyticsController as WorkspaceAnalyticsController;
 use App\Http\Controllers\Workspace\CategoryController as WorkspaceCategoryController;
 use App\Http\Controllers\Workspace\CertificateController as WorkspaceCertificateController;
 use App\Http\Controllers\Workspace\CourseController as WorkspaceCourseController;
@@ -122,7 +120,6 @@ Route::middleware(['auth', 'verified', 'role:'.UserRole::SuperAdmin->value])->gr
 
     Route::get('/admin/permissions', [PermissionController::class, 'index'])->name('admin.permissions');
     Route::get('/admin/content', [ContentController::class, 'index'])->name('admin.content');
-    Route::get('/admin/analytics', [AnalyticsController::class, 'index'])->name('admin.analytics');
     Route::get('/admin/activity', [ActivityLogController::class, 'index'])->name('admin.activity');
     Route::get('/admin/settings', [SettingController::class, 'index'])->name('admin.settings');
     Route::post('/admin/settings', [SettingController::class, 'update'])->name('admin.settings.update');
@@ -185,8 +182,6 @@ Route::middleware(['auth', 'verified', 'role:'.UserRole::SuperAdmin->value.','.U
         Route::post('/workspace/{platform}/live-sessions', [WorkspaceLiveSessionController::class, 'store'])->name('workspace.sessions.store');
         Route::get('/workspace/{platform}/live-sessions/{session}', [WorkspaceLiveSessionController::class, 'edit'])->name('workspace.sessions.edit')->whereNumber('session');
         Route::post('/workspace/{platform}/live-sessions/{session}', [WorkspaceLiveSessionController::class, 'update'])->name('workspace.sessions.update')->whereNumber('session');
-
-        Route::get('/workspace/{platform}/analytics', [WorkspaceAnalyticsController::class, 'index'])->name('workspace.analytics');
     });
 
 // ---- Learner (Phase F5) ----------------------------------------------------
