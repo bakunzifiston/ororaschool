@@ -6,6 +6,7 @@
         'papyrus' => 'bg-papyrus',
         'accent' => 'bg-accent-50',
         'terrace' => 'marketing-band-accent bg-accent-500 text-chalk',
+        'forest' => 'bg-basalt-950 text-chalk',
         'mist' => 'bg-st-approved-bg',
         'basalt' => 'marketing-band-basalt on-basalt bg-basalt-900 text-chalk',
     ];

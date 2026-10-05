@@ -11,6 +11,9 @@
         'primary' => 'bg-accent-500 text-accent-on border border-accent-500 hover:bg-accent-600 hover:border-accent-600',
         'secondary' => 'bg-chalk text-basalt-800 border border-clay-200 hover:border-fern-400 hover:bg-clay-100',
         'ghost' => 'bg-transparent text-fern-500 border border-transparent hover:bg-clay-100 hover:text-basalt-900',
+        'outline' => 'bg-transparent text-chalk border border-chalk/40 hover:bg-chalk/10 hover:border-chalk/70',
+        'forest' => 'bg-basalt-950 text-chalk border border-basalt-950 hover:bg-basalt-900 hover:border-basalt-900',
+        'leaf' => 'bg-ok text-white border border-ok hover:brightness-95',
         'danger' => 'bg-transparent text-danger border border-danger/40 hover:bg-danger-bg hover:border-danger',
     ];
 

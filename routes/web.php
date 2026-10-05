@@ -143,6 +143,9 @@ Route::middleware(['auth', 'verified', 'role:'.UserRole::SuperAdmin->value.','.U
         Route::post('/workspace/{platform}/courses/{course}/transition', [WorkspaceCourseController::class, 'transition'])->name('workspace.courses.transition');
 
         Route::get('/workspace/{platform}/categories', [WorkspaceCategoryController::class, 'index'])->name('workspace.categories');
+        Route::post('/workspace/{platform}/categories', [WorkspaceCategoryController::class, 'store'])->name('workspace.categories.store');
+        Route::delete('/workspace/{platform}/categories/{category}', [WorkspaceCategoryController::class, 'destroy'])->name('workspace.categories.destroy')
+            ->where('category', '[a-z0-9]+(?:-[a-z0-9]+)*');
 
         Route::get('/workspace/{platform}/modules', [WorkspaceCurriculumController::class, 'modules'])->name('workspace.modules');
         Route::post('/workspace/{platform}/modules', [WorkspaceCurriculumController::class, 'storeModule'])->name('workspace.modules.store');

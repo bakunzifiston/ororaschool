@@ -228,6 +228,212 @@
         box-shadow: none;
     }
 
+    html[data-experience='super-admin'] body {
+        background-color: #eef3ef;
+    }
+
+    [data-experience='super-admin'] main {
+        background-color: #eef3ef;
+    }
+
+    [data-experience='super-admin'] .estate-wide {
+        max-width: 90rem;
+    }
+
+    [data-dashboard='estate'] .estate-title {
+        font-size: 1.85rem;
+        line-height: 1.15;
+        letter-spacing: -0.03em;
+        font-weight: 600;
+    }
+
+    [data-dashboard='estate'] .kpi-strip > div {
+        gap: 0.85rem;
+    }
+
+    [data-dashboard='estate'] .estate-kpi {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        padding: 0.85rem 1rem 0.8rem;
+        border: 0;
+        border-left-width: 0;
+        border-radius: 1rem;
+        background-color: #fff;
+        box-shadow: 0 1px 2px rgb(17 21 18 / 0.04), 0 10px 28px rgb(17 21 18 / 0.05);
+        text-decoration: none;
+        color: inherit;
+    }
+
+    [data-dashboard='estate'] .estate-kpi-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+    }
+
+    [data-dashboard='estate'] .estate-kpi-title {
+        display: flex;
+        min-width: 0;
+        align-items: center;
+        gap: 0.55rem;
+    }
+
+    [data-dashboard='estate'] .estate-kpi-icon {
+        display: inline-flex;
+        height: 2.15rem;
+        width: 2.15rem;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+    }
+
+    [data-dashboard='estate'] .estate-kpi-icon svg {
+        height: 1.05rem;
+        width: 1.05rem;
+    }
+
+    [data-dashboard='estate'] .estate-kpi-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 0.8rem;
+        font-weight: 500;
+        line-height: 1.25;
+        color: #2f3833;
+    }
+
+    [data-dashboard='estate'] .estate-kpi-arrow {
+        height: 0.85rem;
+        width: 0.85rem;
+        flex-shrink: 0;
+        color: #9aa59c;
+    }
+
+    [data-dashboard='estate'] .estate-kpi-value {
+        margin-top: 0.5rem;
+        font-family: var(--font-sans);
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        color: #111814;
+    }
+
+    [data-dashboard='estate'] .estate-kpi-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0.25rem 0.4rem;
+        margin-top: 0.35rem;
+        font-size: 0.72rem;
+        line-height: 1.25;
+        color: #6b7a71;
+    }
+
+    [data-dashboard='estate'] .estate-kpi-trend {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.15rem;
+        font-weight: 600;
+        color: #6b7a71;
+    }
+
+    [data-dashboard='estate'] .estate-kpi-trend.is-up {
+        color: #3f8c1f;
+    }
+
+    [data-dashboard='estate'] .estate-kpi-trend.is-down {
+        color: var(--color-danger);
+    }
+
+    [data-dashboard='estate'] .estate-kpi-trend.is-warn {
+        color: var(--color-st-pending);
+    }
+
+    [data-dashboard='estate'] .kpi-tint-accent {
+        background-color: var(--color-accent-50);
+        color: var(--color-accent-600);
+    }
+
+    [data-dashboard='estate'] .kpi-tint-green {
+        background-color: #e4f6d6;
+        color: #4f9a28;
+    }
+
+    [data-dashboard='estate'] .kpi-tint-blue {
+        background-color: #dceefc;
+        color: #4d89c6;
+    }
+
+    [data-dashboard='estate'] .kpi-tint-violet {
+        background-color: #efe4ff;
+        color: #8b5cf6;
+    }
+
+    [data-dashboard='estate'] .kpi-tint-amber {
+        background-color: #fbeed0;
+        color: #d4a017;
+    }
+
+    [data-dashboard='estate'] .app-panel {
+        border: 0;
+        border-radius: 1.25rem;
+        background-color: #fff;
+        box-shadow: 0 1px 2px rgb(17 21 18 / 0.04), 0 10px 28px rgb(17 21 18 / 0.05);
+    }
+
+    [data-dashboard='estate'] .app-panel > div {
+        padding: 1.35rem 1.5rem;
+    }
+
+    [data-dashboard='estate'] .estate-stack {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.15rem;
+        margin-top: 1.15rem;
+    }
+
+    @media (min-width: 64rem) {
+        [data-dashboard='estate'] .estate-split {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    [data-dashboard='estate'] .kpi-tint-green {
+        background-color: #e7f5dc;
+        color: #3f8c1f;
+    }
+
+    [data-dashboard='estate'] .kpi-tint-blue {
+        background-color: #e4eef8;
+        color: #2f6b84;
+    }
+
+    [data-dashboard='estate'] .kpi-tint-violet {
+        background-color: #f3e8ff;
+        color: #7c3aed;
+    }
+
+    [data-dashboard='estate'] .kpi-tint-amber {
+        background-color: #f7eed7;
+        color: #8a6a16;
+    }
+
+    [data-dashboard='estate'] .estate-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        border: 1px solid rgb(17 21 18 / 0.08);
+        border-radius: 0.9rem;
+        background-color: #fff;
+        padding: 0.45rem 0.75rem 0.45rem 0.6rem;
+        color: var(--color-fern-500);
+        font-size: var(--text-micro);
+        line-height: 1.25;
+    }
+
     [data-experience='super-admin'] .app-filters,
     [data-experience='platform-workspace'] .app-filters {
         margin-top: 1.5rem;
@@ -294,7 +500,8 @@
         }
     }
 
-    [data-experience='public'] .public-card {
+    [data-experience='public'] .public-card,
+    [data-experience='guest'] .public-card {
         border-radius: var(--radius-lg);
         border: 1px solid rgb(17 21 18 / 0.07);
         background-color: var(--color-chalk);
@@ -351,6 +558,70 @@
     }
 }
 
+/* Unlayered so KPI sizes beat the strip’s Tailwind utilities on every dashboard. */
+.kpi-strip > div {
+    gap: 0.75rem;
+}
+
+.estate-kpi {
+    min-height: 0;
+    padding: 0.75rem 0.9rem 0.7rem;
+    border: 0;
+    border-left-width: 0;
+    border-radius: 1rem;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgb(17 21 18 / 0.04), 0 10px 28px rgb(17 21 18 / 0.05);
+}
+
+.estate-kpi-icon {
+    height: 2rem;
+    width: 2rem;
+}
+
+.estate-kpi-icon svg {
+    height: 0.95rem;
+    width: 0.95rem;
+}
+
+.estate-kpi-label {
+    font-size: 0.78rem;
+}
+
+.estate-kpi-arrow {
+    height: 0.8rem;
+    width: 0.8rem;
+}
+
+.estate-kpi-value {
+    margin-top: 0.4rem;
+    font-size: 1.45rem;
+}
+
+.estate-kpi-meta {
+    margin-top: 0.28rem;
+    font-size: 0.7rem;
+}
+
+.kpi-tint-green {
+    background-color: #e4f6d6;
+    color: #4f9a28;
+}
+
+.kpi-tint-blue {
+    background-color: #dceefc;
+    color: #4d89c6;
+}
+
+.kpi-tint-violet {
+    background-color: #efe4ff;
+    color: #8b5cf6;
+}
+
+.kpi-tint-amber {
+    background-color: #fbeed0;
+    color: #d4a017;
+}
+
 /* Unlayered so these beat the shared shell utilities on public pages only. */
 [data-experience='public'] header.sticky {
     height: 4.25rem;
@@ -396,7 +667,8 @@
     border-bottom-color: rgb(17 21 18 / 0.1);
 }
 
-[data-experience='public'] .inline-flex.items-center.justify-center.rounded-md {
+[data-experience='public'] .inline-flex.items-center.justify-center.rounded-md,
+[data-experience='guest'] .inline-flex.items-center.justify-center.rounded-md {
     border-radius: 9999px;
 }
 
@@ -423,11 +695,53 @@
     height: 70vh;
 }
 
+@keyframes public-reveal {
+    from {
+        opacity: 0;
+        transform: translateY(1.1rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes public-reveal-media {
+    from {
+        transform: scale(1.035);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+[data-experience='public'] [data-reveal]:not(.is-in) {
+    opacity: 0;
+    transform: translateY(1.1rem);
+}
+
+[data-experience='public'] [data-reveal].is-in {
+    animation: public-reveal 720ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--reveal-delay, 0ms);
+}
+
+[data-experience='public'] [data-reveal-media].is-in img {
+    animation: public-reveal-media 1400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
     *::after {
         animation-duration: 0.01ms !important;
         transition-duration: 0.01ms !important;
+    }
+
+    [data-experience='public'] [data-reveal],
+    [data-experience='public'] [data-reveal-media] img {
+        opacity: 1;
+        transform: none;
     }
 }

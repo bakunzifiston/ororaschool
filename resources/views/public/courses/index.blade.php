@@ -1,25 +1,37 @@
 <x-layouts.public title="Explore courses" flush>
-    <x-public.section tone="terrace" compact>
+    <x-public.section tone="forest" compact>
         <x-public.trail on-dark :items="[
             ['label' => 'Home', 'route' => 'home'],
             ['label' => 'Courses'],
         ]" />
 
+        <p class="flex items-center gap-3 text-micro font-medium tracking-[0.18em] text-clay-200">
+            <span class="h-px w-8 bg-accent-400" aria-hidden="true"></span>
+            FARMSCHOOL
+        </p>
+
         <x-public.page-heading
+            class="mt-6"
             on-dark
-            title="Explore courses"
-            subtitle="Practical training from across the four live academies." />
+            :title="$page['title']"
+            :subtitle="$page['subtitle']" />
     </x-public.section>
 
-    <x-public.section tone="chalk" class="grow">
+    <x-public.section tone="papyrus" class="grow">
         <x-public.filters :filters="$page['filters']"
                           :options="$page['options']"
                           :show-platform-filter="$page['showPlatformFilter']"
+                          :show-academy-filter="filled($page['filters']['platform'] ?? '') || filled($page['filters']['academy'] ?? '')"
                           :form-action="$page['formAction']" />
 
         <div class="mt-10">
             @if (count($page['courses']))
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                <p class="text-dense text-fern-500">
+                    {{ number_format($page['pagination']['total'] ?? count($page['courses'])) }}
+                    {{ ($page['pagination']['total'] ?? count($page['courses'])) === 1 ? 'course' : 'courses' }}
+                </p>
+
+                <div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
                     @foreach ($page['courses'] as $course)
                         <x-public.course-tile :course="$course" />
                     @endforeach

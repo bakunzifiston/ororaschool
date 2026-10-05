@@ -64,8 +64,9 @@ class SuperAdminDashboard
                     'trend' => null,
                     'direction' => $inactivePlatforms > 0 ? 'warn' : null,
                     'note' => $activePlatforms.' active · '.$inactivePlatforms.' inactive',
-                    'icon' => 'layers',
-                    'tone' => $inactivePlatforms > 0 ? 'pending' : 'accent',
+                    'icon' => 'cap',
+                    'href' => route('admin.platforms'),
+                    'tint' => 'green',
                 ],
                 [
                     'label' => 'Total Users',
@@ -74,7 +75,8 @@ class SuperAdminDashboard
                     'direction' => 'up',
                     'note' => 'this period',
                     'icon' => 'users',
-                    'tone' => 'approved',
+                    'href' => route('admin.users'),
+                    'tint' => 'blue',
                 ],
                 [
                     'label' => 'Active Learners',
@@ -83,7 +85,8 @@ class SuperAdminDashboard
                     'direction' => null,
                     'note' => 'Enrolled across the estate',
                     'icon' => 'user',
-                    'tone' => 'active',
+                    'href' => route('admin.users'),
+                    'tint' => 'violet',
                 ],
                 [
                     'label' => 'Completion Rate',
@@ -91,8 +94,9 @@ class SuperAdminDashboard
                     'trend' => '+3 pts',
                     'direction' => 'up',
                     'note' => 'over 90 days',
-                    'icon' => 'chart',
-                    'tone' => 'ok',
+                    'icon' => 'bars',
+                    'href' => route('admin.analytics'),
+                    'tint' => 'amber',
                 ],
             ],
 
@@ -108,19 +112,21 @@ class SuperAdminDashboard
             ],
 
             'charts' => [
-                'completion' => [
-                    'title' => 'Course completion',
-                    'headline' => $completion.'%',
-                    'trend' => '+3 pts',
-                    'trend_note' => 'over 90 days',
-                    'labels' => array_column($platforms, 'name'),
-                    'values' => array_column($platforms, 'completion_rate'),
-                    'suffix' => '%',
-                    'max' => 100,
-                ],
-                'distribution' => [
-                    'title' => 'Academy distribution',
-                    'subtitle' => 'Users on each tenant, including inactive academies that still hold records.',
+                'catalogue' => array_merge([
+                    'title' => 'Catalogue status',
+                    'subtitle' => 'Every course on the estate, by publishing state.',
+                    'headline' => (string) count($courses),
+                    'caption' => 'Total courses',
+                ], self::countedSeries($courses, 'status', [
+                    'published' => 'Published',
+                    'approved' => 'Approved',
+                    'pending_review' => 'Pending review',
+                    'draft' => 'Draft',
+                    'archived' => 'Archived',
+                ])),
+                'users' => [
+                    'title' => 'Users by academy',
+                    'subtitle' => 'Including inactive academies that still hold records.',
                     'labels' => array_column($platforms, 'name'),
                     'values' => array_column($platforms, 'users'),
                 ],
@@ -199,6 +205,32 @@ class SuperAdminDashboard
         }
 
         return $items;
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $rows
+     * @param  array<string, string>  $labels
+     * @return array{labels: list<string>, values: list<int>}
+     */
+    private static function countedSeries(array $rows, string $attribute, array $labels): array
+    {
+        $series = ['labels' => [], 'values' => []];
+
+        foreach ($labels as $key => $label) {
+            $count = count(array_filter(
+                $rows,
+                fn (array $row): bool => ($row[$attribute] ?? '') === $key,
+            ));
+
+            if ($count === 0) {
+                continue;
+            }
+
+            $series['labels'][] = $label;
+            $series['values'][] = $count;
+        }
+
+        return $series;
     }
 
     private static function platformIcon(string $slug): string

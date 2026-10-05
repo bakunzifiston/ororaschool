@@ -12,6 +12,8 @@
     'required' => false,
     'autofocus' => false,
     'size' => 'lg',
+    'icon' => null,
+    'appearance' => 'box',
 ])
 
 @php
@@ -23,16 +25,33 @@
 
     $id = 'field-' . $name;
     $describedBy = array_filter([$hint ? $id . '-hint' : null, $error ? $id . '-error' : null]);
+    $line = $appearance === 'line';
+    $pill = $appearance === 'pill';
+    $hasTrailing = $revealable || filled($icon);
 
     // Inputs are 44px tall, not the 36px used inside the dense app shell: these
     // forms are filled in on phones, often outdoors.
     $height = $size === 'sm' ? 'h-9 text-dense' : 'h-11 text-body';
-    $input = implode(' ', [
-        $height.' w-full rounded-md border bg-chalk px-3 text-basalt-800',
-        'placeholder:text-clay-300 read-only:bg-papyrus read-only:text-fern-500',
-        $error ? 'border-danger' : 'border-clay-300',
-        $revealable ? 'pr-11' : '',
-    ]);
+    $input = $line
+        ? implode(' ', [
+            $height.' w-full rounded-none border-0 border-b bg-transparent px-0 text-basalt-800',
+            'placeholder:text-fern-500 read-only:text-fern-500',
+            $error ? 'border-danger' : 'border-clay-300',
+            $hasTrailing ? 'pr-11' : '',
+        ])
+        : ($pill
+            ? implode(' ', [
+                $height.' w-full rounded-full border bg-papyrus px-4 text-basalt-800',
+                'placeholder:text-fern-500 read-only:bg-clay-100 read-only:text-fern-500',
+                $error ? 'border-danger' : 'border-clay-200',
+                $hasTrailing ? 'pr-11' : '',
+            ])
+            : implode(' ', [
+                $height.' w-full rounded-md border bg-chalk px-3 text-basalt-800',
+                'placeholder:text-clay-300 read-only:bg-papyrus read-only:text-fern-500',
+                $error ? 'border-danger' : 'border-clay-300',
+                $hasTrailing ? 'pr-11' : '',
+            ]));
 @endphp
 
 <div {{ $attributes->merge(['class' => 'min-w-0']) }}
@@ -58,6 +77,12 @@
                @if (count($describedBy)) aria-describedby="{{ implode(' ', $describedBy) }}" @endif
                @if ($error) aria-invalid="true" @endif
                class="{{ $input }}">
+
+        @if (filled($icon) && ! $revealable)
+            <span class="pointer-events-none absolute inset-y-0 right-0 flex w-11 items-center justify-center text-fern-500" aria-hidden="true">
+                <x-icon :name="$icon" class="h-4 w-4" />
+            </span>
+        @endif
 
         @if ($revealable)
             {{-- Passwords get typed wrong on phone keyboards; let people look. --}}

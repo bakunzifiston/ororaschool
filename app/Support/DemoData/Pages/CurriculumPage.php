@@ -57,7 +57,7 @@ class CurriculumPage
                 $current,
                 'Modules',
                 $course
-                    ? 'Builder for '.$course['title'].' on '.$current['name'].'. Reordering is visual only.'
+                    ? 'Builder for '.$course['title'].' on '.$current['name'].'. Add a module, or a lesson under a module. Reordering is visual only.'
                     : 'Pick a '.$current['name'].' course to open its builder.',
             ),
             'courses' => array_column($courses, 'title', 'slug'),

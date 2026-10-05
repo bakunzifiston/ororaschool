@@ -1,57 +1,32 @@
-@props(['items' => []])
+@props(['items' => [], 'solid' => false])
 
 @php
     $columns = count($items);
-    $tones = [
-        'accent' => [
-            'cell' => 'bg-accent-50 border-accent-100',
-            'icon' => 'bg-accent-500 text-accent-on',
-            'value' => 'text-accent-700',
-        ],
-        'ok' => [
-            'cell' => 'bg-ok-bg border-ok/20',
-            'icon' => 'bg-ok text-white',
-            'value' => 'text-ok',
-        ],
-        'active' => [
-            'cell' => 'bg-st-active-bg border-st-active/20',
-            'icon' => 'bg-st-active text-white',
-            'value' => 'text-st-active',
-        ],
-        'approved' => [
-            'cell' => 'bg-st-approved-bg border-st-approved/20',
-            'icon' => 'bg-st-approved text-white',
-            'value' => 'text-st-approved',
-        ],
-        'pending' => [
-            'cell' => 'bg-st-pending-bg border-st-pending/20',
-            'icon' => 'bg-st-pending text-white',
-            'value' => 'text-st-pending',
-        ],
-        'completed' => [
-            'cell' => 'bg-st-completed-bg border-st-completed/20',
-            'icon' => 'bg-st-completed text-white',
-            'value' => 'text-st-completed',
-        ],
-    ];
 @endphp
 
 <div {{ $attributes->merge(['class' => 'kpi-strip']) }}>
     <div @class([
-        'grid grid-cols-2 gap-3',
-        'xl:grid-cols-4' => $columns <= 4,
-        'xl:grid-cols-5' => $columns >= 5,
+        'grid grid-cols-1 gap-3 sm:grid-cols-2',
+        'lg:grid-cols-3' => $columns === 3,
+        'lg:grid-cols-4' => $columns === 4,
+        'lg:grid-cols-5' => $columns >= 5,
     ])>
         @foreach ($items as $item)
             @php
                 $href = $item['href'] ?? null;
                 $monoTrend = (bool) preg_match('/^[+\-−]?[\d.,]+\s*(%|pts)?$/u', (string) ($item['trend'] ?? ''));
                 $direction = $item['direction'] ?? null;
-                $tone = $tones[$item['tone'] ?? 'accent'] ?? $tones['accent'];
+                $tint = $item['tint'] ?? 'accent';
+                $tints = [
+                    'accent' => 'bg-accent-50 text-accent-600',
+                    'green' => 'kpi-tint kpi-tint-green',
+                    'blue' => 'kpi-tint kpi-tint-blue',
+                    'violet' => 'kpi-tint kpi-tint-violet',
+                    'amber' => 'kpi-tint kpi-tint-amber',
+                ];
                 $cellClass = [
-                    'min-w-0 rounded-md border px-3.5 py-3',
-                    $tone['cell'],
-                    'block hover:brightness-[0.98]' => (bool) $href,
+                    'estate-kpi app-stat min-w-0 rounded-lg border border-clay-200 bg-chalk px-3 py-2.5',
+                    'hover:border-clay-300' => (bool) $href,
                 ];
             @endphp
 
@@ -60,27 +35,30 @@
             @else
                 <div @class($cellClass)>
             @endif
-                    <div class="flex items-start justify-between gap-2">
-                        <p class="truncate text-micro text-basalt-700">{{ $item['label'] }}</p>
-                        @if (! empty($item['icon']))
-                            <span @class(['inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full', $tone['icon']]) aria-hidden="true">
-                                <x-icon :name="$item['icon']" class="h-3.5 w-3.5" />
-                            </span>
+                    <div class="estate-kpi-head flex items-center justify-between gap-2">
+                        <div class="estate-kpi-title flex min-w-0 items-center gap-2.5">
+                            @if (! empty($item['icon']))
+                                <span @class(['estate-kpi-icon inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full', $tints[$tint] ?? $tints['accent']]) aria-hidden="true">
+                                    <x-icon :name="$item['icon']" :solid="$solid" class="h-4 w-4" />
+                                </span>
+                            @endif
+                            <p class="estate-kpi-label truncate text-micro text-fern-500">{{ $item['label'] }}</p>
+                        </div>
+                        @if ($href)
+                            <x-icon name="arrow-right" class="estate-kpi-arrow h-3.5 w-3.5 shrink-0 text-fern-400" />
                         @endif
                     </div>
 
-                    <p @class(['figure mt-1.5 text-section leading-none', $tone['value']])>{{ $item['value'] }}</p>
+                    <p class="estate-kpi-value mt-2 text-section font-semibold leading-none text-basalt-900">{{ $item['value'] }}</p>
 
                     @if (! empty($item['trend']) || ! empty($item['note']))
-                        <div class="mt-1.5 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+                        <p class="estate-kpi-meta mt-2 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-micro text-fern-500">
                             @if (! empty($item['trend']))
                                 <span @class([
-                                    'inline-flex items-center gap-0.5 text-micro font-medium',
-                                    'figure' => $monoTrend,
-                                    'text-ok' => $direction === 'up',
-                                    'text-st-pending' => $direction === 'warn',
-                                    'text-danger' => $direction === 'down',
-                                    'text-basalt-700' => ! in_array($direction, ['up', 'down', 'warn'], true),
+                                    'estate-kpi-trend',
+                                    'is-up' => $direction === 'up',
+                                    'is-down' => $direction === 'down',
+                                    'is-warn' => $direction === 'warn',
                                 ])>
                                     @if ($direction === 'up')
                                         <x-icon name="arrow-up" class="h-3 w-3" />
@@ -90,11 +68,10 @@
                                     {{ $item['trend'] }}
                                 </span>
                             @endif
-
                             @if (! empty($item['note']))
-                                <span class="text-micro text-basalt-700/80">{{ $item['note'] }}</span>
+                                <span>{{ $item['note'] }}</span>
                             @endif
-                        </div>
+                        </p>
                     @endif
             @if ($href)
                 </a>

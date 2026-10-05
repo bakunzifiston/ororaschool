@@ -14,6 +14,8 @@
     $title = $course['title'] ?? '';
     $href = $course['href'] ?? '#';
     $paid = (bool) ($course['paid'] ?? false);
+    $platformName = $course['platform_name'] ?? '';
+    $focus = $course['academy'] ?? '';
 @endphp
 
 <a href="{{ $href }}" {{ $attributes->merge(['class' => 'public-card public-card-hover group flex h-full min-w-0 flex-col overflow-hidden']) }}>
@@ -30,13 +32,16 @@
                 <x-icon :name="$glyph" class="h-8 w-8 text-accent-400" />
             </span>
         @endif
-        <span class="absolute left-3 top-3 rounded-full bg-chalk/90 px-2.5 py-1 text-micro font-medium text-basalt-800 backdrop-blur-sm">
-            {{ $course['platform_name'] ?? '' }}
-        </span>
     </span>
 
     <span class="flex grow flex-col p-5">
-        <span class="font-display text-panel font-semibold leading-snug text-basalt-900 group-hover:text-accent-700">
+        @if ($platformName !== '' || $focus !== '')
+            <span class="text-micro font-medium text-fern-500">
+                {{ collect([$platformName, $focus])->filter()->implode(' · ') }}
+            </span>
+        @endif
+
+        <span class="mt-1.5 font-display text-panel font-semibold leading-snug text-basalt-900 group-hover:text-accent-700">
             {{ $title }}
         </span>
 
@@ -55,11 +60,7 @@
                     <span>{{ $lessons }} {{ $lessons === 1 ? 'lesson' : 'lessons' }}</span>
                 @endif
                 <span class="text-clay-300" aria-hidden="true">·</span>
-                <span @class([
-                    'rounded-full px-2 py-0.5 font-medium',
-                    'bg-ok-bg text-ok' => ! $paid,
-                    'bg-st-completed-bg text-st-completed' => $paid,
-                ])>{{ $paid ? 'Paid' : 'Free' }}</span>
+                <span>{{ $paid ? 'Paid' : 'Free' }}</span>
                 @if ($enrolled > 0)
                     <span class="text-clay-300" aria-hidden="true">·</span>
                     <span>{{ number_format($enrolled) }} enrolled</span>

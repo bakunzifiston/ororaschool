@@ -265,9 +265,9 @@ class Courses
     private static function extras(): array
     {
         return [
-            'farm-record-keeping' => ['academy' => 'Plot records and costing', 'academy_slug' => 'plot-records', 'category' => 'Field books'],
-            'season-planning-terraces' => ['academy' => 'Season planning', 'academy_slug' => 'season-planning', 'category' => 'Plot mapping', 'cover' => 'images/courses/season-planning.jpg'],
-            'costing-a-season' => ['academy' => 'Plot records and costing', 'academy_slug' => 'plot-records', 'category' => 'Margins'],
+            'farm-record-keeping' => ['category' => 'Field books'],
+            'season-planning-terraces' => ['category' => 'Plot mapping', 'cover' => 'images/courses/season-planning.jpg'],
+            'costing-a-season' => ['category' => 'Margins'],
             'cooperative-share-records' => ['academy' => 'Cooperative books', 'academy_slug' => 'cooperative-books', 'category' => 'Share register'],
             'mastitis-milk-hygiene' => ['academy' => 'Milk hygiene', 'academy_slug' => 'milk-hygiene', 'category' => 'Milking routine', 'language' => 'English / Kinyarwanda', 'certificate_eligible' => true],
             'cold-chain-collection-centres' => ['academy' => 'Collection centres', 'academy_slug' => 'collection-centres', 'category' => 'Temperature logs'],

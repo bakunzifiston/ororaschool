@@ -6,8 +6,10 @@ use App\Models\Course;
 use App\Models\Lesson;
 use App\Models\Module;
 use App\Models\Platform;
+use App\Models\User;
 use App\Support\DemoData\Courses;
 use App\Support\DemoData\PublicCatalog;
+use App\Support\DemoData\Resources;
 use Database\Seeders\CatalogSeeder;
 use Tests\TestCase;
 
@@ -43,6 +45,8 @@ class PublicPagesTest extends TestCase
 
     public function test_homepage_lists_published_courses_on_active_platforms_only(): void
     {
+        User::factory()->count(4)->create();
+
         $this->get(route('home'))
             ->assertOk()
             ->assertSee('data-experience="public"', false)
@@ -56,8 +60,12 @@ class PublicPagesTest extends TestCase
             ->assertSee('Dairy and livestock', false)
             ->assertSee('Published courses', false)
             ->assertSee('Connected academies', false)
-            ->assertSee('Learning record', false)
+            ->assertSee('Open resources', false)
+            ->assertSee('Users', false)
+            ->assertDontSee('Learning record', false)
+            ->assertSee('>'.User::query()->count().'</dd>', false)
             ->assertSee('10+', false)
+            ->assertSee((string) count(Resources::open()), false)
             ->assertSee('Explore courses', false)
             ->assertSee('View all courses', false)
             ->assertSee('Verify a FarmSchool certificate', false)

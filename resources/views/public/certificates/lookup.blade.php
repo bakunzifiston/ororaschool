@@ -1,17 +1,23 @@
 <x-layouts.public title="Certificate verification" flush>
-    <x-public.section tone="terrace" compact>
+    <x-public.section tone="forest" compact>
         <x-public.trail on-dark :items="[
             ['label' => 'Home', 'route' => 'home'],
             ['label' => 'Certificate verification'],
         ]" />
 
+        <p class="flex items-center gap-3 text-micro font-medium tracking-[0.18em] text-clay-200">
+            <span class="h-px w-8 bg-accent-400" aria-hidden="true"></span>
+            FARMSCHOOL
+        </p>
+
         <x-public.page-heading
+            class="mt-6"
             on-dark
-            title="Certificate verification"
+            :title="$page['header']['title']"
             :subtitle="$page['header']['subtitle']" />
     </x-public.section>
 
-    <x-public.section tone="chalk" class="grow">
+    <x-public.section tone="papyrus" class="grow">
         <form method="GET" action="{{ route('certificates.lookup') }}" class="public-card mx-auto max-w-xl p-6 sm:p-8">
             <x-field name="code" label="Certificate number"
                      placeholder="OS-GEM-2026-1847"

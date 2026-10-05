@@ -27,6 +27,18 @@ class LearnerDashboard
         $continue = $empty ? null : LearnerProgress::continueLesson();
         $certificates = $empty ? [] : IssuedCertificates::forLearner(LearnerProgress::LEARNER_ID);
         $platforms = array_values(array_unique(array_column(array_merge($inProgress, $completed), 'platform_name')));
+        $mixLabels = [];
+        $mixValues = [];
+
+        if (count($inProgress) > 0) {
+            $mixLabels[] = 'In progress';
+            $mixValues[] = count($inProgress);
+        }
+
+        if (count($completed) > 0) {
+            $mixLabels[] = 'Completed';
+            $mixValues[] = count($completed);
+        }
 
         return [
             'user' => $user,
@@ -40,6 +52,58 @@ class LearnerDashboard
             'inProgress' => $inProgress,
             'completed' => $completed,
             'certificatesCount' => count($certificates),
+            'stats' => [
+                [
+                    'label' => 'In progress',
+                    'value' => (string) count($inProgress),
+                    'trend' => null,
+                    'direction' => null,
+                    'note' => 'Open enrolments',
+                    'icon' => 'book',
+                    'tint' => 'green',
+                ],
+                [
+                    'label' => 'Completed',
+                    'value' => (string) count($completed),
+                    'trend' => null,
+                    'direction' => null,
+                    'note' => 'Finished on this record',
+                    'icon' => 'check',
+                    'tint' => 'blue',
+                ],
+                [
+                    'label' => 'Certificates',
+                    'value' => (string) count($certificates),
+                    'trend' => null,
+                    'direction' => null,
+                    'note' => 'Issued to you',
+                    'icon' => 'award',
+                    'tint' => 'amber',
+                ],
+            ],
+            'charts' => [
+                'mix' => [
+                    'title' => 'Learning mix',
+                    'subtitle' => 'Courses on this record, by progress.',
+                    'headline' => (string) (count($inProgress) + count($completed)),
+                    'labels' => $mixLabels,
+                    'values' => $mixValues,
+                ],
+                'progress' => [
+                    'title' => 'Progress by course',
+                    'subtitle' => 'Share of lessons finished on each open course.',
+                    'labels' => array_map(
+                        fn (array $enrolment): string => $enrolment['course_data']['title'] ?? $enrolment['course'],
+                        $inProgress,
+                    ),
+                    'values' => array_map(
+                        fn (array $enrolment): int => (int) ($enrolment['progress'] ?? 0),
+                        $inProgress,
+                    ),
+                    'suffix' => '%',
+                    'max' => 100,
+                ],
+            ],
         ];
     }
 }

@@ -24,10 +24,10 @@ class PublicCatalogPage
         return [
             'header' => PublicHeader::make(
                 'Explore courses',
-                'Every published course across the four live academies.',
+                'Practical training from across the four live academies.',
             ),
             'title' => 'Explore courses',
-            'subtitle' => 'Every published course across the four live academies.',
+            'subtitle' => 'Practical training from across the four live academies.',
             'filters' => array_merge([
                 'platform' => '',
                 'academy' => '',

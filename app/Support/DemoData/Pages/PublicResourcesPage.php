@@ -33,6 +33,8 @@ class PublicResourcesPage
                 'Resources',
                 'Open academy handouts. Course, module and lesson files stay with enrolment.',
             ),
+            'title' => 'Resources',
+            'subtitle' => 'Open academy handouts. Course, module and lesson files stay with enrolment.',
             'filters' => array_merge([
                 'platform' => '',
                 'type' => '',

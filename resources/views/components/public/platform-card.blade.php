@@ -31,15 +31,14 @@
                 <x-icon :name="$glyph" class="h-8 w-8 text-accent-400" />
             </span>
         @endif
-        @if ($discipline !== '')
-            <span class="absolute left-3 top-3 rounded-full bg-chalk/90 px-2.5 py-1 text-micro font-medium text-basalt-800 backdrop-blur-sm">
-                {{ $discipline }}
-            </span>
-        @endif
     </span>
 
     <span class="flex grow flex-col p-5">
-        <span class="font-display text-panel font-semibold leading-snug text-basalt-900 group-hover:text-accent-700">
+        @if ($discipline !== '')
+            <span class="text-micro font-medium text-fern-500">{{ $discipline }}</span>
+        @endif
+
+        <span class="mt-1.5 font-display text-panel font-semibold leading-snug text-basalt-900 group-hover:text-accent-700">
             {{ $name }}
         </span>
 

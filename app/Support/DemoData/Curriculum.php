@@ -4,6 +4,7 @@ namespace App\Support\DemoData;
 
 use App\Models\Course;
 use App\Models\Module;
+use Illuminate\Support\Str;
 
 /**
  * Course syllabus. Reads modules and lessons from MySQL. The catalogue()
@@ -35,6 +36,68 @@ class Curriculum
         return $course->curriculumModules
             ->map(fn (Module $module) => $module->toSyllabusArray())
             ->all();
+    }
+
+    /**
+     * @return array{slug: string, title: string}|null
+     */
+    public static function addModule(string $platform, string $courseSlug, string $title): ?array
+    {
+        $course = self::courseOnPlatform($platform, $courseSlug);
+
+        if ($course === null) {
+            return null;
+        }
+
+        $slug = self::uniqueSlug(
+            $course->curriculumModules()->pluck('slug')->all(),
+            Str::slug($title) ?: 'module',
+        );
+
+        $module = $course->curriculumModules()->create([
+            'slug' => $slug,
+            'title' => $title,
+            'sort_order' => ((int) $course->curriculumModules()->max('sort_order')) + 1,
+        ]);
+
+        return ['slug' => $module->slug, 'title' => $module->title];
+    }
+
+    /**
+     * @return array{slug: string, title: string}|null
+     */
+    public static function addLesson(string $platform, string $courseSlug, string $moduleSlug, string $title, string $type): ?array
+    {
+        $course = self::courseOnPlatform($platform, $courseSlug);
+
+        if ($course === null) {
+            return null;
+        }
+
+        $module = $course->curriculumModules()->where('slug', $moduleSlug)->first();
+
+        if ($module === null) {
+            return null;
+        }
+
+        $slug = self::uniqueSlug(
+            $course->curriculumLessons()->pluck('slug')->all(),
+            Str::slug($title) ?: 'lesson',
+        );
+
+        $lesson = $module->lessons()->create([
+            'course_id' => $course->id,
+            'slug' => $slug,
+            'title' => $title,
+            'type' => $type,
+            'duration' => 8,
+            'body' => self::body($slug),
+            'is_preview' => false,
+            'quiz_slug' => null,
+            'sort_order' => ((int) $module->lessons()->max('sort_order')) + 1,
+        ]);
+
+        return ['slug' => $lesson->slug, 'title' => $lesson->title];
     }
 
     /**
@@ -99,6 +162,31 @@ class Curriculum
             ->where('slug', $courseSlug)
             ->with(['curriculumModules.lessons'])
             ->first();
+    }
+
+    private static function courseOnPlatform(string $platform, string $courseSlug): ?Course
+    {
+        return Course::query()
+            ->where('slug', $courseSlug)
+            ->whereHas('platform', fn ($query) => $query->where('slug', $platform))
+            ->first();
+    }
+
+    /**
+     * @param  list<string>  $used
+     */
+    private static function uniqueSlug(array $used, string $base): string
+    {
+        $index = array_fill_keys($used, true);
+        $slug = $base;
+        $suffix = 2;
+
+        while (isset($index[$slug])) {
+            $slug = $base.'-'.$suffix;
+            $suffix++;
+        }
+
+        return $slug;
     }
 
     public static function findLesson(string $courseSlug, string $lessonId): ?array

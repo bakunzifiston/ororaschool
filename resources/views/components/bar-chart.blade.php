@@ -57,14 +57,16 @@
             @endforeach
         </ul>
     @else
-        <div class="mt-4 flex h-36 items-end gap-1.5">
+        <div class="mt-4 flex h-40 items-end gap-2">
             @foreach ($values as $i => $value)
                 @php $height = (int) round(($value / $ceiling) * 100); @endphp
-                <div class="flex min-w-0 flex-1 flex-col items-stretch justify-end gap-1">
+                <div class="flex min-w-0 flex-1 flex-col items-stretch justify-end gap-1.5">
                     <span class="figure self-center text-micro text-fern-500">{{ $value }}{{ $suffix }}</span>
-                    <div class="w-full rounded-sm bg-accent-500"
-                         style="height: {{ max(4, $height) }}%"
-                         title="{{ $labels[$i] ?? '' }}: {{ $value }}{{ $suffix }}"></div>
+                    <div class="flex h-32 justify-center overflow-hidden rounded-sm bg-clay-100">
+                        <div class="mt-auto w-full rounded-t-sm bg-accent-500"
+                             style="height: {{ max(4, $height) }}%"
+                             title="{{ $labels[$i] ?? '' }}: {{ $value }}{{ $suffix }}"></div>
+                    </div>
                 </div>
             @endforeach
         </div>

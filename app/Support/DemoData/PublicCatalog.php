@@ -5,6 +5,7 @@ namespace App\Support\DemoData;
 use App\Models\Academy;
 use App\Models\Course;
 use App\Models\Platform;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -180,13 +181,15 @@ class PublicCatalog
     }
 
     /**
-     * @return array{courses: int, platforms: int}
+     * @return array{courses: int, platforms: int, resources: int, users: int}
      */
     public static function stats(): array
     {
         return [
             'courses' => self::publishedQuery()->count(),
             'platforms' => Platform::query()->active()->count(),
+            'resources' => count(Resources::open()),
+            'users' => User::query()->count(),
         ];
     }
 
@@ -239,7 +242,7 @@ class PublicCatalog
             $platforms[$row['slug']] = $row['name'];
         }
 
-        $academies = ['' => 'All academies'];
+        $academies = ['' => 'Any focus'];
         foreach ($courses as $course) {
             if ($course->academy) {
                 $academies[$course->academy->slug] = $course->academy->name;

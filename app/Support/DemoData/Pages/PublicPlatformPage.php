@@ -16,8 +16,10 @@ class PublicPlatformPage
         return [
             'header' => PublicHeader::make(
                 'Academies',
-                'Four live academies. Each teaches the work of its own system. Your training record is the same wherever you enrol.',
+                'Four live academies. Each teaches the work of its own system, on one learning record.',
             ),
+            'title' => 'Academies',
+            'subtitle' => 'Four live academies. Each teaches the work of its own system, on one learning record.',
             'platforms' => PublicCatalog::activePlatforms(),
         ];
     }

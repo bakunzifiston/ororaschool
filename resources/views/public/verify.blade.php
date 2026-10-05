@@ -3,19 +3,25 @@
         $status = $page['status'] ?? ($page['found'] ? ($page['valid'] ? 'valid' : 'revoked') : 'not_found');
     @endphp
 
-    <x-public.section tone="terrace" compact>
+    <x-public.section tone="forest" compact>
         <x-public.trail on-dark :items="[
             ['label' => 'Certificate verification', 'route' => 'certificates.lookup'],
             ['label' => $page['header']['title'] ?? $page['code']],
         ]" />
 
+        <p class="flex items-center gap-3 text-micro font-medium tracking-[0.18em] text-clay-200">
+            <span class="h-px w-8 bg-accent-400" aria-hidden="true"></span>
+            FARMSCHOOL
+        </p>
+
         <x-public.page-heading
+            class="mt-6"
             on-dark
             :title="$page['header']['title'] ?? 'Certificate '.$page['code']"
             :subtitle="$page['header']['subtitle'] ?? $page['subtitle'] ?? null" />
     </x-public.section>
 
-    <x-public.section tone="chalk" class="grow">
+    <x-public.section tone="papyrus" class="grow">
         <div class="mx-auto max-w-xl">
             <div class="public-card p-5 sm:p-8">
                 <x-status-badge :status="$status" />

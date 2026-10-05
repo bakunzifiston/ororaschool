@@ -14,9 +14,7 @@ class Academies
     public static function all(): array
     {
         return [
-            ['slug' => 'plot-records', 'platform' => 'ororafarm', 'name' => 'Plot records and costing', 'courses' => 2, 'status' => 'published'],
             ['slug' => 'cooperative-books', 'platform' => 'ororafarm', 'name' => 'Cooperative books', 'courses' => 1, 'status' => 'draft'],
-            ['slug' => 'season-planning', 'platform' => 'ororafarm', 'name' => 'Season planning', 'courses' => 1, 'status' => 'published'],
             ['slug' => 'milk-hygiene', 'platform' => 'gemura', 'name' => 'Milk hygiene', 'courses' => 2, 'status' => 'published'],
             ['slug' => 'herd-fertility', 'platform' => 'gemura', 'name' => 'Herd fertility', 'courses' => 1, 'status' => 'approved'],
             ['slug' => 'collection-centres', 'platform' => 'gemura', 'name' => 'Collection centres', 'courses' => 1, 'status' => 'published'],

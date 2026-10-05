@@ -12,7 +12,26 @@
     </x-page-header>
 
     <section class="mt-8" aria-label="Key performance indicators">
-        <x-kpi-strip :items="array_merge($page['stats'], $page['secondaryStats'])" />
+        <x-kpi-strip :items="array_merge($page['stats'], $page['secondaryStats'])" solid />
+    </section>
+
+    <section class="mt-10" aria-labelledby="workspace-analytics-heading">
+        <h2 id="workspace-analytics-heading" class="font-display text-section text-basalt-900">Analytics</h2>
+        <div class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <x-panel>
+                <x-pie-chart :title="$page['charts']['status']['title']"
+                             :subtitle="$page['charts']['status']['subtitle']"
+                             :headline="$page['charts']['status']['headline'] ?? null"
+                             :labels="$page['charts']['status']['labels']"
+                             :values="$page['charts']['status']['values']" />
+            </x-panel>
+            <x-panel>
+                <x-line-chart :title="$page['charts']['enrolment']['title']"
+                              :subtitle="$page['charts']['enrolment']['subtitle']"
+                              :labels="$page['charts']['enrolment']['labels']"
+                              :values="$page['charts']['enrolment']['values']" />
+            </x-panel>
+        </div>
     </section>
 
     <section class="mt-10" aria-labelledby="recent-courses-heading">

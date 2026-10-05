@@ -13,7 +13,7 @@ class PublicHomePage
      * @return array{
      *     platforms: list<array<string, mixed>>,
      *     featured: list<array<string, mixed>>,
-     *     stats: list<array{value: string, label: string}>
+     *     stats: list<array{value: string, label: string, icon: string}>
      * }
      */
     public static function data(): array
@@ -27,14 +27,22 @@ class PublicHomePage
                 [
                     'value' => self::formatCourseCount($stats['courses']),
                     'label' => 'Published courses',
+                    'icon' => 'book',
                 ],
                 [
                     'value' => (string) $stats['platforms'],
                     'label' => 'Connected academies',
+                    'icon' => 'layers',
                 ],
                 [
-                    'value' => '1',
-                    'label' => 'Learning record',
+                    'value' => (string) $stats['resources'],
+                    'label' => 'Open resources',
+                    'icon' => 'file',
+                ],
+                [
+                    'value' => (string) $stats['users'],
+                    'label' => 'Users',
+                    'icon' => 'users',
                 ],
             ],
         ];

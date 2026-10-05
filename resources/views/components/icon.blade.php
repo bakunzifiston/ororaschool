@@ -1,4 +1,4 @@
-@props(['name' => 'circle'])
+@props(['name' => 'circle', 'solid' => false])
 
 @php
     $paths = [
@@ -9,6 +9,7 @@
         'key' => '<path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/>',
         'globe' => '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
         'chart' => '<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M7 15l3-4 3 3 4-6"/>',
+        'bars' => '<path d="M4 14h4v6H4z"/><path d="M10 9h4v11h-4z"/><path d="M16 4h4v16h-4z"/>',
         'history' => '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>',
         'cog' => '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
         'book' => '<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a2.5 2.5 0 0 1 0-5H20"/>',
@@ -33,6 +34,8 @@
         'arrow-down' => '<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>',
         'arrow-right' => '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
         'clock' => '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+        'calendar' => '<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>',
+        'cap' => '<path d="M2 10 12 5l10 5-10 5L2 10Z"/><path d="M6 12.5V16c0 1.2 2.5 2.5 6 2.5s6-1.3 6-2.5v-3.5"/>',
         'archive' => '<rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/>',
         'inbox' => '<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
         'sprout' => '<path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/>',
@@ -47,15 +50,39 @@
         'tag' => '<path d="M12.59 2.59A2 2 0 0 0 11.17 2H4a2 2 0 0 0-2 2v7.17a2 2 0 0 0 .59 1.42l8.82 8.82a2 2 0 0 0 2.82 0l7.18-7.18a2 2 0 0 0 0-2.82Z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
         'grip' => '<circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/>',
         'volume' => '<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>',
+        'more' => '<circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/>',
         'lock' => '<rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
         'upload' => '<path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>',
         'pencil' => '<path d="M21.17 6.83 17.17 2.83a2 2 0 0 0-2.83 0L3 14.17V21h6.83L21.17 9.66a2 2 0 0 0 0-2.83Z"/><path d="m15 5 4 4"/>',
         'circle' => '<circle cx="12" cy="12" r="10"/>',
     ];
+
+    $solidPaths = [
+        'cap' => '<path d="M12 3.1 2.2 8.15a.85.85 0 0 0 0 1.5L12 14.7l9.8-5.05a.85.85 0 0 0 0-1.5L12 3.1Z"/><path d="M6.8 13.1v3.35c0 1.35 2.25 2.6 5.2 2.6s5.2-1.25 5.2-2.6V13.1L12 15.7 6.8 13.1Z"/>',
+        'users' => '<circle cx="8.6" cy="7.4" r="3.35"/><path d="M2.6 20.15A5.5 5.5 0 0 1 8.1 14.7h1a5.5 5.5 0 0 1 5.5 5.45V21H2.6v-.85Z"/><circle cx="16.7" cy="8.1" r="2.55"/><path d="M15.15 21h6.25v-.7a4.35 4.35 0 0 0-4.35-4.35 4.4 4.4 0 0 0-2.55.8 6.4 6.4 0 0 0 .65 4.25Z"/>',
+        'user' => '<circle cx="12" cy="7.8" r="3.55"/><path d="M5.2 20.2A5.7 5.7 0 0 1 10.9 14.6h2.2a5.7 5.7 0 0 1 5.7 5.6V21H5.2v-.8Z"/>',
+        'bars' => '<rect x="3.6" y="13.2" width="4.4" height="7.3" rx="1.15"/><rect x="9.8" y="8" width="4.4" height="12.5" rx="1.15"/><rect x="16" y="3.8" width="4.4" height="16.7" rx="1.15"/>',
+        'book' => '<path d="M6.4 2A3.4 3.4 0 0 0 3 5.4v13.2A3.4 3.4 0 0 0 6.4 22H20a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H6.4Zm0 18A1.4 1.4 0 0 1 5 18.6 1.4 1.4 0 0 1 6.4 17.2H19V20H6.4Z"/>',
+        'chart' => '<rect x="3.6" y="13.2" width="4.4" height="7.3" rx="1.15"/><rect x="9.8" y="8" width="4.4" height="12.5" rx="1.15"/><rect x="16" y="3.8" width="4.4" height="16.7" rx="1.15"/>',
+        'teacher' => '<path d="M12 3.1 2.2 8.15a.85.85 0 0 0 0 1.5L12 14.7l9.8-5.05a.85.85 0 0 0 0-1.5L12 3.1Z"/><path d="M6.8 13.1v3.35c0 1.35 2.25 2.6 5.2 2.6s5.2-1.25 5.2-2.6V13.1L12 15.7 6.8 13.1Z"/>',
+        'award' => '<circle cx="12" cy="8.2" r="5.1"/><path d="M8.7 13.6 7.2 21l4.8-2.5L16.8 21l-1.5-7.4Z"/>',
+        'check' => '<path d="M9.15 16.55 4.7 12.1l1.55-1.55 2.9 2.9 8.05-8.05 1.55 1.55-9.6 9.6Z"/>',
+    ];
+
+    $drawn = $solid && isset($solidPaths[$name])
+        ? $solidPaths[$name]
+        : ($paths[$name] ?? $paths['circle']);
 @endphp
 
-<svg {{ $attributes->merge(['class' => 'h-4 w-4 shrink-0']) }}
-     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    {!! $paths[$name] ?? $paths['circle'] !!}
-</svg>
+@if ($solid && isset($solidPaths[$name]))
+    <svg {{ $attributes->merge(['class' => 'h-4 w-4 shrink-0']) }}
+         viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        {!! $drawn !!}
+    </svg>
+@else
+    <svg {{ $attributes->merge(['class' => 'h-4 w-4 shrink-0']) }}
+         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        {!! $drawn !!}
+    </svg>
+@endif

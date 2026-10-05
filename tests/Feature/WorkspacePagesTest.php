@@ -27,6 +27,8 @@ class WorkspacePagesTest extends TestCase
             ->assertSee('Instructors', false)
             ->assertSee('Certificates issued', false)
             ->assertSee('Completion rate', false)
+            ->assertSee('Course status', false)
+            ->assertSee('Enrolment by course', false)
             ->assertSee('74%', false)
             ->assertSee('Mastitis Detection', false)
             ->assertSee('View', false)
@@ -140,6 +142,101 @@ class WorkspacePagesTest extends TestCase
             ->assertSee('Outbreak traceback', false)
             ->assertDontSee('CMT scoring', false)
             ->assertDontSee('Milk hygiene', false);
+
+        $this->actingAsSuperAdmin();
+
+        $this->get(route('workspace.categories', ['platform' => 'ororafarm']))
+            ->assertOk()
+            ->assertSee('Cooperative books', false)
+            ->assertDontSee('Plot records and costing', false)
+            ->assertDontSee('Season planning', false);
+    }
+
+    public function test_a_category_can_be_added_under_an_academy(): void
+    {
+        $this->from(route('workspace.categories', ['platform' => 'gemura']))
+            ->post(route('workspace.categories.store', ['platform' => 'gemura']), [
+                'name' => 'Teat dipping',
+                'academy' => 'milk-hygiene',
+            ])
+            ->assertRedirect(route('workspace.categories', ['platform' => 'gemura']))
+            ->assertSessionHas('status', 'Teat dipping was added. Nothing was written in this build.');
+
+        $this->get(route('workspace.categories', ['platform' => 'gemura']))
+            ->assertSee('Teat dipping', false)
+            ->assertSee('Milking routine', false);
+    }
+
+    public function test_a_sub_category_can_be_added_under_a_category(): void
+    {
+        $this->from(route('workspace.categories', ['platform' => 'gemura']))
+            ->post(route('workspace.categories.store', ['platform' => 'gemura']), [
+                'name' => 'Iodine dip',
+                'academy' => 'milk-hygiene',
+                'parent' => 'milking-routine',
+            ])
+            ->assertRedirect(route('workspace.categories', ['platform' => 'gemura']))
+            ->assertSessionHas('status');
+
+        $this->get(route('workspace.categories', ['platform' => 'gemura']))
+            ->assertSee('Iodine dip', false)
+            ->assertSee('CMT scoring', false);
+    }
+
+    public function test_a_category_can_be_removed(): void
+    {
+        $this->from(route('workspace.categories', ['platform' => 'gemura']))
+            ->delete(route('workspace.categories.destroy', ['platform' => 'gemura', 'category' => 'cmt-scoring']))
+            ->assertRedirect(route('workspace.categories', ['platform' => 'gemura']))
+            ->assertSessionHas('status', 'CMT scoring was removed. Nothing was written in this build.');
+
+        $this->get(route('workspace.categories', ['platform' => 'gemura']));
+
+        $this->get(route('workspace.categories', ['platform' => 'gemura']))
+            ->assertDontSee('CMT scoring', false)
+            ->assertSee('Fore-stripping', false);
+    }
+
+    public function test_a_category_from_another_platform_is_not_found(): void
+    {
+        $this->delete(route('workspace.categories.destroy', ['platform' => 'gemura', 'category' => 'ear-tag-application']))
+            ->assertNotFound();
+
+        $this->post(route('workspace.categories.store', ['platform' => 'gemura']), [
+            'name' => 'Teat dipping',
+            'academy' => 'identification',
+        ])->assertNotFound();
+    }
+
+    public function test_adding_a_category_requires_a_name(): void
+    {
+        $this->from(route('workspace.categories', ['platform' => 'gemura']))
+            ->post(route('workspace.categories.store', ['platform' => 'gemura']), [
+                'academy' => 'milk-hygiene',
+            ])
+            ->assertRedirect(route('workspace.categories', ['platform' => 'gemura']))
+            ->assertSessionHasErrors('name');
+    }
+
+    public function test_a_new_category_name_is_escaped(): void
+    {
+        $this->post(route('workspace.categories.store', ['platform' => 'gemura']), [
+            'name' => '<script>alert(1)</script>',
+            'academy' => 'milk-hygiene',
+        ]);
+
+        $this->get(route('workspace.categories', ['platform' => 'gemura']))
+            ->assertDontSee('<script>alert(1)</script>', false);
+    }
+
+    public function test_guests_cannot_add_a_category(): void
+    {
+        auth()->logout();
+
+        $this->post(route('workspace.categories.store', ['platform' => 'gemura']), [
+            'name' => 'Teat dipping',
+            'academy' => 'milk-hygiene',
+        ])->assertRedirect(route('login'));
     }
 
     public function test_modules_builder_nests_lessons_with_content_types(): void
@@ -165,6 +262,137 @@ class WorkspacePagesTest extends TestCase
             ->assertSee('The tag and the pliers', false)
             ->assertSee('Placing an ear tag without tearing', false)
             ->assertDontSee('Reading a CMT paddle', false);
+    }
+
+    public function test_a_module_can_be_added_to_a_course(): void
+    {
+        $this->seed(CatalogSeeder::class);
+
+        $this->from(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->post(route('workspace.modules.store', ['platform' => 'gemura']), [
+                'course' => 'mastitis-milk-hygiene',
+                'title' => 'Paddock walk',
+            ])
+            ->assertRedirect(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->assertSessionHas('status', 'Paddock walk was added. Nothing was written in this build.');
+
+        $this->assertDatabaseHas('modules', [
+            'title' => 'Paddock walk',
+        ]);
+
+        $this->get(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->assertSee('Paddock walk', false)
+            ->assertSee('Why somatic cell counts move', false);
+    }
+
+    public function test_a_lesson_can_be_added_under_a_module(): void
+    {
+        $this->seed(CatalogSeeder::class);
+
+        $this->from(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->post(route('workspace.lessons.store', ['platform' => 'gemura']), [
+                'course' => 'mastitis-milk-hygiene',
+                'module' => 'm-hygiene-2',
+                'title' => 'Strip, dip, wipe',
+                'type' => 'video',
+            ])
+            ->assertRedirect(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->assertSessionHas('status', 'Strip, dip, wipe was added. Nothing was written in this build.');
+
+        $this->assertDatabaseHas('lessons', [
+            'title' => 'Strip, dip, wipe',
+            'type' => 'video',
+        ]);
+
+        $this->get(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->assertSee('Strip, dip, wipe', false)
+            ->assertSee('Fore-stripping at the kraal', false);
+    }
+
+    public function test_adding_a_module_requires_a_title(): void
+    {
+        $this->seed(CatalogSeeder::class);
+
+        $this->from(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->post(route('workspace.modules.store', ['platform' => 'gemura']), [
+                'course' => 'mastitis-milk-hygiene',
+            ])
+            ->assertRedirect(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->assertSessionHasErrors('title');
+    }
+
+    public function test_a_lesson_from_another_platform_is_not_found(): void
+    {
+        $this->seed(CatalogSeeder::class);
+
+        $this->post(route('workspace.lessons.store', ['platform' => 'gemura']), [
+            'course' => 'mastitis-milk-hygiene',
+            'module' => 'm-tag-1',
+            'title' => 'Strip, dip, wipe',
+            'type' => 'video',
+        ])->assertNotFound();
+    }
+
+    public function test_a_new_module_title_is_escaped(): void
+    {
+        $this->seed(CatalogSeeder::class);
+
+        $this->post(route('workspace.modules.store', ['platform' => 'gemura']), [
+            'course' => 'mastitis-milk-hygiene',
+            'title' => '<script>alert(1)</script>',
+        ]);
+
+        $this->get(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->assertDontSee('<script>alert(1)</script>', false);
+    }
+
+    public function test_a_course_from_another_platform_is_not_found_in_the_modules_builder(): void
+    {
+        $this->get(route('workspace.modules', ['platform' => 'gemura', 'course' => 'animal-identification-eartags']))
+            ->assertNotFound();
+    }
+
+    public function test_adding_a_module_from_another_platform_is_not_found(): void
+    {
+        $this->seed(CatalogSeeder::class);
+
+        $this->post(route('workspace.modules.store', ['platform' => 'gemura']), [
+            'course' => 'animal-identification-eartags',
+            'title' => 'Paddock walk',
+        ])->assertNotFound();
+    }
+
+    public function test_guests_cannot_add_a_lesson(): void
+    {
+        auth()->logout();
+
+        $this->post(route('workspace.lessons.store', ['platform' => 'gemura']), [
+            'course' => 'mastitis-milk-hygiene',
+            'module' => 'm-hygiene-1',
+            'title' => 'Strip, dip, wipe',
+            'type' => 'video',
+        ])->assertRedirect(route('login'));
+    }
+
+    public function test_lessons_list_is_scoped_to_the_platform(): void
+    {
+        $this->seed(CatalogSeeder::class);
+
+        $this->get(route('workspace.lessons', ['platform' => 'gemura']))
+            ->assertOk()
+            ->assertSee('Reading a CMT paddle', false)
+            ->assertSee('Why somatic cell counts move', false)
+            ->assertSee('Open builder', false)
+            ->assertDontSee('Placing an ear tag without tearing', false);
+    }
+
+    public function test_guests_cannot_add_a_module(): void
+    {
+        auth()->logout();
+
+        $this->post(route('workspace.modules.store', ['platform' => 'gemura']), [
+            'course' => 'mastitis-milk-hygiene',
+        ])->assertRedirect(route('login'));
     }
 
     public function test_quizzes_and_builder_are_scoped_to_the_platform(): void

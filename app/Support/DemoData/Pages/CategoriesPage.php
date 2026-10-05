@@ -20,7 +20,7 @@ class CategoriesPage
             'header' => WorkspaceHeader::make(
                 $current,
                 'Categories',
-                'Academy → category → sub-category for '.$current['name'].'. Drag handles are visual — nothing is persisted in this build.',
+                'Academy → category → sub-category for '.$current['name'].'. Add a category under an academy, or a sub-category under a category. Drag handles are visual — nothing is persisted in this build.',
             ),
             'tree' => $tree,
             'emptyTitle' => 'No taxonomy on '.$current['name'].' yet',

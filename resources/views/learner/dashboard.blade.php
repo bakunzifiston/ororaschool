@@ -3,6 +3,34 @@
                    :title="$page['header']['title']"
                    :subtitle="$page['header']['subtitle']" />
 
+    <section class="mt-8" aria-label="Key performance indicators">
+        <x-kpi-strip :items="$page['stats']" solid />
+    </section>
+
+    @if (array_sum($page['charts']['mix']['values']) > 0)
+        <section class="mt-10" aria-labelledby="learner-analytics-heading">
+            <h2 id="learner-analytics-heading" class="font-display text-section text-basalt-900">Analytics</h2>
+            <div class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <x-panel>
+                    <x-pie-chart :title="$page['charts']['mix']['title']"
+                                 :subtitle="$page['charts']['mix']['subtitle']"
+                                 :headline="$page['charts']['mix']['headline'] ?? null"
+                                 :labels="$page['charts']['mix']['labels']"
+                                 :values="$page['charts']['mix']['values']" />
+                </x-panel>
+                <x-panel>
+                    <x-bar-chart orientation="horizontal"
+                                 :title="$page['charts']['progress']['title']"
+                                 :subtitle="$page['charts']['progress']['subtitle']"
+                                 :labels="$page['charts']['progress']['labels']"
+                                 :values="$page['charts']['progress']['values']"
+                                 :suffix="$page['charts']['progress']['suffix'] ?? ''"
+                                 :max="$page['charts']['progress']['max'] ?? null" />
+                </x-panel>
+            </div>
+        </section>
+    @endif
+
     @if ($page['continue'])
         @php $next = $page['continue']; @endphp
         <section class="mt-8" aria-labelledby="continue-heading">

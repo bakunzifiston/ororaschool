@@ -1,31 +1,49 @@
-@props(['title' => null])
+@props(['title' => null, 'cover' => null, 'wide' => false])
 
 @php
     // Named from the same fixture as the rest of the app, so this line cannot
     // fall out of date with the platforms that actually exist.
     $platforms = collect(\App\Support\DemoData\Platforms::active())->pluck('name');
+    $covered = filled($cover);
+    $contentClass = $covered ? 'w-full max-w-none' : ($wide ? 'max-w-5xl' : 'max-w-md');
 @endphp
 
-<x-layouts.shell experience="guest" :title="$title" content-class="max-w-md">
+<x-layouts.shell
+    experience="guest"
+    :title="$title"
+    :content-class="$contentClass"
+    :main-class="$covered ? 'flex min-h-0 grow flex-col p-0' : 'min-w-0 grow px-4 py-6 sm:px-6 lg:px-8 lg:py-10'">
 
-    {{-- Basalt band rather than a brand panel filling half the screen: on a
-         low-end phone, chrome that pushes the form below the fold costs more
-         than it communicates. --}}
-    <x-slot:masthead>
-        <div class="on-basalt bg-basalt-900">
-            <div class="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
-                <x-layouts.partials.brand :href="route('home')" on-basalt />
-                <p class="text-micro text-fern-400">Training and certification</p>
+    @unless ($covered)
+        <x-slot:masthead>
+            <div class="bg-basalt-950">
+                <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+                    <x-layouts.partials.brand :href="route('home')" on-basalt />
+                    <x-button size="sm" :href="route('register')">Get started</x-button>
+                </div>
             </div>
-        </div>
-    </x-slot:masthead>
+        </x-slot:masthead>
+    @endunless
 
-    <div class="py-4 sm:py-8">
+    @if ($covered)
         {{ $slot }}
 
-        <p class="mt-8 border-t border-clay-200 pt-4 text-micro leading-relaxed text-fern-500">
+        <p class="sr-only">
             {{ config('app.name') }} serves {{ $platforms->join(', ', ' and ') }}.
             Your training record follows you across every academy you work on.
         </p>
-    </div>
+    @else
+        <div class="py-10 sm:py-14">
+            {{ $slot }}
+
+            <p class="mt-10 text-micro leading-relaxed text-fern-500">
+                {{ config('app.name') }} serves {{ $platforms->join(', ', ' and ') }}.
+                Your training record follows you across every academy you work on.
+            </p>
+        </div>
+    @endif
+
+    @if ($covered)
+        <x-slot:footer></x-slot:footer>
+    @endif
 </x-layouts.shell>

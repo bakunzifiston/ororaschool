@@ -2,6 +2,8 @@
 
 namespace App\Support\DemoData;
 
+use Illuminate\Support\Str;
+
 /**
  * FIXTURE LAYER — DELETE WHEN REAL DATA ARRIVES.
  *
@@ -14,10 +16,177 @@ class Categories
      */
     public static function tree(string $platform): array
     {
-        return array_values(array_filter(
-            self::all(),
-            fn (array $academy) => $academy['platform'] === $platform,
-        ));
+        $stored = session(self::sessionKey($platform));
+
+        if (is_array($stored)) {
+            return $stored;
+        }
+
+        return self::fixtureTree($platform);
+    }
+
+    /**
+     * @return array{slug: string, name: string}|null
+     */
+    public static function add(string $platform, string $academySlug, string $name, ?string $parentSlug = null): ?array
+    {
+        $tree = self::tree($platform);
+        $academyIndex = self::academyIndex($tree, $academySlug);
+
+        if ($academyIndex === null) {
+            return null;
+        }
+
+        $slug = self::uniqueSlug($tree, Str::slug($name) ?: 'category');
+
+        if ($parentSlug === null || $parentSlug === '') {
+            $tree[$academyIndex]['categories'][] = [
+                'slug' => $slug,
+                'name' => $name,
+                'children' => [],
+            ];
+            self::store($platform, $tree);
+
+            return ['slug' => $slug, 'name' => $name];
+        }
+
+        foreach ($tree[$academyIndex]['categories'] as $index => $category) {
+            if (($category['slug'] ?? '') !== $parentSlug) {
+                continue;
+            }
+
+            $tree[$academyIndex]['categories'][$index]['children'][] = [
+                'slug' => $slug,
+                'name' => $name,
+            ];
+            self::store($platform, $tree);
+
+            return ['slug' => $slug, 'name' => $name];
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array{slug: string, name: string}|null
+     */
+    public static function remove(string $platform, string $slug): ?array
+    {
+        $tree = self::tree($platform);
+
+        foreach ($tree as $academyIndex => $academy) {
+            foreach ($academy['categories'] as $categoryIndex => $category) {
+                if (($category['slug'] ?? '') === $slug) {
+                    $removed = ['slug' => $slug, 'name' => $category['name']];
+                    unset($tree[$academyIndex]['categories'][$categoryIndex]);
+                    $tree[$academyIndex]['categories'] = array_values($tree[$academyIndex]['categories']);
+                    self::store($platform, $tree);
+
+                    return $removed;
+                }
+
+                foreach ($category['children'] ?? [] as $childIndex => $child) {
+                    if (($child['slug'] ?? '') !== $slug) {
+                        continue;
+                    }
+
+                    $removed = ['slug' => $slug, 'name' => $child['name']];
+                    unset($tree[$academyIndex]['categories'][$categoryIndex]['children'][$childIndex]);
+                    $tree[$academyIndex]['categories'][$categoryIndex]['children'] = array_values(
+                        $tree[$academyIndex]['categories'][$categoryIndex]['children'],
+                    );
+                    self::store($platform, $tree);
+
+                    return $removed;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return list<array{slug: string, name: string, platform: string, categories: list<array<string, mixed>>}>
+     */
+    private static function fixtureTree(string $platform): array
+    {
+        $tree = [];
+
+        foreach (self::all() as $academy) {
+            if ($academy['platform'] === $platform) {
+                $tree[$academy['slug']] = $academy;
+            }
+        }
+
+        foreach (Academies::forPlatform($platform) as $academy) {
+            if (! isset($tree[$academy['slug']])) {
+                $tree[$academy['slug']] = [
+                    'slug' => $academy['slug'],
+                    'platform' => $platform,
+                    'name' => $academy['name'],
+                    'categories' => [],
+                ];
+            }
+        }
+
+        return array_values($tree);
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $tree
+     */
+    private static function academyIndex(array $tree, string $slug): ?int
+    {
+        foreach ($tree as $index => $academy) {
+            if (($academy['slug'] ?? '') === $slug) {
+                return $index;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $tree
+     */
+    private static function uniqueSlug(array $tree, string $base): string
+    {
+        $used = [];
+
+        foreach ($tree as $academy) {
+            $used[$academy['slug']] = true;
+
+            foreach ($academy['categories'] ?? [] as $category) {
+                $used[$category['slug']] = true;
+
+                foreach ($category['children'] ?? [] as $child) {
+                    $used[$child['slug']] = true;
+                }
+            }
+        }
+
+        $slug = $base;
+        $suffix = 2;
+
+        while (isset($used[$slug])) {
+            $slug = $base.'-'.$suffix;
+            $suffix++;
+        }
+
+        return $slug;
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $tree
+     */
+    private static function store(string $platform, array $tree): void
+    {
+        session([self::sessionKey($platform) => $tree]);
+    }
+
+    private static function sessionKey(string $platform): string
+    {
+        return 'demo.categories.'.$platform;
     }
 
     /**
@@ -92,25 +261,6 @@ class Categories
                     ]],
                     ['slug' => 'exposure-windows', 'name' => 'Exposure windows', 'children' => [
                         ['slug' => 'contact-animals', 'name' => 'Contact animals'],
-                    ]],
-                ],
-            ],
-            [
-                'slug' => 'plot-records', 'platform' => 'ororafarm', 'name' => 'Plot records and costing',
-                'categories' => [
-                    ['slug' => 'field-books', 'name' => 'Field books', 'children' => [
-                        ['slug' => 'planting-dates', 'name' => 'Planting dates'],
-                    ]],
-                    ['slug' => 'margins', 'name' => 'Margins', 'children' => [
-                        ['slug' => 'family-labour', 'name' => 'Family labour'],
-                    ]],
-                ],
-            ],
-            [
-                'slug' => 'season-planning', 'platform' => 'ororafarm', 'name' => 'Season planning',
-                'categories' => [
-                    ['slug' => 'plot-mapping', 'name' => 'Plot mapping', 'children' => [
-                        ['slug' => 'terraces', 'name' => 'Terraces'],
                     ]],
                 ],
             ],

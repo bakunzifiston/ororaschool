@@ -5,7 +5,7 @@
     $platformCount = count(\App\Support\DemoData\Platforms::all());
 @endphp
 
-<x-layouts.shell experience="super-admin" :title="$title" railed :user="$shell['user']">
+<x-layouts.shell experience="super-admin" :title="$title" railed :user="$shell['user']" content-class="estate-wide">
 
     <x-slot:sidebar>
         <div class="flex h-14 shrink-0 items-center justify-between gap-2 px-4">

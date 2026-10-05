@@ -32,6 +32,8 @@ class LearnerPagesTest extends TestCase
             ->assertSee('Movement Permits', false)
             ->assertSee('Aflatoxin Control', false)
             ->assertSee('Courses in progress', false)
+            ->assertSee('Learning mix', false)
+            ->assertSee('Progress by course', false)
             ->assertSee('certificates earned', false)
             ->assertSee('Audio: a clean milking sequence', false)
             ->assertDontSee('three separate accounts', false)
@@ -44,7 +46,8 @@ class LearnerPagesTest extends TestCase
             ->assertOk()
             ->assertSee('No courses in progress', false)
             ->assertSee('All in-progress courses', false)
-            ->assertDontSee('Continue lesson', false);
+            ->assertDontSee('Continue lesson', false)
+            ->assertDontSee('Learning mix', false);
     }
 
     public function test_my_courses_groups_by_platform_and_filters_progress(): void
