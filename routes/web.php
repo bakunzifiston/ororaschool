@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\ContentController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\PlatformController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\UserController;
@@ -122,6 +123,9 @@ Route::middleware(['auth', 'verified', 'role:'.UserRole::SuperAdmin->value])->gr
     Route::get('/admin/activity', [ActivityLogController::class, 'index'])->name('admin.activity');
     Route::get('/admin/settings', [SettingController::class, 'index'])->name('admin.settings');
     Route::post('/admin/settings', [SettingController::class, 'update'])->name('admin.settings.update');
+
+    Route::get('/admin/profile', [ProfileController::class, 'edit'])->name('admin.profile');
+    Route::post('/admin/profile', [ProfileController::class, 'update'])->name('admin.profile.update');
 });
 
 // ---- Platform Workspace (Phase F4) -----------------------------------------

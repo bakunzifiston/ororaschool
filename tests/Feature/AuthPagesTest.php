@@ -378,6 +378,30 @@ class AuthPagesTest extends TestCase
         $this->assertDatabaseMissing('users', ['email' => 'short.password@umuhinzi.rw']);
     }
 
+    public function test_direct_registration_rejects_an_email_that_is_already_taken(): void
+    {
+        User::factory()->learner()->create([
+            'email' => 'taken@umuhinzi.rw',
+        ]);
+
+        $this->from(route('register'))
+            ->post(route('register.store'), [
+                'first_name' => 'Placide',
+                'last_name' => 'Bizimana',
+                'district' => 'Gatsibo',
+                'sector' => 'Kabarore',
+                'email' => 'Taken@umuhinzi.rw',
+                'password' => 'password12',
+            ])
+            ->assertRedirect(route('register'))
+            ->assertSessionHasErrors([
+                'email' => 'That email already has a FarmSchool account. Sign in, or reset your password.',
+            ]);
+
+        $this->assertGuest();
+        $this->assertDatabaseCount('users', 1);
+    }
+
     public function test_reset_link_copy_does_not_disclose_whether_an_account_exists(): void
     {
         Notification::fake();

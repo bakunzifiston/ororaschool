@@ -30,6 +30,16 @@ class RegisterRequest extends FormRequest
         ];
     }
 
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'email.unique' => 'That email already has a FarmSchool account. Sign in, or reset your password.',
+        ];
+    }
+
     public function fullName(): string
     {
         return trim($this->string('first_name')->toString().' '.$this->string('last_name')->toString());

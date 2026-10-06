@@ -11,6 +11,7 @@ use App\Support\DemoData\Pages\AuthPages;
 use App\UserRole;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -42,12 +43,18 @@ class AuthPagesController extends Controller
 
     public function storeRegistration(RegisterRequest $request): RedirectResponse
     {
-        $user = User::query()->create([
-            'name' => $request->fullName(),
-            ...$request->safe()->only(['district', 'sector', 'email', 'password']),
-            'role' => UserRole::Learner,
-            'status' => 'active',
-        ]);
+        try {
+            $user = User::query()->create([
+                'name' => $request->fullName(),
+                ...$request->safe()->only(['district', 'sector', 'email', 'password']),
+                'role' => UserRole::Learner,
+                'status' => 'active',
+            ]);
+        } catch (UniqueConstraintViolationException) {
+            throw ValidationException::withMessages([
+                'email' => 'That email already has a FarmSchool account. Sign in, or reset your password.',
+            ]);
+        }
 
         $user->markEmailAsVerified();
 

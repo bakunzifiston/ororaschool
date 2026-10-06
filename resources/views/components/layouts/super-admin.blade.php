@@ -44,7 +44,10 @@
         <x-layouts.partials.user-menu
             :user="$shell['user']"
             :role="$shell['role']"
-            :links="[['label' => 'Settings', 'route' => 'admin.settings', 'icon' => 'cog']]" />
+            :links="[
+                ['label' => 'Profile', 'route' => 'admin.profile', 'icon' => 'user'],
+                ['label' => 'Settings', 'route' => 'admin.settings', 'icon' => 'cog'],
+            ]" />
     </x-slot:topbarEnd>
 
     {{ $slot }}
