@@ -81,9 +81,9 @@
                     {{ ($page['pagination']['total'] ?? count($page['resources'])) === 1 ? 'resource' : 'resources' }}
                 </p>
 
-                <div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                <div class="academy-showcase-grid mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-7 xl:grid-cols-3 xl:gap-6">
                     @foreach ($page['resources'] as $resource)
-                        <x-public.resource-card :resource="$resource" />
+                        <x-public.resource-card :resource="$resource" showcase />
                     @endforeach
                 </div>
 

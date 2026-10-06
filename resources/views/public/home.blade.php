@@ -85,9 +85,9 @@
                     </x-public.section-heading>
                 </div>
 
-                <div class="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+                <div class="academy-showcase-grid mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-7 xl:grid-cols-4 xl:gap-6">
                     @foreach ($page['platforms'] as $platform)
-                        <x-public.platform-card :platform="$platform" data-reveal style="--reveal-delay: {{ $loop->index * 70 }}ms" />
+                        <x-public.platform-card :platform="$platform" showcase data-reveal style="--reveal-delay: {{ $loop->index * 70 }}ms" />
                     @endforeach
                 </div>
             </div>
@@ -162,9 +162,9 @@
             </a>
         </div>
 
-        <div class="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="academy-showcase-grid mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-7 xl:grid-cols-4 xl:gap-6">
             @foreach ($page['featured'] as $course)
-                <x-public.course-tile :course="$course" data-reveal style="--reveal-delay: {{ $loop->index * 70 }}ms" />
+                <x-public.course-tile :course="$course" showcase data-reveal style="--reveal-delay: {{ $loop->index * 70 }}ms" />
             @endforeach
         </div>
     </x-public.section>
