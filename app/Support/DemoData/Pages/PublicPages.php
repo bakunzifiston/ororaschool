@@ -14,7 +14,7 @@ class PublicPages
         return [
             'header' => PublicHeader::make(
                 'About FarmSchool',
-                'The training and certification layer for the Orora ecosystem.',
+                'The training and certification layer for farming.',
             ),
             'platforms' => PublicCatalog::activePlatforms(),
         ];

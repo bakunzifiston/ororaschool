@@ -266,22 +266,10 @@ class LearnerProgress
         $taken = array_column(self::enrolments(), 'course');
         $rows = [];
 
-        foreach (['evening-intake-lactometer', 'kraal-register-reconciliation'] as $slug) {
-            if (in_array($slug, $taken, true)) {
+        foreach (PublicCatalog::publishedCourses() as $presented) {
+            if (in_array($presented['slug'], $taken, true)) {
                 continue;
             }
-
-            $course = Course::query()
-                ->with(['platform', 'academy'])
-                ->where('slug', $slug)
-                ->where('status', 'published')
-                ->first();
-
-            if (! $course) {
-                continue;
-            }
-
-            $presented = PublicCatalog::present($course);
 
             $rows[] = [
                 'course' => $presented,
@@ -312,33 +300,76 @@ class LearnerProgress
     public static function resources(): array
     {
         $enrolments = self::enrolments();
-        $platforms = array_unique(array_column($enrolments, 'platform_slug'));
+        $courseIds = [];
+        $moduleIds = [];
+        $lessonIds = [];
+        $platforms = [];
         $needles = [];
 
         foreach ($enrolments as $enrolment) {
-            $needles[] = strtolower($enrolment['course_data']['title'] ?? '');
+            $platforms[] = (string) ($enrolment['platform_slug'] ?? '');
+            $courseSlug = (string) ($enrolment['course'] ?? '');
+            $needles[] = strtolower((string) ($enrolment['course_data']['title'] ?? ''));
 
-            foreach (Curriculum::lessonsFor($enrolment['course']) as $lesson) {
-                $needles[] = strtolower($lesson['title']);
+            $course = Course::query()
+                ->with(['curriculumModules.lessons'])
+                ->where('slug', $courseSlug)
+                ->first();
+
+            if ($course === null) {
+                foreach (Curriculum::lessonsFor($courseSlug) as $lesson) {
+                    $needles[] = strtolower((string) ($lesson['title'] ?? ''));
+                }
+
+                continue;
+            }
+
+            $courseIds[] = (string) $course->id;
+            $needles[] = strtolower($course->title);
+
+            foreach ($course->curriculumModules as $module) {
+                $moduleIds[] = (string) $module->id;
+                $needles[] = strtolower($module->title);
+
+                foreach ($module->lessons as $lesson) {
+                    $lessonIds[] = (string) $lesson->id;
+                    $needles[] = strtolower($lesson->title);
+                }
             }
         }
 
-        $needles = array_values(array_filter($needles));
+        $platforms = array_values(array_unique(array_filter($platforms)));
+        $courseIds = array_values(array_unique($courseIds));
+        $moduleIds = array_values(array_unique($moduleIds));
+        $lessonIds = array_values(array_unique($lessonIds));
+        $needles = array_values(array_unique(array_filter($needles)));
 
         return array_values(array_filter(
             Resources::all(),
-            function (array $resource) use ($platforms, $needles) {
+            function (array $resource) use ($platforms, $courseIds, $moduleIds, $lessonIds, $needles): bool {
                 if (! Resources::requiresEnrolment($resource)) {
-                    $platform = Platforms::find($resource['platform']);
+                    $platform = Platforms::find($resource['platform'] ?? '');
 
                     return $platform !== null && ($platform['status'] ?? '') === 'active';
                 }
 
-                if (! in_array($resource['platform'], $platforms, true)) {
+                if (! in_array((string) ($resource['platform'] ?? ''), $platforms, true)) {
                     return false;
                 }
 
-                $haystack = strtolower($resource['attached_to']);
+                $kind = (string) ($resource['attached_kind'] ?? '');
+                $key = (string) ($resource['attached_key'] ?? '');
+
+                if ($key !== '' && ctype_digit($key)) {
+                    return match ($kind) {
+                        'course' => in_array($key, $courseIds, true),
+                        'module' => in_array($key, $moduleIds, true),
+                        'lesson' => in_array($key, $lessonIds, true),
+                        default => false,
+                    };
+                }
+
+                $haystack = strtolower((string) ($resource['attached_to'] ?? ''));
 
                 foreach ($needles as $needle) {
                     if ($needle !== '' && str_contains($haystack, $needle)) {
@@ -369,6 +400,10 @@ class LearnerProgress
      */
     public static function history(): array
     {
+        if (self::enrolments() === []) {
+            return [];
+        }
+
         return [
             ['at' => '14 Sep 2026', 'platform' => 'Gemura', 'title' => 'Picked up Mastitis Detection again', 'detail' => 'Finished fore-stripping. Next: the audio of a clean milking sequence.'],
             ['at' => '08 Sep 2026', 'platform' => 'BuchaPro', 'title' => 'Started Movement Permits and Livestock Transport Records', 'detail' => 'Two lessons in. The roadblock check is the one that still fails in the field.'],

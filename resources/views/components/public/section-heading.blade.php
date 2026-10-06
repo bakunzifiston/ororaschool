@@ -1,5 +1,5 @@
 @props([
-    'title',
+    'title' => null,
     'subtitle' => null,
     'align' => 'left',
 ])
@@ -9,7 +9,13 @@
 @endphp
 
 <div {{ $attributes->merge(['class' => $centered ? 'mx-auto max-w-2xl text-center' : 'max-w-2xl']) }}>
-    <h2 class="marketing-title text-basalt-900">{{ $title }}</h2>
+    <h2 class="marketing-title text-basalt-900">
+        @if ($slot->isNotEmpty())
+            {{ $slot }}
+        @else
+            {{ $title }}
+        @endif
+    </h2>
     @if (filled($subtitle))
         <p @class([
             'mt-3 text-read leading-relaxed text-fern-600',

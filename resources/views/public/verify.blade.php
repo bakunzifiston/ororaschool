@@ -21,7 +21,7 @@
             :subtitle="$page['header']['subtitle'] ?? $page['subtitle'] ?? null" />
     </x-public.section>
 
-    <x-public.section tone="papyrus" class="grow">
+    <x-public.section tone="white" class="grow">
         <div class="mx-auto max-w-xl">
             <div class="public-card p-5 sm:p-8">
                 <x-status-badge :status="$status" />

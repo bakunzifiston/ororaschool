@@ -33,7 +33,7 @@ class PublicPagesTest extends TestCase
         $this->assertContains('Cooperative Membership and Share Records', $allTitles);
         $this->assertContains('Mastitis Detection and Milk Hygiene in Smallholder Herds', $allTitles);
 
-        $this->assertCount(10, $publicTitles);
+        $this->assertCount(12, $publicTitles);
         $this->assertContains('Mastitis Detection and Milk Hygiene in Smallholder Herds', $publicTitles);
         $this->assertNotContains('Layer Vaccination Calendars for Small Flocks', $publicTitles);
         $this->assertNotContains('Mineral Supplementation for Lactating Cows', $publicTitles);
@@ -54,8 +54,9 @@ class PublicPagesTest extends TestCase
             ->assertSee('Get started', false)
             ->assertSee('Sign in', false)
             ->assertDontSee('Log in', false)
-            ->assertSee('Four academies. One school.', false)
-            ->assertSee('One learning experience across the Orora ecosystem.', false)
+            ->assertSee('Four academies.', false)
+            ->assertSee('One school', false)
+            ->assertSee('One learning experience across farming.', false)
             ->assertSee('Farm management', false)
             ->assertSee('Dairy and livestock', false)
             ->assertSee('Published courses', false)
@@ -64,7 +65,7 @@ class PublicPagesTest extends TestCase
             ->assertSee('Users', false)
             ->assertDontSee('Learning record', false)
             ->assertSee('>'.User::query()->count().'</dd>', false)
-            ->assertSee('10+', false)
+            ->assertSee('12+', false)
             ->assertSee((string) count(Resources::open()), false)
             ->assertSee('Explore courses', false)
             ->assertSee('View all courses', false)

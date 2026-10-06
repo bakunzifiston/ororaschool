@@ -2,9 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Models\Lesson;
 use App\Models\Platform;
 use App\Support\DemoData\People;
 use Database\Seeders\CatalogSeeder;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class WorkspacePagesTest extends TestCase
@@ -256,6 +259,10 @@ class WorkspacePagesTest extends TestCase
             ->assertSee('Live session', false)
             ->assertSee('Add module', false)
             ->assertSee('Add lesson', false)
+            ->assertSee('Edit', false)
+            ->assertSee('Delete', false)
+            ->assertSee('YouTube link', false)
+            ->assertSee('Duration (minutes)', false)
             ->assertDontSee('Placing an ear tag without tearing', false);
 
         $this->get(route('workspace.modules', ['platform' => 'buchapro', 'course' => 'animal-identification-eartags']))
@@ -308,6 +315,228 @@ class WorkspacePagesTest extends TestCase
         $this->get(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
             ->assertSee('Strip, dip, wipe', false)
             ->assertSee('Fore-stripping at the kraal', false);
+    }
+
+    public function test_a_module_can_be_updated(): void
+    {
+        $this->seed(CatalogSeeder::class);
+
+        $this->from(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->post(route('workspace.modules.update', ['platform' => 'gemura', 'module' => 'm-hygiene-1']), [
+                'course' => 'mastitis-milk-hygiene',
+                'title' => 'Cell counts at the kraal',
+            ])
+            ->assertRedirect(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->assertSessionHas('status', 'Cell counts at the kraal was saved. Nothing was written in this build.');
+
+        $this->assertDatabaseHas('modules', [
+            'slug' => 'm-hygiene-1',
+            'title' => 'Cell counts at the kraal',
+        ]);
+
+        $this->get(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->assertSee('Cell counts at the kraal', false)
+            ->assertDontSee('Why somatic cell counts move', false);
+    }
+
+    public function test_a_module_can_be_removed(): void
+    {
+        $this->seed(CatalogSeeder::class);
+
+        $this->from(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->delete(route('workspace.modules.destroy', ['platform' => 'gemura', 'module' => 'm-hygiene-3']), [
+                'course' => 'mastitis-milk-hygiene',
+            ])
+            ->assertRedirect(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->assertSessionHas('status', 'Clinic: paddles together was removed. Nothing was written in this build.');
+
+        $this->assertDatabaseMissing('modules', [
+            'slug' => 'm-hygiene-3',
+        ]);
+
+        $this->assertDatabaseMissing('lessons', [
+            'slug' => 'l-milk-4',
+        ]);
+
+        $this->get(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']));
+
+        $this->get(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->assertDontSee('Clinic: paddles together', false)
+            ->assertDontSee('Reading CMT paddles together', false)
+            ->assertSee('Why somatic cell counts move', false);
+    }
+
+    public function test_a_lesson_can_be_updated(): void
+    {
+        $this->seed(CatalogSeeder::class);
+
+        $this->from(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->post(route('workspace.lessons.update', ['platform' => 'gemura', 'lesson' => 'l-cmt-1']), [
+                'course' => 'mastitis-milk-hygiene',
+                'title' => 'Reading the paddle cups',
+                'type' => 'text',
+                'duration' => 10,
+                'body' => 'Hold the paddle level and score each quarter.',
+            ])
+            ->assertRedirect(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->assertSessionHas('status', 'Reading the paddle cups was saved. Nothing was written in this build.');
+
+        $this->assertDatabaseHas('lessons', [
+            'slug' => 'l-cmt-1',
+            'title' => 'Reading the paddle cups',
+            'type' => 'text',
+            'duration' => 10,
+            'body' => 'Hold the paddle level and score each quarter.',
+        ]);
+
+        $this->get(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->assertSee('Reading the paddle cups', false)
+            ->assertDontSee('Reading a CMT paddle', false);
+    }
+
+    public function test_a_video_lesson_can_save_a_youtube_link(): void
+    {
+        $this->seed(CatalogSeeder::class);
+
+        $this->from(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->post(route('workspace.lessons.store', ['platform' => 'gemura']), [
+                'course' => 'mastitis-milk-hygiene',
+                'module' => 'm-hygiene-1',
+                'title' => 'Paddle demo clip',
+                'type' => 'video',
+                'duration' => 6,
+                'source_url' => 'https://youtu.be/dQw4w9WgXcQ',
+                'body' => 'Watch before the kraal clinic.',
+            ])
+            ->assertRedirect(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->assertSessionHas('status', 'Paddle demo clip was added. Nothing was written in this build.');
+
+        $this->assertDatabaseHas('lessons', [
+            'title' => 'Paddle demo clip',
+            'type' => 'video',
+            'source_url' => 'https://youtu.be/dQw4w9WgXcQ',
+            'body' => 'Watch before the kraal clinic.',
+            'duration' => 6,
+        ]);
+    }
+
+    public function test_a_video_lesson_rejects_an_invalid_youtube_link(): void
+    {
+        $this->seed(CatalogSeeder::class);
+
+        $this->from(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->post(route('workspace.lessons.store', ['platform' => 'gemura']), [
+                'course' => 'mastitis-milk-hygiene',
+                'module' => 'm-hygiene-1',
+                'title' => 'Paddle demo clip',
+                'type' => 'video',
+                'source_url' => 'https://www.youtube.com/watch?v=short',
+            ])
+            ->assertRedirect(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->assertSessionHasErrors(['source_url' => 'Use a YouTube link.']);
+    }
+
+    public function test_an_external_lesson_can_save_a_link(): void
+    {
+        $this->seed(CatalogSeeder::class);
+
+        $this->from(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->post(route('workspace.lessons.update', ['platform' => 'gemura', 'lesson' => 'l-milk-3']), [
+                'course' => 'mastitis-milk-hygiene',
+                'title' => 'MINAGRI milk hygiene note',
+                'type' => 'external',
+                'duration' => 5,
+                'source_url' => 'https://www.minagri.gov.rw/',
+            ])
+            ->assertRedirect(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']));
+
+        $this->assertDatabaseHas('lessons', [
+            'slug' => 'l-milk-3',
+            'type' => 'external',
+            'source_url' => 'https://www.minagri.gov.rw/',
+        ]);
+    }
+
+    public function test_a_pdf_lesson_can_upload_a_file(): void
+    {
+        $this->seed(CatalogSeeder::class);
+
+        Storage::fake();
+
+        $this->from(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->post(route('workspace.lessons.store', ['platform' => 'gemura']), [
+                'course' => 'mastitis-milk-hygiene',
+                'module' => 'm-hygiene-1',
+                'title' => 'CMT score card',
+                'type' => 'pdf',
+                'duration' => 4,
+                'file' => UploadedFile::fake()->create('cmt-score-card.pdf', 120, 'application/pdf'),
+            ])
+            ->assertRedirect(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->assertSessionHas('status', 'CMT score card was added. Nothing was written in this build.');
+
+        $lesson = Lesson::query()->where('title', 'CMT score card')->first();
+
+        $this->assertNotNull($lesson);
+        $this->assertNotNull($lesson->path);
+        Storage::assertExists($lesson->path);
+
+        $this->get(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->assertOk()
+            ->assertSee('CMT score card', false)
+            ->assertSee('Choose a file', false);
+    }
+
+    public function test_a_pdf_lesson_rejects_a_non_pdf_upload(): void
+    {
+        $this->seed(CatalogSeeder::class);
+
+        $this->from(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->post(route('workspace.lessons.store', ['platform' => 'gemura']), [
+                'course' => 'mastitis-milk-hygiene',
+                'module' => 'm-hygiene-1',
+                'title' => 'CMT score card',
+                'type' => 'pdf',
+                'file' => UploadedFile::fake()->create('cmt-score-card.txt', 20, 'text/plain'),
+            ])
+            ->assertRedirect(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->assertSessionHasErrors('file');
+    }
+
+    public function test_a_lesson_can_be_removed(): void
+    {
+        $this->seed(CatalogSeeder::class);
+
+        $this->from(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->delete(route('workspace.lessons.destroy', ['platform' => 'gemura', 'lesson' => 'l-cmt-3']), [
+                'course' => 'mastitis-milk-hygiene',
+            ])
+            ->assertRedirect(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->assertSessionHas('status', 'CMT field sheet was removed. Nothing was written in this build.');
+
+        $this->assertDatabaseMissing('lessons', [
+            'slug' => 'l-cmt-3',
+        ]);
+
+        $this->get(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']));
+
+        $this->get(route('workspace.modules', ['platform' => 'gemura', 'course' => 'mastitis-milk-hygiene']))
+            ->assertDontSee('CMT field sheet', false)
+            ->assertSee('Reading a CMT paddle', false);
+    }
+
+    public function test_updating_a_module_from_another_platform_is_not_found(): void
+    {
+        $this->seed(CatalogSeeder::class);
+
+        $this->post(route('workspace.modules.update', ['platform' => 'gemura', 'module' => 'm-tag-1']), [
+            'course' => 'animal-identification-eartags',
+            'title' => 'Moved title',
+        ])->assertNotFound();
+
+        $this->delete(route('workspace.lessons.destroy', ['platform' => 'gemura', 'lesson' => 'l-tag-1']), [
+            'course' => 'animal-identification-eartags',
+        ])->assertNotFound();
     }
 
     public function test_adding_a_module_requires_a_title(): void
@@ -384,6 +613,8 @@ class WorkspacePagesTest extends TestCase
             ->assertSee('Reading a CMT paddle', false)
             ->assertSee('Why somatic cell counts move', false)
             ->assertSee('Open builder', false)
+            ->assertSee('Edit', false)
+            ->assertSee('Delete', false)
             ->assertDontSee('Placing an ear tag without tearing', false);
     }
 

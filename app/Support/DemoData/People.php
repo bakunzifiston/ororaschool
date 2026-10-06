@@ -2,6 +2,8 @@
 
 namespace App\Support\DemoData;
 
+use App\Support\Rwanda;
+
 /**
  * FIXTURE LAYER — DELETE WHEN REAL DATA ARRIVES.
  *
@@ -120,10 +122,9 @@ class People
 
     public static function districts(): array
     {
-        return [
-            'Nyagatare', 'Gatsibo', 'Kayonza', 'Rwamagana', 'Ngoma',
-            'Musanze', 'Burera', 'Gicumbi', 'Rulindo', 'Nyabihu',
-            'Rubavu', 'Karongi', 'Huye', 'Nyamagabe', 'Kamonyi', 'Kigali',
-        ];
+        return array_values(array_unique([
+            ...Rwanda::districts(),
+            'Kigali',
+        ]));
     }
 }

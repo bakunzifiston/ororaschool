@@ -48,7 +48,10 @@ class LibraryController extends Controller
     {
         return view('learner.resources.index', [
             'page' => LearnerResourcesPage::index(
-                type: (string) $request->string('type'),
+                filters: [
+                    'type' => (string) $request->string('type'),
+                    'platform' => (string) $request->string('platform'),
+                ],
                 empty: $request->boolean('empty'),
             ),
         ]);

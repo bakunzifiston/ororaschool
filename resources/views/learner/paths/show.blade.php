@@ -12,10 +12,23 @@
                     1 academy
                 </span>
             @endif
+            @if ($page['path']['next'] ?? null)
+                <x-button icon="play"
+                          :href="route('learner.courses.show', ['course' => $page['path']['next']['course']['slug']])">
+                    {{ $page['path']['cta'] }}
+                </x-button>
+            @endif
         </x-slot:actions>
     </x-page-header>
 
     <p class="mt-4 text-dense text-fern-600">{{ $page['path']['summary'] }}</p>
+
+    <p class="mt-2 text-micro text-fern-500">
+        {{ $page['path']['course_count'] }} {{ $page['path']['course_count'] === 1 ? 'course' : 'courses' }}
+        @if ($page['path']['next'] ?? null)
+            · Next: {{ $page['path']['next']['course']['title'] }}
+        @endif
+    </p>
 
     <div class="mt-6">
         <x-progress-bar :value="$page['path']['progress']" label="Path progress" />
@@ -23,14 +36,14 @@
 
     <ol class="mt-6 grid gap-3">
         @foreach ($page['path']['items'] as $index => $item)
-            <li class="flex flex-wrap items-center gap-4 rounded-md border border-clay-200 bg-chalk px-4 py-3">
+            <li class="flex flex-col gap-3 rounded-md border border-clay-200 bg-chalk px-4 py-4 sm:flex-row sm:items-center sm:gap-4">
                 <span class="figure text-micro text-fern-500">{{ $index + 1 }}</span>
                 <div class="min-w-0 grow">
                     <a href="{{ route('learner.courses.show', ['course' => $item['course']['slug']]) }}"
                        class="font-medium text-basalt-900 hover:text-accent-600">{{ $item['course']['title'] }}</a>
                     <p class="text-micro text-fern-500">{{ $item['platform_name'] }}</p>
                 </div>
-                <x-progress-bar :value="$item['progress']" size="sm" class="w-28" :show-value="false" />
+                <x-progress-bar :value="$item['progress']" size="sm" class="w-full sm:w-28" :show-value="false" />
                 <x-status-badge :status="$item['state'] === 'not_started' ? 'draft' : $item['state']">
                     {{ $item['state'] === 'not_started' ? 'Not started' : ($item['state'] === 'in_progress' ? 'In progress' : 'Completed') }}
                 </x-status-badge>

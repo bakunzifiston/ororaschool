@@ -8,7 +8,6 @@ use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Models\User;
 use App\Support\DemoData\Pages\AuthPages;
-use App\Support\DemoData\Platforms;
 use App\UserRole;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
@@ -41,32 +40,22 @@ class AuthPagesController extends Controller
         return view('auth.register', ['page' => AuthPages::register()]);
     }
 
-    /**
-     * Platform linking — the primary route to an account.
-     */
-    public function linkPlatform(Request $request): RedirectResponse
-    {
-        $platform = Platforms::find((string) $request->input('platform'));
-
-        return back()->with('status', $platform
-            ? 'Linking with '.$platform['name'].' would hand you over to that academy to confirm '
-                .'it is you. The integration itself arrives with the backend phases.'
-            : 'Choose an academy to link.');
-    }
-
     public function storeRegistration(RegisterRequest $request): RedirectResponse
     {
         $user = User::query()->create([
-            ...$request->safe()->only(['name', 'district', 'email', 'password']),
+            'name' => $request->fullName(),
+            ...$request->safe()->only(['district', 'sector', 'email', 'password']),
             'role' => UserRole::Learner,
             'status' => 'active',
         ]);
 
+        $user->markEmailAsVerified();
+
         event(new Registered($user));
         Auth::login($user);
+        $request->session()->regenerate();
 
-        return redirect()->route('verification.notice')
-            ->with('status', 'Account created. Confirm your email address to finish.');
+        return redirect()->route('learner.courses');
     }
 
     public function forgotPassword(): View

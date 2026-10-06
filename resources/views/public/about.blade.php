@@ -1,5 +1,5 @@
 <x-layouts.public title="About FarmSchool" flush>
-    <x-public.section tone="accent" compact>
+    <x-public.section tone="white" compact>
         <x-public.trail :items="[
             ['label' => 'Home', 'route' => 'home'],
             ['label' => 'About FarmSchool'],
@@ -7,10 +7,10 @@
 
         <x-public.page-heading
             title="About FarmSchool"
-            :subtitle="$page['header']['subtitle'] ?? 'The training and certification layer for the Orora ecosystem.'" />
+            :subtitle="$page['header']['subtitle'] ?? 'The training and certification layer for farming.'" />
     </x-public.section>
 
-    <x-public.section tone="chalk" class="grow">
+    <x-public.section tone="white" class="grow">
         <div class="grid items-start gap-12 lg:grid-cols-2 lg:gap-16">
             <article>
                 <p class="text-read leading-relaxed text-fern-600">

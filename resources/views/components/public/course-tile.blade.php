@@ -1,4 +1,4 @@
-@props(['course' => []])
+@props(['course' => [], 'omitPlatform' => false])
 
 @php
     $glyphs = [
@@ -7,14 +7,22 @@
         'buchapro' => 'tag',
         'feedgrid' => 'layers',
     ];
-    $glyph = $glyphs[$course['platform'] ?? ''] ?? 'book';
+    $platformTones = [
+        'ororafarm' => 'border-st-published/30 bg-st-published-bg text-st-published',
+        'gemura' => 'border-st-approved/30 bg-st-approved-bg text-st-approved',
+        'buchapro' => 'border-st-pending/30 bg-st-pending-bg text-st-pending',
+        'feedgrid' => 'border-st-active/30 bg-st-active-bg text-st-active',
+    ];
+    $platformSlug = $course['platform'] ?? '';
+    $glyph = $glyphs[$platformSlug] ?? 'book';
+    $platformTone = $platformTones[$platformSlug] ?? 'border-accent-200 bg-accent-50 text-accent-700';
     $lessons = (int) ($course['lessons'] ?? 0);
     $enrolled = (int) ($course['enrolled'] ?? 0);
     $cover = $course['cover'] ?? null;
     $title = $course['title'] ?? '';
     $href = $course['href'] ?? '#';
     $paid = (bool) ($course['paid'] ?? false);
-    $platformName = $course['platform_name'] ?? '';
+    $platformName = $omitPlatform ? '' : ($course['platform_name'] ?? '');
     $focus = $course['academy'] ?? '';
 @endphp
 
@@ -36,12 +44,22 @@
 
     <span class="flex grow flex-col p-5">
         @if ($platformName !== '' || $focus !== '')
-            <span class="text-micro font-medium text-fern-500">
-                {{ collect([$platformName, $focus])->filter()->implode(' · ') }}
+            <span class="flex flex-wrap items-center gap-2">
+                @if ($platformName !== '')
+                    <span @class([
+                        'inline-flex items-center rounded-md border px-2.5 py-1 text-micro font-medium',
+                        $platformTone,
+                    ])>
+                        {{ $platformName }}
+                    </span>
+                @endif
+                @if ($focus !== '')
+                    <span class="text-micro font-medium text-fern-500">{{ $focus }}</span>
+                @endif
             </span>
         @endif
 
-        <span class="mt-1.5 font-display text-panel font-semibold leading-snug text-basalt-900 group-hover:text-accent-700">
+        <span class="mt-2 font-display text-panel font-semibold leading-snug text-basalt-900 group-hover:text-accent-700">
             {{ $title }}
         </span>
 

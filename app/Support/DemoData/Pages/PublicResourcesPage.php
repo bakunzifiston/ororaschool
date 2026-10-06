@@ -20,7 +20,7 @@ class PublicResourcesPage
         $rows = $empty ? [] : self::filter($filters);
         $path = route('catalog.resources');
         $query = array_filter($filters, fn ($value) => $value !== '' && $value !== null);
-        $paged = Paging::paginate($rows, $page, PublicCatalog::PER_PAGE, $path, $query);
+        $paged = Paging::paginate($rows, $page, 24, $path, $query);
 
         $platforms = ['' => 'All academies'];
 

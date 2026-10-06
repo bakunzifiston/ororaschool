@@ -17,7 +17,7 @@
             :subtitle="$page['subtitle']" />
     </x-public.section>
 
-    <x-public.section tone="papyrus" class="grow">
+    <x-public.section tone="white" class="grow">
         @php
             $hasActiveFilters = filled($page['filters']['q'] ?? '')
                 || filled($page['filters']['platform'] ?? '')

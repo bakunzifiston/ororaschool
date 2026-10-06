@@ -17,7 +17,7 @@
             :subtitle="$page['subtitle']" />
     </x-public.section>
 
-    <x-public.section tone="papyrus" class="grow">
+    <x-public.section tone="white" class="grow">
         @if (count($page['platforms']))
             <p class="text-dense text-fern-500">
                 {{ number_format(count($page['platforms'])) }}

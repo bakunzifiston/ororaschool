@@ -92,7 +92,7 @@
     {{ $slot }}
 
     <x-slot:footer>
-        <footer class="mt-auto bg-basalt-950 text-chalk">
+        <footer class="mt-auto bg-[#1A360D] text-chalk">
             <div class="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-10 lg:py-16">
                 <div>
                     <div class="inline-flex rounded-md bg-chalk px-3 py-2.5">
@@ -100,7 +100,7 @@
                     </div>
                     <p class="mt-4 max-w-xs text-dense leading-relaxed text-clay-200">
                         Training and certification for farmers, livestock producers and field officers
-                        across the Orora ecosystem.
+                        across farming.
                     </p>
                 </div>
 

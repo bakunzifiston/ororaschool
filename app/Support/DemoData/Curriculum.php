@@ -3,7 +3,9 @@
 namespace App\Support\DemoData;
 
 use App\Models\Course;
+use App\Models\Lesson;
 use App\Models\Module;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 
 /**
@@ -64,9 +66,10 @@ class Curriculum
     }
 
     /**
+     * @param  array{title: string, type: string, duration?: int, body?: string|null, source_url?: string|null, file?: UploadedFile|null}  $attributes
      * @return array{slug: string, title: string}|null
      */
-    public static function addLesson(string $platform, string $courseSlug, string $moduleSlug, string $title, string $type): ?array
+    public static function addLesson(string $platform, string $courseSlug, string $moduleSlug, array $attributes): ?array
     {
         $course = self::courseOnPlatform($platform, $courseSlug);
 
@@ -82,22 +85,124 @@ class Curriculum
 
         $slug = self::uniqueSlug(
             $course->curriculumLessons()->pluck('slug')->all(),
-            Str::slug($title) ?: 'lesson',
+            Str::slug($attributes['title']) ?: 'lesson',
         );
+
+        $body = trim((string) ($attributes['body'] ?? ''));
+        $file = $attributes['file'] ?? null;
+        $path = null;
+
+        if ($file instanceof UploadedFile) {
+            $path = $file->store('lesson-files');
+        }
 
         $lesson = $module->lessons()->create([
             'course_id' => $course->id,
             'slug' => $slug,
-            'title' => $title,
-            'type' => $type,
-            'duration' => 8,
-            'body' => self::body($slug),
+            'title' => $attributes['title'],
+            'type' => $attributes['type'],
+            'duration' => (int) ($attributes['duration'] ?? 8),
+            'body' => $body !== '' ? $body : self::body($slug),
+            'source_url' => $attributes['source_url'] ?? null,
+            'path' => $path,
             'is_preview' => false,
             'quiz_slug' => null,
             'sort_order' => ((int) $module->lessons()->max('sort_order')) + 1,
         ]);
 
         return ['slug' => $lesson->slug, 'title' => $lesson->title];
+    }
+
+    /**
+     * @return array{slug: string, title: string}|null
+     */
+    public static function updateModule(string $platform, string $courseSlug, string $moduleSlug, string $title): ?array
+    {
+        $module = self::moduleOnPlatform($platform, $courseSlug, $moduleSlug);
+
+        if ($module === null) {
+            return null;
+        }
+
+        $module->update(['title' => $title]);
+
+        return ['slug' => $module->slug, 'title' => $module->title];
+    }
+
+    /**
+     * @return array{slug: string, title: string}|null
+     */
+    public static function removeModule(string $platform, string $courseSlug, string $moduleSlug): ?array
+    {
+        $module = self::moduleOnPlatform($platform, $courseSlug, $moduleSlug);
+
+        if ($module === null) {
+            return null;
+        }
+
+        $removed = ['slug' => $module->slug, 'title' => $module->title];
+
+        $module->load('lessons');
+
+        foreach ($module->lessons as $lesson) {
+            $lesson->delete();
+        }
+
+        $module->delete();
+
+        return $removed;
+    }
+
+    /**
+     * @param  array{title: string, type: string, duration?: int, body?: string|null, source_url?: string|null, file?: UploadedFile|null}  $attributes
+     * @return array{slug: string, title: string}|null
+     */
+    public static function updateLesson(string $platform, string $courseSlug, string $lessonSlug, array $attributes): ?array
+    {
+        $lesson = self::lessonOnPlatform($platform, $courseSlug, $lessonSlug);
+
+        if ($lesson === null) {
+            return null;
+        }
+
+        $payload = [
+            'title' => $attributes['title'],
+            'type' => $attributes['type'],
+            'duration' => (int) ($attributes['duration'] ?? $lesson->duration),
+            'source_url' => $attributes['source_url'] ?? null,
+        ];
+
+        if (array_key_exists('body', $attributes)) {
+            $body = trim((string) ($attributes['body'] ?? ''));
+            $payload['body'] = $body !== '' ? $body : $lesson->body;
+        }
+
+        $file = $attributes['file'] ?? null;
+
+        if ($file instanceof UploadedFile) {
+            $payload['path'] = $lesson->storeUploadedFile($file);
+        }
+
+        $lesson->update($payload);
+
+        return ['slug' => $lesson->slug, 'title' => $lesson->title];
+    }
+
+    /**
+     * @return array{slug: string, title: string}|null
+     */
+    public static function removeLesson(string $platform, string $courseSlug, string $lessonSlug): ?array
+    {
+        $lesson = self::lessonOnPlatform($platform, $courseSlug, $lessonSlug);
+
+        if ($lesson === null) {
+            return null;
+        }
+
+        $removed = ['slug' => $lesson->slug, 'title' => $lesson->title];
+        $lesson->delete();
+
+        return $removed;
     }
 
     /**
@@ -170,6 +275,28 @@ class Curriculum
             ->where('slug', $courseSlug)
             ->whereHas('platform', fn ($query) => $query->where('slug', $platform))
             ->first();
+    }
+
+    private static function moduleOnPlatform(string $platform, string $courseSlug, string $moduleSlug): ?Module
+    {
+        $course = self::courseOnPlatform($platform, $courseSlug);
+
+        if ($course === null) {
+            return null;
+        }
+
+        return $course->curriculumModules()->where('slug', $moduleSlug)->first();
+    }
+
+    private static function lessonOnPlatform(string $platform, string $courseSlug, string $lessonSlug): ?Lesson
+    {
+        $course = self::courseOnPlatform($platform, $courseSlug);
+
+        if ($course === null) {
+            return null;
+        }
+
+        return $course->curriculumLessons()->where('slug', $lessonSlug)->first();
     }
 
     /**

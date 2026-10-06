@@ -8,6 +8,8 @@ use App\Models\Lesson;
 use App\Models\Module;
 use App\Models\Quiz;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class LearnerPagesTest extends TestCase
@@ -56,6 +58,8 @@ class LearnerPagesTest extends TestCase
         $this->get(route('learner.courses'))
             ->assertOk()
             ->assertSee('Same record — not three logins', false)
+            ->assertSee('Academy', false)
+            ->assertSee('Category', false)
             ->assertSee('Gemura', false)
             ->assertSee('BuchaPro', false)
             ->assertSee('FeedGrid', false)
@@ -73,6 +77,19 @@ class LearnerPagesTest extends TestCase
             ->assertOk()
             ->assertSee('Mastitis Detection', false)
             ->assertSee('Aflatoxin Control', false)
+            ->assertDontSee('Cold Chain Discipline', false);
+
+        $this->get(route('learner.courses', ['platform' => 'gemura']))
+            ->assertOk()
+            ->assertSee('Mastitis Detection', false)
+            ->assertSee('Cold Chain Discipline', false)
+            ->assertDontSee('Aflatoxin Control', false)
+            ->assertDontSee('Animal Identification', false);
+
+        $this->get(route('learner.courses', ['category' => 'Milking routine']))
+            ->assertOk()
+            ->assertSee('Mastitis Detection', false)
+            ->assertDontSee('Aflatoxin Control', false)
             ->assertDontSee('Cold Chain Discipline', false);
     }
 
@@ -178,6 +195,24 @@ class LearnerPagesTest extends TestCase
             ->post(route('learner.courses.lessons.complete', ['course' => 'mastitis-milk-hygiene', 'lesson' => 'l-cmt-1']))
             ->assertRedirect(route('learner.courses.lessons.show', ['course' => 'mastitis-milk-hygiene', 'lesson' => 'l-cmt-1']))
             ->assertSessionHas('status');
+    }
+
+    public function test_a_pdf_lesson_file_can_be_opened_by_the_learner(): void
+    {
+        Storage::fake();
+
+        $lesson = Lesson::query()->where('slug', 'l-cmt-3')->firstOrFail();
+        $path = UploadedFile::fake()->create('cmt-field-sheet.pdf', 80, 'application/pdf')->store('lesson-files');
+        $lesson->update(['path' => $path]);
+
+        $this->get(route('learner.courses.lessons.show', ['course' => 'mastitis-milk-hygiene', 'lesson' => 'l-cmt-3']))
+            ->assertOk()
+            ->assertSee(route('learner.courses.lessons.file', ['course' => 'mastitis-milk-hygiene', 'lesson' => 'l-cmt-3']), false)
+            ->assertSee('Open the note', false)
+            ->assertDontSee('PDF viewer placeholder', false);
+
+        $this->get(route('learner.courses.lessons.file', ['course' => 'mastitis-milk-hygiene', 'lesson' => 'l-cmt-3']))
+            ->assertOk();
     }
 
     public function test_completing_the_current_lesson_unlocks_the_next_one(): void
@@ -311,8 +346,10 @@ class LearnerPagesTest extends TestCase
         $this->get(route('learner.sessions'))
             ->assertOk()
             ->assertSee('Reading CMT paddles together', false)
-            ->assertSee('Join', false)
-            ->assertSee('Recording', false);
+            ->assertSee('Upcoming sessions', false)
+            ->assertSee('Solange Nyirahabimana', false)
+            ->assertSee('Recording', false)
+            ->assertDontSee('Join session', false);
 
         $this->from(route('learner.sessions'))
             ->post(route('learner.sessions.join', ['session' => 1]))
@@ -321,12 +358,20 @@ class LearnerPagesTest extends TestCase
 
         $this->get(route('learner.resources'))
             ->assertOk()
+            ->assertSee('Academy', false)
             ->assertSee('CMT field sheet', false)
             ->assertSee('Smallholder milk hygiene manual', false)
             ->assertSee('Terrace numbering guide', false)
             ->assertSee('Open', false)
             ->assertSee(route('learner.resources.show', ['resource' => 'cmt-field-sheet']), false)
             ->assertDontSee('Plot book template', false);
+
+        $this->get(route('learner.resources', ['platform' => 'gemura']))
+            ->assertOk()
+            ->assertSee('CMT field sheet', false)
+            ->assertSee('Smallholder milk hygiene manual', false)
+            ->assertDontSee('Terrace numbering guide', false)
+            ->assertDontSee('Aflatoxin control manual', false);
 
         $this->get(route('learner.profile'))
             ->assertOk()

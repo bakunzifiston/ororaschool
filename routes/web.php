@@ -69,7 +69,6 @@ Route::middleware('guest')->controller(AuthPagesController::class)->group(functi
 
     Route::get('/register', 'register')->name('register');
     Route::post('/register', 'storeRegistration')->name('register.store');
-    Route::post('/register/link', 'linkPlatform')->name('register.link');
 
     Route::get('/forgot-password', 'forgotPassword')->name('password.request');
     Route::post('/forgot-password', 'sendResetLink')->middleware('throttle:6,1')->name('password.email');
@@ -146,8 +145,16 @@ Route::middleware(['auth', 'verified', 'role:'.UserRole::SuperAdmin->value.','.U
 
         Route::get('/workspace/{platform}/modules', [WorkspaceCurriculumController::class, 'modules'])->name('workspace.modules');
         Route::post('/workspace/{platform}/modules', [WorkspaceCurriculumController::class, 'storeModule'])->name('workspace.modules.store');
+        Route::post('/workspace/{platform}/modules/{module}', [WorkspaceCurriculumController::class, 'updateModule'])->name('workspace.modules.update')
+            ->where('module', '[a-z0-9]+(?:-[a-z0-9]+)*');
+        Route::delete('/workspace/{platform}/modules/{module}', [WorkspaceCurriculumController::class, 'destroyModule'])->name('workspace.modules.destroy')
+            ->where('module', '[a-z0-9]+(?:-[a-z0-9]+)*');
         Route::get('/workspace/{platform}/lessons', [WorkspaceCurriculumController::class, 'lessons'])->name('workspace.lessons');
         Route::post('/workspace/{platform}/lessons', [WorkspaceCurriculumController::class, 'storeLesson'])->name('workspace.lessons.store');
+        Route::post('/workspace/{platform}/lessons/{lesson}', [WorkspaceCurriculumController::class, 'updateLesson'])->name('workspace.lessons.update')
+            ->where('lesson', '[a-z0-9]+(?:-[a-z0-9]+)*');
+        Route::delete('/workspace/{platform}/lessons/{lesson}', [WorkspaceCurriculumController::class, 'destroyLesson'])->name('workspace.lessons.destroy')
+            ->where('lesson', '[a-z0-9]+(?:-[a-z0-9]+)*');
 
         Route::get('/workspace/{platform}/quizzes', [WorkspaceQuizController::class, 'index'])->name('workspace.quizzes');
         Route::post('/workspace/{platform}/quizzes', [WorkspaceQuizController::class, 'store'])->name('workspace.quizzes.store');
@@ -192,6 +199,8 @@ Route::middleware(['auth', 'verified', 'role:'.UserRole::Learner->value])->group
     Route::get('/learn/courses/{course}', [LearnerCourseController::class, 'show'])->name('learner.courses.show');
     Route::post('/learn/courses/{course}/enroll', [LearnerCourseController::class, 'enroll'])->name('learner.courses.enroll');
     Route::get('/learn/courses/{course}/lessons/{lesson}', [LearnerLessonController::class, 'show'])->name('learner.courses.lessons.show');
+    Route::get('/learn/courses/{course}/lessons/{lesson}/file', [LearnerLessonController::class, 'file'])->name('learner.courses.lessons.file')
+        ->where('lesson', '[a-z0-9]+(?:-[a-z0-9]+)*');
     Route::post('/learn/courses/{course}/lessons/{lesson}/complete', [LearnerLessonController::class, 'complete'])->name('learner.courses.lessons.complete');
 
     Route::get('/learn/quizzes/{quiz}', [LearnerQuizController::class, 'show'])->name('learner.quizzes.show');

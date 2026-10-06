@@ -1,5 +1,5 @@
 <x-layouts.public title="Contact and support" flush>
-    <x-public.section tone="accent" class="grow">
+    <x-public.section tone="white" class="grow">
         <x-public.trail :items="[
             ['label' => 'Home', 'route' => 'home'],
             ['label' => 'Contact and support'],

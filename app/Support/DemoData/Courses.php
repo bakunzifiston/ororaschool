@@ -64,6 +64,16 @@ class Courses
                 'modules' => 3, 'lessons' => 8, 'duration' => 120, 'enrolled' => 0,
                 'level' => 'Intermediate', 'updated' => '18 Sep 2026',
             ],
+            [
+                'slug' => 'soil-fertility-compost-pits',
+                'platform' => 'ororafarm',
+                'title' => 'Soil Fertility and Compost Pit Management',
+                'summary' => 'Build and manage compost pits that restore terrace soils: carbon–nitrogen balance, turning schedules and when to spread before the rains.',
+                'instructor' => 'Aline Mukamana',
+                'status' => 'published',
+                'modules' => 3, 'lessons' => 9, 'duration' => 165, 'enrolled' => 248,
+                'level' => 'Foundation', 'updated' => '22 Sep 2026',
+            ],
 
             // ---- Gemura: dairy and livestock -------------------------------
             [
@@ -220,6 +230,16 @@ class Courses
                 'modules' => 3, 'lessons' => 8, 'duration' => 120, 'enrolled' => 74,
                 'level' => 'Foundation', 'updated' => '30 Nov 2025',
             ],
+            [
+                'slug' => 'on-farm-feed-mixing-batches',
+                'platform' => 'feedgrid',
+                'title' => 'On-Farm Feed Mixing and Batch Records',
+                'summary' => 'Weigh, mix and label dairy and goat rations on the farm: batch sheets, premix handling and how to avoid carry-over between species.',
+                'instructor' => 'Espérance Twagirayezu',
+                'status' => 'published',
+                'modules' => 3, 'lessons' => 10, 'duration' => 180, 'enrolled' => 193,
+                'level' => 'Foundation', 'updated' => '20 Sep 2026',
+            ],
 
             // Published on an inactive platform — must never appear on public pages.
             [
@@ -269,6 +289,7 @@ class Courses
             'season-planning-terraces' => ['category' => 'Plot mapping', 'cover' => 'images/courses/season-planning.jpg'],
             'costing-a-season' => ['category' => 'Margins'],
             'cooperative-share-records' => ['academy' => 'Cooperative books', 'academy_slug' => 'cooperative-books', 'category' => 'Share register'],
+            'soil-fertility-compost-pits' => ['category' => 'Soil fertility'],
             'mastitis-milk-hygiene' => ['academy' => 'Milk hygiene', 'academy_slug' => 'milk-hygiene', 'category' => 'Milking routine', 'language' => 'English / Kinyarwanda', 'certificate_eligible' => true],
             'cold-chain-collection-centres' => ['academy' => 'Collection centres', 'academy_slug' => 'collection-centres', 'category' => 'Temperature logs'],
             'heat-detection-ai-timing' => ['academy' => 'Herd fertility', 'academy_slug' => 'herd-fertility', 'category' => 'Artificial insemination', 'certificate_eligible' => true],
@@ -284,6 +305,7 @@ class Courses
             'least-cost-ration-formulation' => ['academy' => 'Ration formulation', 'academy_slug' => 'ration', 'category' => 'Local ingredients', 'paid' => true],
             'aflatoxin-control-maize-bran' => ['academy' => 'Feed safety and storage', 'academy_slug' => 'feed-safety', 'category' => 'Moisture control'],
             'mineral-supplementation-lactating' => ['academy' => 'Feed safety and storage', 'academy_slug' => 'feed-safety', 'category' => 'Mineral licks', 'certificate_eligible' => false],
+            'on-farm-feed-mixing-batches' => ['academy' => 'Feed safety and storage', 'academy_slug' => 'feed-safety', 'category' => 'Batch mixing'],
             'layer-vaccination-calendars' => ['academy' => 'Poultry housing', 'academy_slug' => 'poultry-houses', 'category' => 'Vaccination'],
         ];
     }

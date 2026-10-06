@@ -48,7 +48,7 @@ class Navigation
         ];
     }
 
-    /** Learner: top nav, no sidebar. */
+    /** Learner: top nav, no sidebar. Profile sits in the account menu. */
     public static function learner(): array
     {
         return [
@@ -58,7 +58,7 @@ class Navigation
             ['label' => 'Certificates', 'route' => 'learner.certificates', 'path' => '/learn/certificates', 'icon' => 'award'],
             ['label' => 'Live sessions', 'route' => 'learner.sessions', 'path' => '/learn/live-sessions', 'icon' => 'video'],
             ['label' => 'Resources', 'route' => 'learner.resources', 'path' => '/learn/resources', 'icon' => 'file'],
-            ['label' => 'Profile', 'route' => 'learner.profile', 'path' => '/learn/profile', 'icon' => 'user'],
+            ['label' => 'Profile', 'route' => 'learner.profile', 'path' => '/learn/profile', 'icon' => 'user', 'area' => 'account'],
         ];
     }
 

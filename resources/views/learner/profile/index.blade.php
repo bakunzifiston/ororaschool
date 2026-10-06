@@ -3,8 +3,12 @@
                    :title="$page['header']['title']"
                    :subtitle="$page['header']['subtitle']" />
 
-    <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-5">
-        <form method="POST" action="{{ route('learner.profile.update') }}" class="lg:col-span-2">
+    <div @class([
+        'mt-6 grid grid-cols-1 gap-6',
+        'lg:grid-cols-5' => count($page['history']) || count($page['platforms']),
+    ])>
+        <form method="POST" action="{{ route('learner.profile.update') }}"
+              @class(['lg:col-span-2' => count($page['history']) || count($page['platforms']), 'max-w-xl' => ! count($page['history']) && ! count($page['platforms'])])>
             @csrf
             <x-panel title="Your details">
                 <div class="grid gap-5">
@@ -17,23 +21,29 @@
             </x-panel>
         </form>
 
-        <div class="lg:col-span-3">
-            <x-panel title="Learning history" subtitle="One timeline. Every academy you have learned on." :padded="false">
-                <ol class="divide-y divide-clay-100">
-                    @foreach ($page['history'] as $entry)
-                        <li class="px-4 py-3">
-                            <p class="text-micro text-fern-500">{{ $entry['at'] }} · {{ $entry['platform'] }}</p>
-                            <p class="mt-0.5 font-medium text-basalt-900">{{ $entry['title'] }}</p>
-                            <p class="mt-0.5 text-dense text-fern-500">{{ $entry['detail'] }}</p>
-                        </li>
-                    @endforeach
-                </ol>
-            </x-panel>
+        @if (count($page['history']) || count($page['platforms']))
+            <div class="lg:col-span-3">
+                @if (count($page['history']))
+                    <x-panel title="Learning history" subtitle="One timeline. Every academy you have learned on." :padded="false">
+                        <ol class="divide-y divide-clay-100">
+                            @foreach ($page['history'] as $entry)
+                                <li class="px-4 py-3">
+                                    <p class="text-micro text-fern-500">{{ $entry['at'] }} · {{ $entry['platform'] }}</p>
+                                    <p class="mt-0.5 font-medium text-basalt-900">{{ $entry['title'] }}</p>
+                                    <p class="mt-0.5 text-dense text-fern-500">{{ $entry['detail'] }}</p>
+                                </li>
+                            @endforeach
+                        </ol>
+                    </x-panel>
+                @endif
 
-            <p class="mt-3 text-micro text-fern-500">
-                Academies on this record:
-                {{ collect($page['platforms'])->pluck('name')->join(', ', ' and ') }}.
-            </p>
-        </div>
+                @if (count($page['platforms']))
+                    <p class="mt-3 text-micro text-fern-500">
+                        Academies on this record:
+                        {{ collect($page['platforms'])->pluck('name')->join(', ', ' and ') }}.
+                    </p>
+                @endif
+            </div>
+        @endif
     </div>
 </x-layouts.learner>

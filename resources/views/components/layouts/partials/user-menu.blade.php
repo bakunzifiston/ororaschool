@@ -14,7 +14,7 @@
             class="flex items-center gap-2 rounded-full py-1 pr-1 pl-1 text-left transition-colors hover:bg-clay-100">
         <x-avatar :name="$user['name'] ?? ''" size="sm" />
         @unless ($compact)
-            <span class="hidden min-w-0 md:block">
+            <span class="hidden whitespace-nowrap md:block">
                 <span class="block truncate text-micro font-medium text-basalt-800">{{ $user['name'] ?? '' }}</span>
                 @if ($roleLabel)
                     <span class="block truncate text-micro text-fern-500">{{ $roleLabel }}</span>
@@ -38,6 +38,9 @@
          class="absolute right-0 z-50 mt-1.5 w-56 origin-top-right overflow-hidden rounded-lg border border-clay-200 bg-chalk py-1 shadow-lg">
         <div class="border-b border-clay-100 px-3 py-2">
             <p class="truncate text-dense font-medium text-basalt-900">{{ $user['name'] ?? '' }}</p>
+            @if (! empty($user['email']))
+                <p class="truncate text-micro text-fern-500">{{ $user['email'] }}</p>
+            @endif
             @if ($roleLabel)
                 <p class="truncate text-micro text-fern-500">{{ $roleLabel }}</p>
             @endif

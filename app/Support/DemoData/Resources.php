@@ -76,7 +76,7 @@ class Resources
             $platforms[$platform['slug']] = $platform;
         }
 
-        return array_values(array_filter(array_map(
+        $rows = array_values(array_filter(array_map(
             function (array $resource) use ($platforms): ?array {
                 $platform = $platforms[$resource['platform']] ?? null;
 
@@ -91,6 +91,10 @@ class Resources
             },
             self::all(),
         )));
+
+        usort($rows, fn (array $a, array $b): int => strcasecmp((string) $a['title'], (string) $b['title']));
+
+        return $rows;
     }
 
     /**

@@ -1,71 +1,75 @@
 <x-layouts.learner title="My courses">
     <x-page-header :breadcrumb="$page['header']['breadcrumb']"
                    :title="$page['header']['title']"
-                   :subtitle="$page['header']['subtitle']">
-        <x-slot:actions>
-            <x-button variant="ghost" size="sm" :href="route('learner.courses', ['empty' => 1])">Preview empty</x-button>
-        </x-slot:actions>
-    </x-page-header>
+                   :subtitle="$page['header']['subtitle']" />
 
-    <form method="GET" action="{{ route('learner.courses') }}" class="mt-6 flex flex-wrap items-end gap-3">
-        <div class="w-52">
-            <x-select name="status" label="Show" size="sm" :autosubmit="true"
-                      :options="$page['filters']['statuses']"
-                      :selected="$page['filters']['status']" />
-        </div>
-    </form>
+    @if ($page['showFilters'])
+        <form method="GET" action="{{ route('learner.courses') }}" class="mt-6 flex flex-wrap items-end gap-3">
+            <div class="w-52">
+                <x-select name="status" label="Show" size="sm" :autosubmit="true"
+                          :options="$page['filters']['statuses']"
+                          :selected="$page['filters']['status']" />
+            </div>
+            <div class="w-52">
+                <x-select name="platform" label="Academy" size="sm" :autosubmit="true"
+                          :options="$page['filters']['platforms']"
+                          :selected="$page['filters']['platform']" />
+            </div>
+            <div class="w-52">
+                <x-select name="category" label="Category" size="sm" :autosubmit="true"
+                          :options="$page['filters']['categories']"
+                          :selected="$page['filters']['category']" />
+            </div>
+            @if (filled($page['filters']['status']) || filled($page['filters']['platform']) || filled($page['filters']['category']))
+                <a href="{{ route('learner.courses') }}" class="mb-1 text-dense font-medium text-accent-700 hover:underline">Clear filters</a>
+            @endif
+        </form>
+    @endif
 
-    <div class="mt-6 grid gap-8">
-        @forelse ($page['groups'] as $group)
-            <section>
-                <header class="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-                    <div>
-                        <h2 class="font-display text-section text-basalt-900">{{ $group['name'] }}</h2>
-                        <p class="text-micro text-fern-500">{{ $group['discipline'] }}</p>
-                    </div>
-                    <span class="figure text-micro text-fern-500">{{ count($group['courses']) }} {{ count($group['courses']) === 1 ? 'course' : 'courses' }}</span>
-                </header>
-
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    @foreach ($group['courses'] as $enrolment)
+    @if (count($page['sections']))
+        @foreach ($page['sections'] as $section)
+            <x-learner-section :title="$section['title']">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                    @foreach ($section['courses'] as $enrolment)
+                        @php
+                            $action = ($enrolment['status'] ?? '') === 'completed'
+                                ? 'View course'
+                                : ((int) ($enrolment['progress'] ?? 0) > 0 ? 'Continue' : 'Start learning');
+                        @endphp
                         <x-course-card :course="$enrolment['course_data']"
                                        :platform-label="$enrolment['platform_name']"
                                        :progress="$enrolment['progress']"
                                        :status="$enrolment['status']"
+                                       :action="$action"
+                                       :action-icon="$action === 'View course' ? null : 'play'"
                                        :href="route('learner.courses.show', ['course' => $enrolment['course']])" />
                     @endforeach
                 </div>
-            </section>
-        @empty
+            </x-learner-section>
+        @endforeach
+    @elseif (! count($page['available']))
+        <div class="mt-8">
             <x-panel :padded="false">
                 <x-empty-state icon="book"
                                :title="$page['emptyTitle']"
                                :message="$page['emptyMessage']" />
             </x-panel>
-        @endforelse
-    </div>
+        </div>
+    @endif
 
     @if (count($page['available']))
-        <section class="mt-10">
-            <h2 class="mb-1 font-display text-section text-basalt-900">Also on the catalogue</h2>
-            <p class="mb-4 text-micro text-fern-500">Open ones start immediately. The rest ask you to enrol first.</p>
-
-            <ul class="grid gap-3">
+        <x-learner-section title="{{ count($page['sections']) ? 'Also on the catalogue' : 'Available courses' }}"
+                           description="{{ count($page['sections']) ? 'Open ones start immediately. The rest ask you to enrol first.' : null }}">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 @foreach ($page['available'] as $item)
-                    <li class="flex flex-wrap items-center justify-between gap-3 rounded-md border border-clay-200 bg-chalk px-4 py-3">
-                        <div class="min-w-0">
-                            <a href="{{ route('learner.courses.show', ['course' => $item['course']['slug']]) }}"
-                               class="font-medium text-basalt-900 hover:text-accent-600">{{ $item['course']['title'] }}</a>
-                            <p class="text-micro text-fern-500">{{ $item['platform_name'] }}</p>
-                        </div>
-                        @if ($item['course']['enrollment_required'])
-                            <x-button :href="route('learner.courses.show', ['course' => $item['course']['slug']])">Enrol</x-button>
-                        @else
-                            <x-button variant="secondary" :href="route('learner.courses.show', ['course' => $item['course']['slug']])">Start</x-button>
-                        @endif
-                    </li>
+                    <x-course-card variant="public"
+                                   size="sm"
+                                   :course="$item['course']"
+                                   :platform-label="$item['platform_name']"
+                                   action="View course"
+                                   :href="route('learner.courses.show', ['course' => $item['course']['slug']])" />
                 @endforeach
-            </ul>
-        </section>
+            </div>
+        </x-learner-section>
     @endif
 </x-layouts.learner>

@@ -211,9 +211,49 @@
     [data-experience='super-admin'] .app-stat,
     [data-experience='platform-workspace'] .app-stat,
     [data-experience='super-admin'] .app-card,
-    [data-experience='platform-workspace'] .app-card {
+    [data-experience='platform-workspace'] .app-card,
+    [data-experience='learner'] .app-panel,
+    [data-experience='learner'] .app-card {
         border-color: rgb(17 21 18 / 0.07);
         box-shadow: 0 1px 2px rgb(17 21 18 / 0.04), 0 10px 28px rgb(17 21 18 / 0.05);
+    }
+
+    [data-experience='super-admin'] .app-panel,
+    [data-experience='platform-workspace'] .app-panel,
+    [data-experience='super-admin'] .app-stat,
+    [data-experience='platform-workspace'] .app-stat,
+    [data-experience='super-admin'] .app-card,
+    [data-experience='platform-workspace'] .app-card {
+        background-color: #fff;
+    }
+
+    [data-experience='super-admin'] table,
+    [data-experience='platform-workspace'] table,
+    [data-experience='super-admin'] thead,
+    [data-experience='platform-workspace'] thead,
+    [data-experience='super-admin'] tbody,
+    [data-experience='platform-workspace'] tbody {
+        background-color: #fff;
+    }
+
+    [data-experience='learner'] {
+        --radius-xs: 6px;
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 20px;
+    }
+
+    html[data-experience='learner'] body {
+        background-color: #eef3ef;
+    }
+
+    [data-experience='learner'] main {
+        background-color: #eef3ef;
+    }
+
+    [data-experience='learner'] header.sticky {
+        height: 3.75rem;
     }
 
     [data-experience='super-admin'] .app-stat,
@@ -228,12 +268,14 @@
         box-shadow: none;
     }
 
-    html[data-experience='super-admin'] body {
-        background-color: #eef3ef;
+    html[data-experience='super-admin'] body,
+    html[data-experience='platform-workspace'] body {
+        background-color: #fff;
     }
 
-    [data-experience='super-admin'] main {
-        background-color: #eef3ef;
+    [data-experience='super-admin'] main,
+    [data-experience='platform-workspace'] main {
+        background-color: #fff;
     }
 
     [data-experience='super-admin'] .estate-wide {
@@ -443,7 +485,7 @@
         gap: 0.75rem;
         border: 1px solid rgb(17 21 18 / 0.07);
         border-radius: var(--radius-lg);
-        background-color: var(--color-chalk);
+        background-color: #fff;
         padding: 1rem 1.1rem;
         box-shadow: 0 1px 2px rgb(17 21 18 / 0.04);
     }
@@ -504,7 +546,7 @@
     [data-experience='guest'] .public-card {
         border-radius: var(--radius-lg);
         border: 1px solid rgb(17 21 18 / 0.07);
-        background-color: var(--color-chalk);
+        background-color: #fff;
         box-shadow: 0 1px 2px rgb(17 21 18 / 0.04), 0 10px 28px rgb(17 21 18 / 0.05);
         transition: box-shadow 180ms ease, transform 180ms ease, border-color 180ms ease;
     }
@@ -626,14 +668,47 @@
 [data-experience='public'] header.sticky {
     height: 4.25rem;
     border-bottom-color: rgb(17 21 18 / 0.06);
-    background-color: color-mix(in srgb, var(--color-chalk) 84%, transparent);
+    background-color: color-mix(in srgb, #fff 84%, transparent);
     box-shadow: none;
     backdrop-filter: blur(16px);
 }
 
+[data-experience='public'] body,
+html[data-experience='public'] body {
+    background-color: #fff;
+}
+
+[data-experience='public'] main {
+    background-color: #fff;
+}
+
+[data-experience='public'] main .bg-chalk,
+[data-experience='public'] main .bg-papyrus {
+    background-color: #fff;
+}
+
 [data-experience='super-admin'] body,
 [data-experience='platform-workspace'] body {
-    background-color: var(--color-chalk);
+    background-color: #fff;
+}
+
+[data-experience='guest'] body,
+html[data-experience='guest'] body {
+    background-color: #fff;
+}
+
+[data-experience='guest'] main {
+    background-color: #fff;
+}
+
+[data-experience='guest'] main .bg-chalk,
+[data-experience='guest'] .public-card,
+[data-experience='guest'] .auth-sheet {
+    background-color: #fff;
+}
+
+[data-experience='guest'] footer {
+    background-color: #fff;
 }
 
 [data-experience='super-admin'] header.sticky,
@@ -641,8 +716,39 @@
 [data-experience='super-admin'] .sticky.top-0.z-30,
 [data-experience='platform-workspace'] .sticky.top-0.z-30 {
     border-bottom-color: rgb(17 21 18 / 0.06);
-    background-color: color-mix(in srgb, var(--color-chalk) 88%, transparent);
-    backdrop-filter: blur(16px);
+    background-color: #fff;
+    backdrop-filter: none;
+}
+
+/* Keep module list cards, forms, and table shells white across workspace pages.
+   Scoped to main so the dark sidebar is untouched. */
+[data-experience='super-admin'] main .bg-chalk,
+[data-experience='platform-workspace'] main .bg-chalk,
+[data-experience='super-admin'] main .bg-papyrus,
+[data-experience='platform-workspace'] main .bg-papyrus,
+[data-experience='super-admin'] main .bg-chalk\/90,
+[data-experience='platform-workspace'] main .bg-chalk\/90 {
+    background-color: #fff;
+}
+
+[data-experience='super-admin'] main .app-panel,
+[data-experience='platform-workspace'] main .app-panel,
+[data-experience='super-admin'] main .app-card,
+[data-experience='platform-workspace'] main .app-card,
+[data-experience='super-admin'] main .app-stat,
+[data-experience='platform-workspace'] main .app-stat,
+[data-experience='super-admin'] main table,
+[data-experience='platform-workspace'] main table,
+[data-experience='super-admin'] main thead,
+[data-experience='platform-workspace'] main thead,
+[data-experience='super-admin'] main tbody,
+[data-experience='platform-workspace'] main tbody {
+    background-color: #fff;
+}
+
+[data-experience='super-admin'] footer,
+[data-experience='platform-workspace'] footer {
+    background-color: #fff;
 }
 
 [data-experience='super-admin'] .inline-flex.items-center.justify-center.rounded-md,

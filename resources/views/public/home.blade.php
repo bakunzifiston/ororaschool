@@ -7,7 +7,7 @@
         $published = $page['stats'][0] ?? ['value' => '', 'label' => ''];
         $companion = collect($page['platforms'])->firstWhere('slug', 'gemura') ?? [];
     @endphp
-    <section class="bg-basalt-950">
+    <section class="bg-[#2a4d18]">
         <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-14 lg:grid-cols-2 lg:gap-16 lg:px-10 lg:py-16">
             <div class="max-w-xl is-in" data-reveal>
                 <p class="flex items-center gap-3 text-micro font-medium tracking-[0.18em] text-clay-200">
@@ -18,7 +18,7 @@
                     Training that stays with the <em class="italic text-accent-200">work.</em>
                 </h1>
                 <p class="mt-5 max-w-md text-read leading-relaxed text-clay-200">
-                    Practical training for the people, businesses and teams working across the Orora ecosystem.
+                    Practical training for the people, businesses and teams working in farming.
                     Learn once, build real skills, and keep your learning record in one place.
                 </p>
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -67,7 +67,7 @@
     </section>
 
     {{-- Statistics + platforms --}}
-    <section class="bg-papyrus">
+    <section class="bg-white">
         <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10">
             <dl class="grid grid-cols-1 divide-y divide-clay-200 py-12 sm:grid-cols-2 sm:divide-y-0 sm:py-14 lg:grid-cols-4 lg:divide-x">
                 @foreach ($page['stats'] as $stat)
@@ -78,8 +78,9 @@
             <div class="border-t border-clay-200 py-16 sm:py-20">
                 <div data-reveal>
                     <x-public.section-heading
-                        title="Four academies. One school."
-                        subtitle="One learning experience across the Orora ecosystem." />
+                        subtitle="One learning experience across farming.">
+                        Four academies. <em class="italic text-accent-500">One school</em>.
+                    </x-public.section-heading>
                 </div>
 
                 <div class="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
@@ -92,7 +93,7 @@
     </section>
 
     {{-- Value --}}
-    <section class="bg-basalt-950">
+    <section class="bg-[#2a4d18]">
         <div class="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-2 lg:gap-20 lg:px-10 lg:py-24">
             <div class="max-w-xl" data-reveal>
                 <p class="flex items-center gap-3 text-micro font-medium tracking-[0.18em] text-clay-200">
@@ -147,11 +148,11 @@
     </section>
 
     {{-- Featured courses --}}
-    <x-public.section tone="chalk">
+    <x-public.section tone="white">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between" data-reveal>
             <x-public.section-heading
                 title="Featured courses"
-                subtitle="Practical training from across the Orora ecosystem." />
+                subtitle="Practical training from across farming." />
             <a href="{{ route('catalog.courses') }}"
                class="inline-flex shrink-0 items-center gap-1 text-dense font-medium text-accent-700 hover:underline">
                 View all courses
@@ -167,7 +168,7 @@
     </x-public.section>
 
     {{-- Certificate verification --}}
-    <x-public.section tone="mist">
+    <x-public.section tone="white">
         <div class="grid items-start gap-10 lg:grid-cols-2 lg:gap-16">
             <div data-reveal>
                 <h2 class="marketing-title text-basalt-900">Verify a FarmSchool certificate</h2>
@@ -192,7 +193,7 @@
         <div class="mx-auto max-w-2xl text-center" data-reveal>
             <h2 class="marketing-title text-chalk">Build skills that work in the real world.</h2>
             <p class="mt-4 text-read leading-relaxed text-clay-200">
-                Start learning with FarmSchool and build practical knowledge across the Orora ecosystem.
+                Start learning with FarmSchool and build practical knowledge across farming.
             </p>
             <div class="mt-9 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
                 <x-button size="lg" class="w-full sm:w-auto" :href="route('catalog.courses')">Explore courses</x-button>

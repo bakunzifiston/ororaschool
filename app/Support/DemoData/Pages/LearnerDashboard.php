@@ -5,6 +5,8 @@ namespace App\Support\DemoData\Pages;
 use App\Support\DemoData\DemoData;
 use App\Support\DemoData\IssuedCertificates;
 use App\Support\DemoData\LearnerProgress;
+use App\Support\DemoData\LearningPaths;
+use App\Support\DemoData\Platforms;
 
 /**
  * FIXTURE LAYER — DELETE WHEN REAL DATA ARRIVES.
@@ -25,7 +27,14 @@ class LearnerDashboard
         $inProgress = $empty ? [] : LearnerProgress::inProgress();
         $completed = $empty ? [] : LearnerProgress::completed();
         $continue = $empty ? null : LearnerProgress::continueLesson();
-        $certificates = $empty ? [] : IssuedCertificates::forLearner(LearnerProgress::LEARNER_ID);
+        $certificates = ($empty || ($inProgress === [] && $completed === []))
+            ? []
+            : array_map(function (array $row): array {
+                $platform = Platforms::find($row['platform']);
+                $row['platform_name'] = $platform['name'] ?? $row['platform'];
+
+                return $row;
+            }, IssuedCertificates::forLearner(LearnerProgress::LEARNER_ID));
         $platforms = array_values(array_unique(array_column(array_merge($inProgress, $completed), 'platform_name')));
         $mixLabels = [];
         $mixValues = [];
@@ -40,6 +49,28 @@ class LearnerDashboard
             $mixValues[] = count($completed);
         }
 
+        $hasRecord = $inProgress !== [] || $completed !== [];
+        $upcoming = [];
+        $available = [];
+
+        if (! $empty && $hasRecord) {
+            foreach (LearnerProgress::sessions() as $session) {
+                if (! in_array($session['status'], ['scheduled', 'live'], true)) {
+                    continue;
+                }
+
+                $platform = Platforms::find($session['platform']);
+                $session['platform_name'] = $platform['name'] ?? $session['platform'];
+                $session['can_join'] = $session['status'] === 'live';
+                $upcoming[] = $session;
+            }
+
+            $available = array_values(array_filter(
+                LearnerProgress::available(),
+                fn (array $item): bool => in_array($item['platform_name'], $platforms, true),
+            ));
+        }
+
         return [
             'user' => $user,
             'header' => LearnerHeader::make(
@@ -51,6 +82,10 @@ class LearnerDashboard
             'continue' => $continue,
             'inProgress' => $inProgress,
             'completed' => $completed,
+            'paths' => ($empty || ! $hasRecord) ? [] : LearningPaths::all(),
+            'upcoming' => array_slice($upcoming, 0, 3),
+            'available' => array_slice($available, 0, 4),
+            'certificates' => array_slice($certificates, 0, 3),
             'certificatesCount' => count($certificates),
             'stats' => [
                 [

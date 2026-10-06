@@ -1,87 +1,83 @@
-<x-layouts.guest title="Get your account">
-    <x-auth-sheet :title="$page['title']" :subtitle="$page['subtitle']">
+<x-layouts.guest title="Get your account" wide>
+    <div class="overflow-hidden rounded-3xl border border-clay-200 bg-chalk shadow-lg">
+        <div class="grid lg:grid-cols-2">
+            <div class="flex flex-col justify-center px-6 py-10 sm:px-10 lg:px-12 lg:py-14">
+                <p class="flex items-center gap-3 text-micro font-medium tracking-[0.18em] text-fern-500">
+                    <span class="h-px w-8 bg-accent-400" aria-hidden="true"></span>
+                    FARMSCHOOL
+                </p>
 
-        {{-- Primary path. Most learners already hold an account on the platform
-             they use daily, so linking comes first and self-registration second. --}}
-        <form method="POST" action="{{ route('register.link') }}">
-            @csrf
+                <h1 class="mt-5 font-display text-title tracking-tight text-basalt-900">{{ $page['title'] }}</h1>
 
-            <ul class="grid gap-2">
-                @foreach ($page['platforms'] as $platform)
-                    <li>
-                        <button type="submit" name="platform" value="{{ $platform['slug'] }}"
-                                class="flex w-full items-center gap-3 rounded-md border border-clay-200 bg-chalk px-3 py-2.5 text-left transition-colors hover:border-accent-500 hover:bg-accent-50">
-                            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-clay-200 bg-papyrus text-dense font-semibold text-fern-600"
-                                  aria-hidden="true">
-                                {{ mb_substr($platform['name'], 0, 1) }}
-                            </span>
+                <form method="POST" action="{{ route('register.store') }}" class="mt-8 grid gap-5">
+                    @csrf
 
-                            <span class="min-w-0 grow">
-                                <span class="block truncate text-dense font-medium text-basalt-900">
-                                    Continue with {{ $platform['name'] }}
-                                </span>
-                                <span class="block truncate text-micro text-fern-500">{{ $platform['discipline'] }}</span>
-                            </span>
+                    <div class="grid gap-5 sm:grid-cols-2">
+                        <x-field name="first_name" appearance="pill"
+                                 :label="$page['fields']['first_name']['label']"
+                                 :placeholder="$page['fields']['first_name']['placeholder']"
+                                 autocomplete="given-name"
+                                 autofocus />
 
-                            <x-icon name="link" class="h-4 w-4 shrink-0 text-fern-500" />
-                        </button>
-                    </li>
-                @endforeach
-            </ul>
-        </form>
+                        <x-field name="last_name" appearance="pill"
+                                 :label="$page['fields']['last_name']['label']"
+                                 :placeholder="$page['fields']['last_name']['placeholder']"
+                                 autocomplete="family-name" />
+                    </div>
 
-        <p class="mt-3 text-micro leading-relaxed text-fern-500">{{ $page['linkNote'] }}</p>
+                    <div class="grid gap-5 sm:grid-cols-2"
+                         x-data="{
+                             district: @js(old('district', '')),
+                             sector: @js(old('sector', '')),
+                             map: @js($page['sectorsByDistrict']),
+                             get sectorOptions() {
+                                 return this.map[this.district] ?? [];
+                             },
+                         }"
+                         x-on:change="if ($event.target.name === 'district' && ! sectorOptions.includes(sector)) { sector = '' }">
+                        <x-select name="district" appearance="pill"
+                                  :label="$page['fields']['district']['label']"
+                                  :options="$page['districts']"
+                                  placeholder="Choose your district"
+                                  model="district" />
 
-        {{-- Ruled divider, in keeping with the record-sheet treatment. --}}
-        <div class="my-6 flex items-center gap-3">
-            <span class="h-px grow bg-clay-200"></span>
-            <span class="shrink-0 text-micro text-fern-500">{{ $page['divider'] }}</span>
-            <span class="h-px grow bg-clay-200"></span>
+                        <x-select name="sector" appearance="pill"
+                                  :label="$page['fields']['sector']['label']"
+                                  placeholder="Choose your sector"
+                                  model="sector"
+                                  disable-when="! district"
+                                  alpine-options="sectorOptions" />
+                    </div>
+
+                    <x-field name="email" type="email" appearance="pill"
+                             :label="$page['fields']['email']['label']"
+                             :placeholder="$page['fields']['email']['placeholder']"
+                             autocomplete="email" />
+
+                    <x-field name="password" type="password" appearance="pill"
+                             :label="$page['fields']['password']['label']"
+                             autocomplete="new-password"
+                             revealable />
+
+                    <x-button type="submit" size="lg" variant="forest" class="w-full">
+                        {{ $page['submit'] }}
+                    </x-button>
+                </form>
+
+                <p class="mt-8 text-center text-dense text-fern-500">
+                    {{ $page['footer'] }}
+                    <a href="{{ route('login') }}" class="font-medium text-accent-600 underline-offset-2 hover:underline">
+                        {{ $page['footerLink'] }}
+                    </a>
+                </p>
+            </div>
+
+            <div class="relative hidden min-h-[28rem] lg:block">
+                <img src="{{ asset('images/home/hero.jpg') }}"
+                     alt=""
+                     width="1600" height="1200"
+                     class="absolute inset-0 h-full w-full object-cover object-[center_35%]">
+            </div>
         </div>
-
-        {{--
-            SECONDARY PATH — self-registration.
-
-            Whether FarmSchool allows learners to create their own account is
-            not settled. If it does not, delete this form, the `register.store`
-            route and its controller method: the linking list above stands on its
-            own and the page still answers "how do I get access?".
-        --}}
-        <p class="mb-4 text-dense leading-relaxed text-fern-500">{{ $page['directIntro'] }}</p>
-
-        <form method="POST" action="{{ route('register.store') }}" class="grid gap-5">
-            @csrf
-
-            <x-field name="name"
-                     :label="$page['fields']['name']['label']"
-                     :placeholder="$page['fields']['name']['placeholder']"
-                     autocomplete="name" />
-
-            <x-select name="district"
-                      :label="$page['fields']['district']['label']"
-                      :options="$page['districts']"
-                      placeholder="Choose your district" />
-
-            <x-field name="email" type="email"
-                     :label="$page['fields']['email']['label']"
-                     :placeholder="$page['fields']['email']['placeholder']"
-                     :hint="$page['fields']['email']['hint']"
-                     autocomplete="email" />
-
-            <x-field name="password" type="password"
-                     :label="$page['fields']['password']['label']"
-                     :hint="$page['fields']['password']['hint']"
-                     autocomplete="new-password"
-                     revealable />
-
-            <x-button type="submit" size="lg" class="w-full">{{ $page['submit'] }}</x-button>
-        </form>
-
-        <x-slot:footer>
-            {{ $page['footer'] }}
-            <a href="{{ route('login') }}" class="inline-block rounded-xs py-1.5 text-accent-600 underline-offset-2 hover:underline">
-                {{ $page['footerLink'] }}
-            </a>
-        </x-slot:footer>
-    </x-auth-sheet>
+    </div>
 </x-layouts.guest>

@@ -2,13 +2,14 @@
 
 @php
     $tones = [
+        'white' => 'bg-white',
         'chalk' => 'bg-chalk',
         'papyrus' => 'bg-papyrus',
         'accent' => 'bg-accent-50',
         'terrace' => 'marketing-band-accent bg-accent-500 text-chalk',
-        'forest' => 'bg-basalt-950 text-chalk',
+        'forest' => 'bg-[#2a4d18] text-chalk',
         'mist' => 'bg-st-approved-bg',
-        'basalt' => 'marketing-band-basalt on-basalt bg-basalt-900 text-chalk',
+        'basalt' => 'marketing-band-basalt on-basalt bg-[#2a4d18] text-chalk',
     ];
 @endphp
 

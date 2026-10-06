@@ -59,6 +59,7 @@ class LearningPaths
         $courses = [];
         $platforms = [];
         $progressValues = [];
+        $cover = null;
 
         foreach ($path['courses'] as $slug) {
             $course = Courses::find($slug);
@@ -67,6 +68,10 @@ class LearningPaths
 
             if (($platform['name'] ?? '') !== '') {
                 $platforms[$platform['slug']] = $platform['name'];
+            }
+
+            if ($cover === null) {
+                $cover = $course['cover'] ?? $platform['cover'] ?? null;
             }
 
             $state = 'not_started';
@@ -95,6 +100,7 @@ class LearningPaths
             'platform_count' => count($platforms),
             'cross_platform' => count($platforms) > 1,
             'progress' => (int) round(array_sum($progressValues) / $count),
+            'cover' => $cover,
         ]);
     }
 }

@@ -24,7 +24,7 @@ class LearnerProfilePage
 
         $platformSlugs = array_values(array_unique(array_column(LearnerProgress::enrolments(), 'platform_slug')));
 
-        if ($platformSlugs === []) {
+        if ($platformSlugs === [] && ! $authenticated) {
             $platformSlugs = $user['platforms'];
         }
 

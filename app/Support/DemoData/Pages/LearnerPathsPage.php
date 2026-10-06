@@ -11,7 +11,7 @@ class LearnerPathsPage
 {
     public static function index(bool $empty = false): array
     {
-        $paths = $empty ? [] : LearningPaths::all();
+        $paths = $empty ? [] : array_map([self::class, 'decorate'], LearningPaths::all());
 
         return [
             'header' => LearnerHeader::make(
@@ -35,6 +35,8 @@ class LearnerPathsPage
             return null;
         }
 
+        $path = self::decorate($path);
+
         return [
             'header' => LearnerHeader::make(
                 $path['title'],
@@ -48,5 +50,28 @@ class LearnerPathsPage
             ),
             'path' => $path,
         ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $path
+     * @return array<string, mixed>
+     */
+    private static function decorate(array $path): array
+    {
+        $next = null;
+
+        foreach ($path['items'] as $item) {
+            if (($item['state'] ?? '') !== 'completed') {
+                $next = $item;
+                break;
+            }
+        }
+
+        $path['course_count'] = count($path['items']);
+        $path['next'] = $next;
+        $path['started'] = (int) ($path['progress'] ?? 0) > 0;
+        $path['cta'] = $path['started'] ? 'Continue path' : 'Start learning';
+
+        return $path;
     }
 }

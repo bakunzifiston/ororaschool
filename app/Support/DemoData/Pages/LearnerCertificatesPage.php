@@ -13,7 +13,7 @@ class LearnerCertificatesPage
 {
     public static function index(bool $empty = false): array
     {
-        $rows = $empty ? [] : array_map(function (array $row) {
+        $rows = ($empty || LearnerProgress::enrolments() === []) ? [] : array_map(function (array $row) {
             $platform = Platforms::find($row['platform']);
 
             return array_merge($row, [

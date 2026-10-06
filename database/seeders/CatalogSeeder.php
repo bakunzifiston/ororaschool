@@ -41,12 +41,16 @@ class CatalogSeeder extends Seeder
         foreach (Academies::all() as $row) {
             $platform = Platform::query()->where('slug', $row['platform'])->firstOrFail();
 
-            Academy::query()->create([
-                'platform_id' => $platform->id,
-                'slug' => $row['slug'],
-                'name' => $row['name'],
-                'status' => $row['status'],
-            ]);
+            Academy::query()->updateOrCreate(
+                [
+                    'platform_id' => $platform->id,
+                    'slug' => $row['slug'],
+                ],
+                [
+                    'name' => $row['name'],
+                    'status' => $row['status'],
+                ],
+            );
         }
 
         foreach (Courses::all() as $row) {
@@ -60,46 +64,51 @@ class CatalogSeeder extends Seeder
                     ->first();
             }
 
-            Course::query()->create([
-                'platform_id' => $platform->id,
-                'academy_id' => $academy?->id,
-                'slug' => $row['slug'],
-                'title' => $row['title'],
-                'summary' => $row['summary'],
-                'description' => $row['description'] ?: $row['summary'],
-                'instructor' => $row['instructor'],
-                'status' => $row['status'],
-                'difficulty' => $row['difficulty'],
-                'language' => $row['language'],
-                'category' => $row['category'] ?: null,
-                'modules' => $row['modules'],
-                'lessons' => $row['lessons'],
-                'duration' => $row['duration'],
-                'enrolled' => $row['enrolled'],
-                'paid' => (bool) $row['paid'],
-                'certificate_eligible' => (bool) $row['certificate_eligible'],
-                'enrollment_required' => (bool) $row['enrollment_required'],
-                'cover' => $row['cover'] ?? null,
-                'content_updated_at' => isset($row['updated']) ? Carbon::parse($row['updated']) : null,
-            ]);
+            Course::query()->updateOrCreate(
+                ['slug' => $row['slug']],
+                [
+                    'platform_id' => $platform->id,
+                    'academy_id' => $academy?->id,
+                    'title' => $row['title'],
+                    'summary' => $row['summary'],
+                    'description' => $row['description'] ?: $row['summary'],
+                    'instructor' => $row['instructor'],
+                    'status' => $row['status'],
+                    'difficulty' => $row['difficulty'],
+                    'language' => $row['language'],
+                    'category' => $row['category'] ?: null,
+                    'modules' => $row['modules'],
+                    'lessons' => $row['lessons'],
+                    'duration' => $row['duration'],
+                    'enrolled' => $row['enrolled'],
+                    'paid' => (bool) $row['paid'],
+                    'certificate_eligible' => (bool) $row['certificate_eligible'],
+                    'enrollment_required' => (bool) $row['enrollment_required'],
+                    'cover' => $row['cover'] ?? null,
+                    'content_updated_at' => isset($row['updated']) ? Carbon::parse($row['updated']) : null,
+                ],
+            );
         }
 
         $this->call(CurriculumSeeder::class);
         $this->call(QuizSeeder::class);
+        $this->call(AcademyLearningContentSeeder::class);
 
         foreach (IssuedCertificates::all() as $row) {
             $platform = Platform::query()->where('slug', $row['platform'])->firstOrFail();
             $course = Course::query()->where('slug', $row['course_slug'])->firstOrFail();
 
-            Certificate::query()->create([
-                'code' => $row['code'],
-                'platform_id' => $platform->id,
-                'course_id' => $course->id,
-                'learner_name' => $row['learner'],
-                'learner_id' => $row['learner_id'],
-                'issued_at' => Carbon::parse($row['issued']),
-                'status' => $row['status'],
-            ]);
+            Certificate::query()->updateOrCreate(
+                ['code' => $row['code']],
+                [
+                    'platform_id' => $platform->id,
+                    'course_id' => $course->id,
+                    'learner_name' => $row['learner'],
+                    'learner_id' => $row['learner_id'],
+                    'issued_at' => Carbon::parse($row['issued']),
+                    'status' => $row['status'],
+                ],
+            );
         }
     }
 }

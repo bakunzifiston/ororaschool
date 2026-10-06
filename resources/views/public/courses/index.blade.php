@@ -17,7 +17,7 @@
             :subtitle="$page['subtitle']" />
     </x-public.section>
 
-    <x-public.section tone="papyrus" class="grow">
+    <x-public.section tone="white" class="grow">
         <x-public.filters :filters="$page['filters']"
                           :options="$page['options']"
                           :show-platform-filter="$page['showPlatformFilter']"

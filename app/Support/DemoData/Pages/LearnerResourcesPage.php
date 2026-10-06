@@ -11,19 +11,38 @@ use App\Support\DemoData\Resources;
  */
 class LearnerResourcesPage
 {
-    public static function index(string $type = '', bool $empty = false): array
+    /**
+     * @param  array{type?: string, platform?: string}  $filters
+     */
+    public static function index(array $filters = [], bool $empty = false): array
     {
-        $rows = $empty ? [] : LearnerProgress::resources();
+        $type = (string) ($filters['type'] ?? '');
+        $platform = (string) ($filters['platform'] ?? '');
+        $filtersActive = $type !== '' || $platform !== '';
 
-        if ($type !== '') {
-            $rows = array_values(array_filter($rows, fn (array $row) => $row['type'] === $type));
-        }
+        $allRows = $empty ? [] : LearnerProgress::resources();
+        $platformOptions = self::platformOptions($allRows);
+
+        $rows = array_values(array_filter(
+            $allRows,
+            function (array $row) use ($type, $platform): bool {
+                if ($type !== '' && ($row['type'] ?? '') !== $type) {
+                    return false;
+                }
+
+                if ($platform !== '' && ($row['platform'] ?? '') !== $platform) {
+                    return false;
+                }
+
+                return true;
+            },
+        ));
 
         $rows = array_map(function (array $row) {
-            $platform = Platforms::find($row['platform']);
+            $current = Platforms::find($row['platform']);
 
             return array_merge($row, [
-                'platform_name' => $platform['name'] ?? $row['platform'],
+                'platform_name' => $current['name'] ?? $row['platform'],
                 'href' => route('learner.resources.show', ['resource' => $row['slug']]),
             ]);
         }, $rows);
@@ -36,11 +55,41 @@ class LearnerResourcesPage
                     ['label' => 'Resources'],
                 ],
             ),
-            'filters' => ['type' => $type, 'types' => Resources::types()],
+            'filters' => [
+                'type' => $type,
+                'platform' => $platform,
+                'types' => Resources::types(),
+                'platforms' => $platformOptions,
+            ],
             'rows' => $rows,
-            'emptyTitle' => 'No resources on your courses yet',
-            'emptyMessage' => 'Academy handouts appear without enrolment. Course, module and lesson files wait until they are attached to a course you are on.',
+            'emptyTitle' => $filtersActive ? 'No resources match those filters' : 'No resources on your courses yet',
+            'emptyMessage' => $filtersActive
+                ? 'Try another academy or type, or clear the filters to see everything on your record.'
+                : 'Academy handouts appear without enrolment. Course, module and lesson files wait until they are attached to a course you are on.',
         ];
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $rows
+     * @return array<string, string>
+     */
+    private static function platformOptions(array $rows): array
+    {
+        $platforms = ['' => 'All academies'];
+
+        foreach ($rows as $row) {
+            $slug = (string) ($row['platform'] ?? '');
+            $current = Platforms::find($slug);
+            $name = (string) ($current['name'] ?? $slug);
+
+            if ($slug !== '' && $name !== '') {
+                $platforms[$slug] = $name;
+            }
+        }
+
+        asort($platforms, SORT_NATURAL | SORT_FLAG_CASE);
+
+        return ['' => 'All academies'] + array_diff_key($platforms, ['' => true]);
     }
 
     /**

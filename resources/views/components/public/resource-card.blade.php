@@ -1,4 +1,4 @@
-@props(['resource' => []])
+@props(['resource' => [], 'omitPlatform' => false])
 
 @php
     $type = (string) ($resource['type'] ?? '');
@@ -16,7 +16,7 @@
     $title = $resource['title'] ?? '';
     $href = $resource['href'] ?? '#';
     $typeLabel = $resource['type_label'] ?? $type;
-    $platformName = $resource['platform_name'] ?? '';
+    $platformName = $omitPlatform ? '' : ($resource['platform_name'] ?? '');
     $attachedTo = $resource['attached_to'] ?? '';
     $size = $resource['size'] ?? '';
 @endphp
@@ -28,11 +28,9 @@
 
     <span class="flex min-w-0 grow flex-col">
         <span class="flex flex-wrap items-center gap-2">
-            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-micro font-medium {{ $tone['band'] }} {{ $tone['ink'] }}">
-                {{ $typeLabel }}
-            </span>
+            <span class="text-micro font-medium text-fern-500">{{ $typeLabel }}</span>
             @if ($platformName !== '')
-                <span class="text-micro font-medium text-fern-500">{{ $platformName }}</span>
+                <span class="text-micro text-fern-500">· {{ $platformName }}</span>
             @endif
         </span>
 

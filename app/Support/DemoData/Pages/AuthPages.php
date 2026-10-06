@@ -2,8 +2,7 @@
 
 namespace App\Support\DemoData\Pages;
 
-use App\Support\DemoData\People;
-use App\Support\DemoData\Platforms;
+use App\Support\Rwanda;
 
 /**
  * FIXTURE LAYER — DELETE WHEN REAL DATA ARRIVES.
@@ -18,8 +17,6 @@ class AuthPages
     {
         return [
             'title' => 'Sign in',
-            'subtitle' => 'FarmSchool is the training and certification arm of the Orora academies. '
-                .'Use the account your academy coordinator set up for you.',
             'email' => [
                 'label' => 'Email address',
                 'placeholder' => 'name@gemura.rw',
@@ -32,7 +29,7 @@ class AuthPages
             'submit' => 'Sign in',
             'forgot' => 'Forgotten your password?',
             'footer' => 'No account yet?',
-            'footerLink' => 'See how to get access',
+            'footerLink' => 'Create an account',
         ];
     }
 
@@ -117,33 +114,22 @@ class AuthPages
     }
 
     /**
-     * Registration leads with platform linking, because most learners already
-     * have an account on the platform they use day to day. The direct sign-up
-     * form below it is a separate decision — see the note in the Blade file.
+     * Direct sign-up for a new learner.
      */
     public static function register(): array
     {
         return [
             'title' => 'Get your FarmSchool account',
-            'subtitle' => 'Most learners already have one through the academy they use day to day. '
-                .'Link that account and your training record and certificates follow you.',
-            'platforms' => array_map(fn (array $platform) => [
-                'slug' => $platform['slug'],
-                'name' => $platform['name'],
-                'discipline' => $platform['discipline'],
-            ], Platforms::active()),
-            'linkNote' => 'Linking takes you to that academy to confirm it is you. Nothing is shared back '
-                .'except your name and the district you work in.',
-            'divider' => 'Not on any of those yet?',
-            'directIntro' => 'Create an account directly. You can link an academy later without losing '
-                .'anything you have already finished.',
             'fields' => [
-                'name' => ['label' => 'Full name', 'placeholder' => 'e.g. Placide Bizimana'],
-                'district' => ['label' => 'District you work in'],
+                'first_name' => ['label' => 'First name', 'placeholder' => 'e.g. Placide'],
+                'last_name' => ['label' => 'Last name', 'placeholder' => 'e.g. Bizimana'],
+                'district' => ['label' => 'District'],
+                'sector' => ['label' => 'Sector'],
                 'email' => ['label' => 'Email address', 'placeholder' => 'name@example.rw', 'hint' => 'Your certificates are issued to this address.'],
                 'password' => ['label' => 'Choose a password', 'hint' => 'At least 10 characters.'],
             ],
-            'districts' => People::districts(),
+            'districts' => Rwanda::districts(),
+            'sectorsByDistrict' => Rwanda::sectorsByDistrict(),
             'submit' => 'Create my account',
             'footer' => 'Already have an account?',
             'footerLink' => 'Sign in',

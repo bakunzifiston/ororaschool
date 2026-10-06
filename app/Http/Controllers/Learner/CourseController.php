@@ -16,7 +16,11 @@ class CourseController extends Controller
     {
         return view('learner.courses.index', [
             'page' => LearnerCoursesPage::index(
-                status: (string) $request->string('status'),
+                filters: [
+                    'status' => (string) $request->string('status'),
+                    'platform' => (string) $request->string('platform'),
+                    'category' => (string) $request->string('category'),
+                ],
                 empty: $request->boolean('empty'),
             ),
         ]);

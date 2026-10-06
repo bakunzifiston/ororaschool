@@ -34,7 +34,20 @@
                             <td class="px-3 py-2.5"><x-content-type :type="$row['type']" /></td>
                             <td class="figure px-3 py-2.5 text-right text-micro text-fern-500">{{ $row['duration'] }}</td>
                             <td class="px-3 py-2.5 text-right">
-                                <x-row-actions :view="route('workspace.modules', ['platform' => $platformSlug, 'course' => $row['course_slug']])" />
+                                <div class="flex flex-wrap items-center justify-end gap-2">
+                                    <x-button variant="ghost" size="sm"
+                                              :href="route('workspace.modules', ['platform' => $platformSlug, 'course' => $row['course_slug']])">
+                                        View
+                                    </x-button>
+                                    <x-button variant="ghost" size="sm"
+                                              x-on:click="$dispatch('open-modal', 'edit-lesson-{{ $row['id'] }}')">
+                                        Edit
+                                    </x-button>
+                                    <x-button variant="danger" size="sm"
+                                              x-on:click="$dispatch('open-modal', 'delete-lesson-{{ $row['id'] }}')">
+                                        Delete
+                                    </x-button>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
@@ -42,4 +55,37 @@
             </x-data-table>
         </x-panel>
     </div>
+
+    @foreach ($page['rows'] as $row)
+        <x-modal :name="'edit-lesson-'.$row['id']" width="md"
+                 :title="'Edit '.$row['title']"
+                 subtitle="Lesson under {{ $row['module'] }}.">
+            <form method="POST" action="{{ route('workspace.lessons.update', ['platform' => $platformSlug, 'lesson' => $row['id']]) }}" enctype="multipart/form-data" class="grid gap-4">
+                @csrf
+                <input type="hidden" name="course" value="{{ $row['course_slug'] }}">
+                <input type="hidden" name="return" value="lessons">
+                @include('workspace.curriculum.partials.lesson-fields', ['types' => $page['types'], 'lesson' => $row])
+                <div class="flex justify-end gap-2">
+                    <x-button variant="ghost" x-on:click="open = false">Cancel</x-button>
+                    <x-button type="submit">Save lesson</x-button>
+                </div>
+            </form>
+        </x-modal>
+
+        <x-modal :name="'delete-lesson-'.$row['id']" width="md"
+                 :title="'Delete '.$row['title'].'?'"
+                 subtitle="Lesson">
+            <p>{{ $row['title'] }} will leave {{ $row['module'] }}.</p>
+            <x-slot:actions>
+                <x-button variant="ghost" x-on:click="open = false">Cancel</x-button>
+                <form method="POST" action="{{ route('workspace.lessons.destroy', ['platform' => $platformSlug, 'lesson' => $row['id']]) }}">
+                    @csrf
+                    @method('DELETE')
+                    <input type="hidden" name="course" value="{{ $row['course_slug'] }}">
+                    <input type="hidden" name="return" value="lessons">
+                    <x-button type="submit" variant="danger">Delete lesson</x-button>
+                </form>
+            </x-slot:actions>
+        </x-modal>
+    @endforeach
 </x-layouts.platform-workspace>

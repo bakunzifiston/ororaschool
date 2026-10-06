@@ -7,7 +7,15 @@
         'buchapro' => 'tag',
         'feedgrid' => 'layers',
     ];
-    $glyph = $glyphs[$platform['slug'] ?? ''] ?? 'book';
+    $platformTones = [
+        'ororafarm' => 'border-st-published/30 bg-st-published-bg text-st-published',
+        'gemura' => 'border-st-approved/30 bg-st-approved-bg text-st-approved',
+        'buchapro' => 'border-st-pending/30 bg-st-pending-bg text-st-pending',
+        'feedgrid' => 'border-st-active/30 bg-st-active-bg text-st-active',
+    ];
+    $slug = $platform['slug'] ?? '';
+    $glyph = $glyphs[$slug] ?? 'book';
+    $platformTone = $platformTones[$slug] ?? 'border-accent-200 bg-accent-50 text-accent-700';
     $copy = $platform['tagline'] ?? $platform['description'] ?? '';
     $count = $platform['public_courses'] ?? null;
     $cover = $platform['cover'] ?? null;
@@ -34,12 +42,19 @@
     </span>
 
     <span class="flex grow flex-col p-5">
-        @if ($discipline !== '')
-            <span class="text-micro font-medium text-fern-500">{{ $discipline }}</span>
+        @if ($name !== '')
+            <span class="flex flex-wrap items-center gap-2">
+                <span @class([
+                    'inline-flex items-center rounded-md border px-2.5 py-1 text-micro font-medium',
+                    $platformTone,
+                ])>
+                    {{ $name }}
+                </span>
+            </span>
         @endif
 
-        <span class="mt-1.5 font-display text-panel font-semibold leading-snug text-basalt-900 group-hover:text-accent-700">
-            {{ $name }}
+        <span class="mt-2 font-display text-panel font-semibold leading-snug text-basalt-900 group-hover:text-accent-700">
+            {{ $discipline !== '' ? $discipline : $name }}
         </span>
 
         @if ($copy !== '')

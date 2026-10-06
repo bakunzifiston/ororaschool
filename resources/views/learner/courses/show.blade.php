@@ -11,7 +11,7 @@
             @elseif ($page['cta'] === 'start' && $page['syllabus']['current'])
                 <x-button icon="play"
                           :href="route('learner.courses.lessons.show', ['course' => $page['syllabus']['course']['slug'], 'lesson' => $page['syllabus']['current']['id']])">
-                    Start
+                    Start learning
                 </x-button>
             @elseif ($page['cta'] === 'continue' && $page['syllabus']['current'])
                 <x-button icon="play"

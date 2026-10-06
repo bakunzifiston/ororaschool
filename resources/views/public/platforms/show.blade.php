@@ -1,15 +1,14 @@
 <x-layouts.public :title="$page['platform']['name']" flush>
     @php
         $platform = $page['platform'];
-        $glyphs = [
-            'ororafarm' => 'sprout',
-            'gemura' => 'droplet',
-            'buchapro' => 'tag',
-            'feedgrid' => 'layers',
-        ];
-        $glyph = $glyphs[$platform['slug'] ?? ''] ?? 'book';
-        $courseCount = (int) ($platform['public_courses'] ?? 0);
-        $foci = array_values(array_filter(array_column($platform['public_academies'] ?? [], 'name')));
+        $courseCount = (int) ($platform['public_courses'] ?? count($page['courses'] ?? []));
+        $meta = collect([
+            $platform['discipline'] ?? null,
+            $platform['region'] ?? null,
+            $courseCount > 0
+                ? $courseCount.' '.($courseCount === 1 ? 'course' : 'courses')
+                : null,
+        ])->filter()->implode(' · ');
     @endphp
 
     <x-public.hero-band compact :image="$platform['cover'] ?? null" :alt="$platform['name']">
@@ -18,40 +17,54 @@
             ['label' => $platform['name']],
         ]" />
 
-        <p class="inline-flex items-center gap-1.5 rounded-full bg-chalk/15 px-2.5 py-1 text-micro font-medium text-chalk">
-            <x-icon :name="$glyph" class="h-3.5 w-3.5" />
-            {{ $platform['discipline'] }}
+        <p class="mt-6 flex items-center gap-3 text-micro font-medium tracking-[0.18em] text-clay-200">
+            <span class="h-px w-8 bg-accent-400" aria-hidden="true"></span>
+            FARMSCHOOL
         </p>
-        <h1 class="mt-4 marketing-title text-chalk">{{ $platform['name'] }}</h1>
-        <p class="mt-3 max-w-xl text-read leading-relaxed text-clay-200">
+
+        <h1 class="mt-5 marketing-hero text-chalk">{{ $platform['name'] }}</h1>
+
+        <p class="mt-4 max-w-xl text-read leading-relaxed text-clay-200">
             {{ $platform['tagline'] ?: $platform['description'] }}
         </p>
+
+        @if ($meta !== '')
+            <p class="mt-5 text-dense text-clay-300">{{ $meta }}</p>
+        @endif
     </x-public.hero-band>
 
-    <x-public.section tone="chalk" class="grow">
-        <dl class="grid gap-6 border-b border-clay-200 pb-8 sm:grid-cols-3 sm:gap-8">
-            @if (($platform['region'] ?? '') !== '')
-                <div>
-                    <dt class="text-micro text-fern-500">Region</dt>
-                    <dd class="mt-1 text-dense text-basalt-900">{{ $platform['region'] }}</dd>
+    <x-public.section tone="white" class="grow">
+        <x-public.section-heading title="Courses" />
+
+        <div class="mt-8">
+            <x-public.filters :filters="$page['filters']"
+                              :options="$page['options']"
+                              :show-platform-filter="$page['showPlatformFilter']"
+                              :form-action="$page['formAction']" />
+        </div>
+
+        <div class="mt-10">
+            @if (count($page['courses']))
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                    @foreach ($page['courses'] as $course)
+                        <x-public.course-tile :course="$course" :omit-platform="true" />
+                    @endforeach
                 </div>
+
+                @if (($page['pagination']['pages'] ?? 1) > 1)
+                    <x-pagination :pagination="$page['pagination']" class="mt-10 px-0" />
+                @endif
+            @else
+                <x-empty-state icon="search" :title="$page['emptyTitle']" :message="$page['emptyMessage']">
+                    <x-slot:actions>
+                        <x-button variant="secondary" :href="$page['formAction']">Clear filters</x-button>
+                    </x-slot:actions>
+                </x-empty-state>
             @endif
-            <div>
-                <dt class="text-micro text-fern-500">Published courses</dt>
-                <dd class="mt-1 text-dense text-basalt-900">
-                    {{ $courseCount }} {{ $courseCount === 1 ? 'course' : 'courses' }}
-                </dd>
-            </div>
-            @if (count($foci))
-                <div>
-                    <dt class="text-micro text-fern-500">Focus</dt>
-                    <dd class="mt-1 text-dense text-basalt-900">{{ implode(', ', $foci) }}</dd>
-                </div>
-            @endif
-        </dl>
+        </div>
 
         @if (count($page['resources'] ?? []))
-            <div class="mt-10 border-b border-clay-200 pb-10">
+            <div class="mt-16 border-t border-clay-200 pt-12">
                 <div class="flex flex-wrap items-end justify-between gap-4">
                     <x-public.section-heading
                         title="Resources"
@@ -62,43 +75,12 @@
                     </a>
                 </div>
 
-                <div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     @foreach ($page['resources'] as $resource)
-                        <x-public.resource-card :resource="$resource" />
+                        <x-public.resource-card :resource="$resource" :omit-platform="true" />
                     @endforeach
                 </div>
             </div>
         @endif
-
-        <div class="mt-10">
-            <x-public.section-heading title="Courses" />
-
-            <div class="mt-8">
-                <x-public.filters :filters="$page['filters']"
-                                  :options="$page['options']"
-                                  :show-platform-filter="$page['showPlatformFilter']"
-                                  :form-action="$page['formAction']" />
-            </div>
-
-            <div class="mt-10">
-                @if (count($page['courses']))
-                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                        @foreach ($page['courses'] as $course)
-                            <x-public.course-tile :course="$course" />
-                        @endforeach
-                    </div>
-
-                    @if (($page['pagination']['pages'] ?? 1) > 1)
-                        <x-pagination :pagination="$page['pagination']" class="mt-10 px-0" />
-                    @endif
-                @else
-                    <x-empty-state icon="search" :title="$page['emptyTitle']" :message="$page['emptyMessage']">
-                        <x-slot:actions>
-                            <x-button variant="secondary" :href="$page['formAction']">Clear filters</x-button>
-                        </x-slot:actions>
-                    </x-empty-state>
-                @endif
-            </div>
-        </div>
     </x-public.section>
 </x-layouts.public>

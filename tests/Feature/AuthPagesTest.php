@@ -64,6 +64,10 @@ class AuthPagesTest extends TestCase
             ->assertSee('autocomplete="current-password"', false)
             ->assertSee(route('password.request'), false)
             ->assertSee(route('register'), false)
+            ->assertSee('Create an account', false)
+            ->assertDontSee('See how to get access', false)
+            ->assertDontSee('FarmSchool is the training and certification arm of the Orora academies', false)
+            ->assertDontSee('Use the account your academy coordinator set up for you', false)
             ->assertDontSee('name="preview_as"', false)
             ->assertDontSee('Temporary — no authentication in this build', false);
     }
@@ -270,47 +274,62 @@ class AuthPagesTest extends TestCase
             ->assertRedirect(route('verification.notice'));
     }
 
-    public function test_registration_leads_with_platform_linking(): void
+    public function test_registration_does_not_offer_academy_linking(): void
     {
         $response = $this->get(route('register'));
 
         foreach (Platforms::active() as $platform) {
-            $response->assertSee('Continue with '.$platform['name'], false);
+            $response->assertDontSee('Continue with '.$platform['name'], false);
         }
 
-        $response->assertSee(route('register.link'), false);
+        $response->assertSee(route('register.store'), false)
+            ->assertSee('First name', false)
+            ->assertSee('Last name', false)
+            ->assertSee('District', false)
+            ->assertSee('Sector', false)
+            ->assertDontSee('you work in', false)
+            ->assertSee('Bugesera', false)
+            ->assertSee('Nyarugenge', false)
+            ->assertSee('Kabarore', false)
+            ->assertDontSee('Full name', false)
+            ->assertDontSee('Not on any of those yet?', false);
     }
 
-    public function test_linking_a_platform_reports_back_without_pretending_to_work(): void
-    {
-        $this->from(route('register'))
-            ->post(route('register.link'), ['platform' => 'gemura'])
-            ->assertRedirect(route('register'))
-            ->assertSessionHas('status', fn (string $status) => str_contains($status, 'Gemura'));
-    }
-
-    public function test_direct_registration_creates_an_unverified_learner_and_asks_them_to_confirm(): void
+    public function test_direct_registration_creates_a_learner_and_sends_them_to_the_courses_dashboard(): void
     {
         Notification::fake();
+        $this->seed(CatalogSeeder::class);
 
         $this->post(route('register.store'), [
-            'name' => 'Placide Bizimana',
+            'first_name' => 'Placide',
+            'last_name' => 'Bizimana',
             'district' => 'Gatsibo',
+            'sector' => 'Kabarore',
             'email' => 'new.learner@umuhinzi.rw',
             'password' => 'password12',
         ])
-            ->assertRedirect(route('verification.notice'))
-            ->assertSessionHas('status');
+            ->assertRedirect(route('learner.courses'))
+            ->assertSessionMissing('status');
 
         $user = User::query()->where('email', 'new.learner@umuhinzi.rw')->first();
 
         $this->assertNotNull($user);
+        $this->assertSame('Placide Bizimana', $user->name);
+        $this->assertSame('Gatsibo', $user->district);
+        $this->assertSame('Kabarore', $user->sector);
         $this->assertSame(UserRole::Learner, $user->role);
         $this->assertSame('active', $user->status);
-        $this->assertFalse($user->hasVerifiedEmail());
+        $this->assertTrue($user->hasVerifiedEmail());
         $this->assertAuthenticatedAs($user);
 
-        Notification::assertSentTo($user, VerifyEmail::class);
+        Notification::assertNothingSent();
+
+        $this->get(route('learner.courses'))
+            ->assertOk()
+            ->assertDontSee('Confirm your email address', false)
+            ->assertDontSee('Send the link again', false)
+            ->assertSee('Evening Intake and Lactometer Checks', false)
+            ->assertSee('Kraal Register Reconciliation', false);
     }
 
     public function test_direct_registration_rejects_an_empty_form(): void
@@ -318,18 +337,38 @@ class AuthPagesTest extends TestCase
         $this->from(route('register'))
             ->post(route('register.store'))
             ->assertRedirect(route('register'))
-            ->assertSessionHasErrors(['name', 'district', 'email', 'password']);
+            ->assertSessionHasErrors(['first_name', 'last_name', 'district', 'sector', 'email', 'password']);
 
         $this->assertGuest();
         $this->assertDatabaseCount('users', 0);
+    }
+
+    public function test_direct_registration_rejects_a_sector_that_is_not_in_the_chosen_district(): void
+    {
+        $this->from(route('register'))
+            ->post(route('register.store'), [
+                'first_name' => 'Placide',
+                'last_name' => 'Bizimana',
+                'district' => 'Gatsibo',
+                'sector' => 'Kinigi',
+                'email' => 'wrong.sector@umuhinzi.rw',
+                'password' => 'password12',
+            ])
+            ->assertRedirect(route('register'))
+            ->assertSessionHasErrors('sector');
+
+        $this->assertGuest();
+        $this->assertDatabaseMissing('users', ['email' => 'wrong.sector@umuhinzi.rw']);
     }
 
     public function test_direct_registration_rejects_a_password_shorter_than_ten_characters(): void
     {
         $this->from(route('register'))
             ->post(route('register.store'), [
-                'name' => 'Placide Bizimana',
+                'first_name' => 'Placide',
+                'last_name' => 'Bizimana',
                 'district' => 'Gatsibo',
+                'sector' => 'Kabarore',
                 'email' => 'short.password@umuhinzi.rw',
                 'password' => 'password1',
             ])

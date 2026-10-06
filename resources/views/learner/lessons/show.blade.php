@@ -7,13 +7,43 @@
         @php $type = $page['lesson']['type']; @endphp
 
         @if ($type === 'video')
-            <div class="flex aspect-video items-center justify-center rounded-md border border-clay-200 bg-basalt-900 text-clay-100">
-                <span class="flex flex-col items-center gap-2">
-                    <x-icon name="play" class="h-10 w-10 text-accent-400" />
-                    <span class="text-micro text-fern-500">Video placeholder · {{ $page['lesson']['duration'] }} min</span>
-                </span>
-            </div>
-            <p class="mt-4 text-read leading-relaxed text-basalt-800">{{ $page['lesson']['body'] }}</p>
+            @if (filled($page['lesson']['youtube_embed'] ?? null))
+                <div class="overflow-hidden rounded-md border border-clay-200 bg-basalt-900">
+                    <iframe src="{{ $page['lesson']['youtube_embed'] }}"
+                            title="{{ $page['lesson']['title'] }}"
+                            class="aspect-video w-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen
+                            loading="lazy"
+                            referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                </div>
+                @if (filled($page['lesson']['youtube_watch'] ?? null))
+                    <div class="mt-3">
+                        <x-button variant="ghost" size="sm" :href="$page['lesson']['youtube_watch']" target="_blank" rel="noopener noreferrer">
+                            Open on YouTube
+                        </x-button>
+                    </div>
+                @endif
+            @elseif (filled($page['lesson']['source_url'] ?? null))
+                <div class="rounded-md border border-clay-200 bg-chalk px-5 py-6">
+                    <p class="text-micro text-fern-500">Video · {{ $page['lesson']['duration'] }} min</p>
+                    <div class="mt-4">
+                        <x-button variant="secondary" icon="play" :href="$page['lesson']['source_url']" target="_blank" rel="noopener noreferrer">
+                            Open the note
+                        </x-button>
+                    </div>
+                </div>
+            @else
+                <div class="flex aspect-video items-center justify-center rounded-md border border-clay-200 bg-basalt-900 text-clay-100">
+                    <span class="flex flex-col items-center gap-2">
+                        <x-icon name="play" class="h-10 w-10 text-accent-400" />
+                        <span class="text-micro text-fern-500">Video placeholder · {{ $page['lesson']['duration'] }} min</span>
+                    </span>
+                </div>
+            @endif
+            @if (filled($page['lesson']['body'] ?? null))
+                <p class="mt-4 text-read leading-relaxed text-basalt-800">{{ $page['lesson']['body'] }}</p>
+            @endif
         @elseif ($type === 'text')
             <article class="rounded-md border border-clay-200 bg-chalk px-5 py-5">
                 <p class="text-read leading-relaxed text-basalt-800">{{ $page['lesson']['body'] }}</p>
@@ -21,8 +51,27 @@
         @elseif ($type === 'pdf')
             <div class="flex min-h-64 flex-col items-center justify-center gap-3 rounded-md border border-dashed border-clay-300 bg-papyrus px-4 py-10">
                 <x-icon name="file" class="h-8 w-8 text-fern-500" />
-                <p class="font-medium text-basalt-900">PDF viewer placeholder</p>
-                <p class="max-w-sm text-center text-micro text-fern-500">{{ $page['lesson']['title'] }} would open here. Download is a placeholder in this build.</p>
+                @if (filled($page['lesson']['file_url'] ?? null))
+                    <p class="font-medium text-basalt-900">{{ $page['lesson']['title'] }}</p>
+                    <div class="mt-2 flex flex-wrap justify-center gap-2">
+                        <x-button variant="secondary" icon="file" :href="$page['lesson']['file_url']" target="_blank" rel="noopener noreferrer">
+                            Open the note
+                        </x-button>
+                        @if (filled($page['lesson']['download_url'] ?? null))
+                            <x-button variant="ghost" icon="arrow-down" :href="$page['lesson']['download_url']">
+                                Download
+                            </x-button>
+                        @endif
+                    </div>
+                @else
+                    <p class="font-medium text-basalt-900">PDF viewer placeholder</p>
+                    <p class="max-w-sm text-center text-micro text-fern-500">{{ $page['lesson']['title'] }} would open here. Download is a placeholder in this build.</p>
+                    @if (filled($page['lesson']['source_url'] ?? null))
+                        <x-button variant="secondary" icon="link" :href="$page['lesson']['source_url']" target="_blank" rel="noopener noreferrer">
+                            Open the note
+                        </x-button>
+                    @endif
+                @endif
             </div>
         @elseif ($type === 'audio')
             <div class="rounded-md border border-clay-200 bg-chalk px-5 py-6">
@@ -37,6 +86,13 @@
                     </span>
                     <span class="figure text-micro text-fern-500">{{ $page['lesson']['duration'] }}:00</span>
                 </div>
+                @if (filled($page['lesson']['source_url'] ?? null))
+                    <div class="mt-4">
+                        <x-button variant="secondary" icon="link" :href="$page['lesson']['source_url']" target="_blank" rel="noopener noreferrer">
+                            Open the note
+                        </x-button>
+                    </div>
+                @endif
                 <p class="mt-4 text-read leading-relaxed text-fern-600">{{ $page['lesson']['body'] }}</p>
             </div>
         @elseif ($type === 'external')
@@ -44,7 +100,9 @@
                 <p class="text-micro text-fern-500">External resource</p>
                 <p class="mt-1 text-read leading-relaxed text-basalt-800">{{ $page['lesson']['body'] }}</p>
                 <div class="mt-4">
-                    <x-button variant="secondary" icon="link" href="https://www.minagri.gov.rw/" target="_blank" rel="noreferrer">
+                    <x-button variant="secondary" icon="link"
+                              :href="$page['lesson']['source_url'] ?: 'https://www.minagri.gov.rw/'"
+                              target="_blank" rel="noreferrer">
                         Open the note
                     </x-button>
                 </div>

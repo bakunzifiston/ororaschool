@@ -7,10 +7,10 @@
              width="1600" height="900"
              fetchpriority="high"
              class="absolute inset-0 h-full w-full object-cover object-[center_35%]">
-        <div class="absolute inset-0 bg-gradient-to-r from-basalt-950/80 via-basalt-950/60 to-basalt-950/30"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-basalt-950/45 via-transparent to-basalt-950/20"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-[#2a4d18]/80 via-[#2a4d18]/60 to-[#2a4d18]/30"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-[#2a4d18]/45 via-transparent to-[#2a4d18]/20"></div>
     @else
-        <div class="absolute inset-0 bg-basalt-900"></div>
+        <div class="absolute inset-0 bg-[#2a4d18]"></div>
     @endif
 
     <div @class([

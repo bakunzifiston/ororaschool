@@ -8,7 +8,6 @@
                 </p>
 
                 <h1 class="mt-5 font-display text-title tracking-tight text-basalt-900">{{ $page['title'] }}</h1>
-                <p class="mt-3 text-dense leading-relaxed text-fern-600">{{ $page['subtitle'] }}</p>
 
                 <form method="POST" action="{{ route('login.attempt') }}" class="mt-8 grid gap-5">
                     @csrf

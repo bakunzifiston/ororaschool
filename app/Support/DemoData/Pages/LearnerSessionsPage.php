@@ -19,6 +19,11 @@ class LearnerSessionsPage
         $label = function (array $row): array {
             $platform = Platforms::find($row['platform']);
             $row['platform_name'] = $platform['name'] ?? $row['platform'];
+            $row['can_join'] = ($row['status'] ?? '') === 'live';
+
+            $parts = array_map('trim', explode(',', (string) $row['starts'], 2));
+            $row['date'] = $parts[0] ?? $row['starts'];
+            $row['time'] = $parts[1] ?? '';
 
             return $row;
         };
