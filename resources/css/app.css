@@ -801,6 +801,184 @@ html[data-experience='guest'] body {
     height: 70vh;
 }
 
+/* ---- Home hero: restrained 3D depth --------------------------------------- */
+.home-hero {
+    --home-hero-depth: rgb(6 24 10 / 0.42);
+    --home-hero-edge: rgb(255 255 255 / 0.18);
+}
+
+.home-hero-atmosphere {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+}
+
+.home-hero-glow {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(48px);
+}
+
+.home-hero-glow--primary {
+    top: -18%;
+    right: -8%;
+    width: min(42rem, 70vw);
+    height: min(42rem, 70vw);
+    background: radial-gradient(circle, rgb(196 214 120 / 0.28) 0%, rgb(42 77 24 / 0) 68%);
+}
+
+.home-hero-glow--secondary {
+    bottom: -22%;
+    left: -12%;
+    width: min(34rem, 60vw);
+    height: min(34rem, 60vw);
+    background: radial-gradient(circle, rgb(10 40 18 / 0.55) 0%, rgb(42 77 24 / 0) 70%);
+}
+
+.home-hero-sheen {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(115deg, rgb(255 255 255 / 0.07) 0%, transparent 38%, transparent 62%, rgb(0 0 0 / 0.14) 100%),
+        linear-gradient(180deg, rgb(255 255 255 / 0.05) 0%, transparent 34%);
+}
+
+.home-hero-floor {
+    position: absolute;
+    inset-inline: 8%;
+    bottom: -18%;
+    height: 42%;
+    background: radial-gradient(ellipse at center, rgb(0 0 0 / 0.28) 0%, transparent 72%);
+    filter: blur(18px);
+}
+
+.home-hero-copy .marketing-hero {
+    text-shadow: 0 1px 0 rgb(0 0 0 / 0.12), 0 18px 40px rgb(0 0 0 / 0.18);
+}
+
+.home-hero-cta-primary {
+    box-shadow:
+        0 1px 0 rgb(255 255 255 / 0.18) inset,
+        0 10px 24px rgb(0 0 0 / 0.22),
+        0 2px 4px rgb(0 0 0 / 0.16);
+    transform: translateZ(0);
+}
+
+.home-hero-cta-primary:hover {
+    box-shadow:
+        0 1px 0 rgb(255 255 255 / 0.2) inset,
+        0 14px 28px rgb(0 0 0 / 0.26),
+        0 3px 6px rgb(0 0 0 / 0.18);
+}
+
+.home-hero-cta-secondary {
+    box-shadow:
+        0 1px 0 rgb(255 255 255 / 0.55) inset,
+        0 10px 22px rgb(0 0 0 / 0.16);
+    backdrop-filter: blur(10px);
+}
+
+.home-hero-stage {
+    perspective: 1400px;
+    transform-style: preserve-3d;
+}
+
+.home-hero-orbit {
+    position: absolute;
+    inset: 8% -4% -6% 6%;
+    border-radius: 2.5rem;
+    background:
+        linear-gradient(145deg, rgb(255 255 255 / 0.08), transparent 42%),
+        radial-gradient(circle at 70% 30%, rgb(214 232 150 / 0.16), transparent 55%);
+    box-shadow:
+        0 30px 60px var(--home-hero-depth),
+        inset 0 1px 0 rgb(255 255 255 / 0.08);
+    transform: rotateY(-8deg) rotateX(4deg) translateZ(-40px);
+}
+
+.home-hero-frame {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    border-radius: 7rem 1.5rem 1.5rem 1.5rem;
+    transform: rotateY(-6deg) rotateX(2.5deg) translateZ(24px);
+    box-shadow:
+        0 1px 0 var(--home-hero-edge) inset,
+        0 -1px 0 rgb(0 0 0 / 0.2) inset,
+        0 28px 50px rgb(0 0 0 / 0.34),
+        0 10px 18px rgb(0 0 0 / 0.2);
+    animation: home-hero-float 7.5s ease-in-out infinite;
+}
+
+.home-hero-frame-edge {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    background:
+        linear-gradient(145deg, rgb(255 255 255 / 0.22) 0%, transparent 28%, transparent 72%, rgb(0 0 0 / 0.18) 100%);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
+}
+
+.home-hero-photo {
+    display: block;
+    filter: saturate(1.04) contrast(1.03);
+}
+
+.home-hero-badge {
+    border-radius: 9999px;
+    border: 1px solid rgb(255 255 255 / 0.45);
+    background: rgb(251 252 249 / 0.82);
+    box-shadow:
+        0 1px 0 rgb(255 255 255 / 0.7) inset,
+        0 12px 28px rgb(0 0 0 / 0.22),
+        0 2px 6px rgb(0 0 0 / 0.12);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+}
+
+@keyframes home-hero-float {
+    0%,
+    100% {
+        transform: rotateY(-6deg) rotateX(2.5deg) translateZ(24px) translateY(0);
+    }
+
+    50% {
+        transform: rotateY(-6deg) rotateX(2.5deg) translateZ(24px) translateY(-6px);
+    }
+}
+
+@media (max-width: 63.99rem) {
+    .home-hero-orbit {
+        inset: 10% 4% 0;
+        transform: none;
+        opacity: 0.7;
+    }
+
+    .home-hero-frame {
+        transform: translateY(0);
+        animation: home-hero-float-mobile 7.5s ease-in-out infinite;
+    }
+}
+
+@keyframes home-hero-float-mobile {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-hero-frame {
+        animation: none;
+    }
+}
+
 @keyframes public-reveal {
     from {
         opacity: 0;

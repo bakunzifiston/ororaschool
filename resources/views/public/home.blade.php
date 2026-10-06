@@ -5,11 +5,17 @@
     {{-- Hero --}}
     @php
         $published = $page['stats'][0] ?? ['value' => '', 'label' => ''];
-        $companion = collect($page['platforms'])->firstWhere('slug', 'gemura') ?? [];
     @endphp
-    <section class="bg-[#2a4d18]">
-        <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-14 lg:grid-cols-2 lg:gap-16 lg:px-10 lg:py-16">
-            <div class="max-w-xl is-in" data-reveal>
+    <section class="home-hero relative isolate overflow-hidden bg-[#2a4d18]">
+        <div class="home-hero-atmosphere" aria-hidden="true">
+            <span class="home-hero-glow home-hero-glow--primary"></span>
+            <span class="home-hero-glow home-hero-glow--secondary"></span>
+            <span class="home-hero-sheen"></span>
+            <span class="home-hero-floor"></span>
+        </div>
+
+        <div class="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-14 lg:grid-cols-2 lg:gap-16 lg:px-10 lg:py-16">
+            <div class="home-hero-copy relative z-10 max-w-xl is-in" data-reveal>
                 <p class="flex items-center gap-3 text-micro font-medium tracking-[0.18em] text-clay-200">
                     <span class="h-px w-8 bg-accent-400" aria-hidden="true"></span>
                     FARMSCHOOL
@@ -21,9 +27,9 @@
                     Practical training for the people, businesses and teams working in farming.
                     Learn once, build real skills, and keep your learning record in one place.
                 </p>
-                <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                    <x-button size="lg" class="w-full sm:w-auto" icon-after="arrow-right" :href="route('catalog.courses')">Explore courses</x-button>
-                    <x-button size="lg" variant="secondary" class="w-full sm:w-auto" :href="route('register')">Get started</x-button>
+                <div class="home-hero-cta mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                    <x-button size="lg" class="home-hero-cta-primary w-full sm:w-auto" icon-after="arrow-right" :href="route('catalog.courses')">Explore courses</x-button>
+                    <x-button size="lg" variant="secondary" class="home-hero-cta-secondary w-full sm:w-auto" :href="route('register')">Get started</x-button>
                 </div>
                 <div class="mt-6 flex flex-wrap items-center gap-3">
                     <span class="flex items-center gap-1.5" aria-hidden="true">
@@ -38,30 +44,26 @@
                 </div>
             </div>
 
-            <div class="relative mx-auto w-full max-w-md sm:max-w-lg lg:max-w-none">
-                <div class="is-in overflow-hidden rounded-tl-[7rem] rounded-tr-3xl rounded-br-3xl rounded-bl-3xl" data-reveal data-reveal-media style="--reveal-delay: 120ms">
-                    <img src="{{ asset('images/home/hero.jpg') }}"
-                         alt="Farmers and a field officer reviewing a terraced plot in the Rwandan highlands."
-                         width="1600" height="1200"
-                         fetchpriority="high"
-                         class="aspect-[5/6] w-full object-cover object-[center_35%]">
+            <div class="home-hero-stage relative mx-auto w-full max-w-md sm:max-w-lg lg:max-w-none">
+                <div class="home-hero-orbit" aria-hidden="true"></div>
+
+                <div class="is-in" data-reveal data-reveal-media style="--reveal-delay: 120ms">
+                    <div class="home-hero-frame">
+                        <div class="home-hero-frame-edge" aria-hidden="true"></div>
+                        <img src="{{ asset('images/home/hero.jpg') }}"
+                             alt="Farmers and a field officer reviewing a terraced plot in the Rwandan highlands."
+                             width="1600" height="1200"
+                             fetchpriority="high"
+                             class="home-hero-photo aspect-[5/6] w-full object-cover object-[center_35%]">
+                    </div>
                 </div>
 
-                <p class="absolute left-1/2 top-5 z-10 inline-flex -translate-x-1/2 items-center gap-2 rounded-full bg-accent-100 px-3.5 py-1.5 text-micro font-medium text-basalt-800 is-in" data-reveal style="--reveal-delay: 220ms">
-                    <span class="h-1.5 w-1.5 rounded-full bg-accent-500" aria-hidden="true"></span>
-                    {{ $published['value'] }} {{ $published['label'] }}
-                </p>
-
-                <article class="absolute bottom-16 left-0 z-10 w-[62%] overflow-hidden rounded-2xl bg-chalk shadow-lg is-in sm:-left-8 lg:-left-12" data-reveal style="--reveal-delay: 280ms">
-                    <img src="{{ asset('images/platforms/gemura.jpg') }}"
-                         alt="Milk cans and a lactometer on a collection bench, with cattle behind the kraal fence."
-                         width="1400" height="875"
-                         class="aspect-[5/4] w-full object-cover object-[center_30%]">
-                    <p class="flex items-center gap-2 px-4 py-3 text-micro font-medium text-basalt-800">
+                <div class="absolute left-1/2 top-5 z-20 -translate-x-1/2 is-in" data-reveal style="--reveal-delay: 220ms">
+                    <p class="home-hero-badge inline-flex items-center gap-2 px-3.5 py-1.5 text-micro font-medium text-basalt-900">
                         <span class="h-1.5 w-1.5 rounded-full bg-accent-500" aria-hidden="true"></span>
-                        {{ $companion['name'] ?? 'Gemura' }}
+                        {{ $published['value'] }} {{ $published['label'] }}
                     </p>
-                </article>
+                </div>
             </div>
         </div>
     </section>
